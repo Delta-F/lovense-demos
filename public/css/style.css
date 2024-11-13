@@ -1,0 +1,151 @@
+body {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.sidebar {
+    width: 300px;
+    background-color: #f5f5f5;
+    height: 100vh;
+    padding: 20px;
+    overflow-y: auto;
+    position: fixed;
+}
+
+main {
+    margin-left: 320px;
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.nav-section {
+    margin-bottom: 20px;
+}
+
+.nav-section h3 {
+    color: #333;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #ddd;
+}
+
+.nav-section ul {
+    list-style: none;
+    padding-left: 15px;
+}
+
+.nav-section li {
+    margin: 8px 0;
+}
+
+.nav-section a {
+    text-decoration: none;
+    color: #666;
+    display: block;
+    padding: 5px 0;
+}
+
+.nav-section a:hover {
+    color: #007bff;
+}
+
+.submenu > span {
+    color: #666;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.submenu > span .arrow {
+    font-size: 0.8em;
+    transition: transform 0.2s ease;
+}
+
+.submenu > ul {
+    margin-left: 15px;
+    transition: display 0.3s ease;
+}
+
+.submenu.active > span .arrow {
+    transform: rotate(180deg);
+}
+
+/* Index page styles */
+.welcome-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.welcome-section h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.category-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.category {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.category h2 {
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.category p {
+    color: #666;
+    line-height: 1.5;
+}
+
+/* API Documentation styles */
+.api-documentation {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.api-documentation h1 {
+    color: #333;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #007bff;
+}
+
+.api-documentation h2 {
+    color: #444;
+    margin: 25px 0 15px;
+}
+
+.api-documentation p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.api-documentation section {
+    margin-bottom: 40px;
+}
+
+/* Active link styles */
+.nav-section a.active {
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Improve spacing for nested items */
+.submenu > ul > li {
+    margin-left: 10px;
+} 

@@ -1,0 +1,40 @@
+/* Dropdown submenu styles */
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+}
+
+.dropdown-submenu:hover > .dropdown-menu {
+    display: block;
+}
+
+/* Page content styles */
+.api-content {
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.api-title {
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.api-description {
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+/* Demo section styles */
+.demo-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+} 

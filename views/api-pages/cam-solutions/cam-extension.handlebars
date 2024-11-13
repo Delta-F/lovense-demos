@@ -1,0 +1,504 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<script src="https://api.lovense-api.com/cam-extension/static/js-sdk/broadcast.js"></script>
+
+<div class="api-documentation">
+    <h1>Cam Extension for Chrome</h1>
+    <div class="content">
+        <section class="quick-start">
+            <div class="steps">
+                <h2>Getting Started</h2>
+                <ol>
+                    <li>Install the Cam Extension from Chrome Web Store</li>
+                    <li>Enable the extension in your browser</li>
+                    <li>Use the test features below to verify the integration</li>
+                </ol>
+            </div>
+
+            <div class="compact-info">
+                <div class="info-line">
+                    <span class="section-label"><i class="fas fa-download"></i> Installation:</span>
+                    <div class="download-buttons">
+                        <a href="#" class="compact-btn cam-ext">
+                            <i class="fas fa-puzzle-piece"></i>
+                            Cam Extension
+                        </a>
+                        <a href="#" class="compact-btn stream-master">
+                            <i class="fas fa-desktop"></i>
+                            Stream Master
+                        </a>
+                    </div>
+                </div>
+
+                <div class="info-line">
+                    <span class="section-label"><i class="fas fa-laptop"></i> System Requirements:</span>
+                    <div class="req-items">
+                        <span class="req-item"><i class="fab fa-chrome"></i> Chrome</span>
+                        <span class="req-item"><i class="fab fa-windows"></i> Windows</span>
+                        <span class="req-item"><i class="fab fa-apple"></i> Mac</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="test-controls">
+            <h2>Test Controls</h2>
+            <button id="startTest" class="btn btn-primary">Start Test</button>
+            <button id="stopTest" class="btn btn-danger">Stop Test</button>
+            <div id="connectionStatus" class="status-badge">Disconnected</div>
+        </section>
+
+        <section class="video-test">
+            <h2>Video Input Test</h2>
+            <div class="video-container">
+                <video id="localVideo" autoplay playsinline></video>
+                <div class="video-controls">
+                    <button id="startVideo" class="btn">Start Video</button>
+                    <button id="stopVideo" class="btn">Stop Video</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="chat-test">
+            <h2>Chat Room Test</h2>
+            <div class="chat-container">
+                <div id="chatMessages" class="messages-area"></div>
+                <div class="input-area">
+                    <input type="text" id="messageInput" placeholder="Type your message...">
+                    <button id="sendMessage" class="btn">Send Message</button>
+                    <input type="number" id="tipAmount" placeholder="Tip amount" min="1" class="tip-input">
+                    <button id="sendTip" class="btn btn-success">Send Tip</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="api-tests">
+            <h2>API Test Functions</h2>
+            <div class="test-buttons">
+                <button id="receiveMessage" class="btn">Test Receive Message</button>
+                <button id="postMessage" class="btn">Test Post Message</button>
+                <button id="getSettings" class="btn">Get Settings</button>
+                <button id="getToyStatus" class="btn">Get Toy Status</button>
+                <button id="getVersion" class="btn">Get Version</button>
+            </div>
+            <div id="apiResponse" class="response-area">
+                <pre><code>Response will appear here...</code></pre>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+.api-documentation {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.content {
+    width: 100%;
+    max-width: 800px;
+}
+
+.content section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+    margin-left: 10px;
+    background-color: #ff4444;
+    color: white;
+}
+
+.status-badge.connected {
+    background-color: #00C851;
+}
+
+.video-container {
+    max-width: 640px;
+    margin: 20px 0;
+}
+
+#localVideo {
+    width: 100%;
+    background: #f0f0f0;
+    border-radius: 5px;
+}
+
+.chat-container {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background: #f9f9f9;
+}
+
+.input-area {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    gap: 10px;
+}
+
+#messageInput {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #007bff;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn-success {
+    background: #00C851;
+}
+
+.response-area {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+.test-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-danger {
+    background: #ff4444;
+}
+
+.tip-input {
+    width: 100px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.compatibility {
+    background: #f8f9fa;
+}
+
+.compatibility-items {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.comp-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background: white;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.comp-item i {
+    font-size: 24px;
+    color: #007bff;
+}
+
+.download-buttons {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.download-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    transition: opacity 0.2s;
+}
+
+.download-btn:hover {
+    opacity: 0.9;
+    color: white;
+}
+
+.download-btn.cam-ext {
+    background: #28a745;
+}
+
+.download-btn.stream-master {
+    background: #17a2b8;
+}
+
+.download-btn i {
+    font-size: 18px;
+}
+
+.quick-start h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.steps {
+    margin-bottom: 20px;
+}
+
+.steps ol {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.steps li {
+    margin-bottom: 5px;
+}
+
+.compact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 15px;
+    font-size: 0.9em;
+}
+
+.info-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-label {
+    color: #666;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.section-label i {
+    margin-right: 5px;
+}
+
+.download-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.compact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    text-decoration: none;
+    color: white;
+    transition: opacity 0.2s;
+}
+
+.compact-btn:hover {
+    opacity: 0.9;
+    color: white;
+    text-decoration: none;
+}
+
+.compact-btn.cam-ext {
+    background: #28a745;
+}
+
+.compact-btn.stream-master {
+    background: #17a2b8;
+}
+
+.req-items {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.req-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #666;
+}
+
+.req-item i {
+    font-size: 1.1em;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const connectionStatus = document.getElementById('connectionStatus');
+    const apiResponse = document.getElementById('apiResponse').querySelector('code');
+    let currentStream = null;
+    let camExtension = null;
+
+    // Initialize CamExtension
+    const initCamExtension = () => {
+        camExtension = new CamExtension("deltatest", "testmodel");
+        
+        const readyCallback = function(ce) {
+            console.log("CamExtension ready");
+            apiResponse.textContent = "CamExtension initialized and ready";
+        }
+
+        camExtension.on("ready", readyCallback);
+    };
+
+    // Start Test
+    document.getElementById('startTest').addEventListener('click', async () => {
+        try {
+            initCamExtension();
+            connectionStatus.textContent = 'Connected';
+            connectionStatus.classList.add('connected');
+            apiResponse.textContent = 'Extension connection established';
+        } catch (error) {
+            apiResponse.textContent = `Error: ${error.message}`;
+        }
+    });
+
+    // Stop Test
+    document.getElementById('stopTest').addEventListener('click', async () => {
+        try {
+            connectionStatus.textContent = 'Disconnected';
+            connectionStatus.classList.remove('connected');
+            apiResponse.textContent = 'Extension connection terminated';
+            camExtension = null;
+            
+            if (currentStream) {
+                stopVideoStream();
+            }
+        } catch (error) {
+            apiResponse.textContent = `Error: ${error.message}`;
+        }
+    });
+
+    // Video Controls
+    document.getElementById('startVideo').addEventListener('click', async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            currentStream = stream; // Store stream reference
+            document.getElementById('localVideo').srcObject = stream;
+            apiResponse.textContent = 'Video stream started';
+        } catch (error) {
+            apiResponse.textContent = `Video error: ${error.message}`;
+        }
+    });
+
+    document.getElementById('stopVideo').addEventListener('click', () => {
+        stopVideoStream();
+        apiResponse.textContent = 'Video stream stopped';
+    });
+
+    function stopVideoStream() {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            document.getElementById('localVideo').srcObject = null;
+            currentStream = null;
+        }
+    }
+
+    // Chat Functions
+    document.getElementById('sendMessage').addEventListener('click', () => {
+        const message = document.getElementById('messageInput').value;
+        if (message && camExtension) {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML += `<div>User: ${message}</div>`;
+            
+            // Integrate with CamExtension
+            camExtension.receiveMessage("testuser", message);
+            
+            document.getElementById('messageInput').value = '';
+            apiResponse.textContent = `Message sent: ${message}`;
+        }
+    });
+
+    // API Test Functions
+    document.getElementById('receiveMessage').addEventListener('click', () => {
+        apiResponse.textContent = 'Testing receive message functionality...';
+    });
+
+    document.getElementById('postMessage').addEventListener('click', () => {
+        apiResponse.textContent = 'Testing post message functionality...';
+    });
+
+    document.getElementById('getSettings').addEventListener('click', () => {
+        apiResponse.textContent = JSON.stringify({
+            resolution: '1080p',
+            framerate: 30,
+            bitrate: '4000kbps'
+        }, null, 2);
+    });
+
+    document.getElementById('getToyStatus').addEventListener('click', () => {
+        apiResponse.textContent = JSON.stringify({
+            connected: true,
+            batteryLevel: 80,
+            status: 'active'
+        }, null, 2);
+    });
+
+    document.getElementById('getVersion').addEventListener('click', async () => {
+        if (camExtension) {
+            try {
+                const version = await camExtension.getCamVersion();
+                apiResponse.textContent = `Cam Extension version: ${version}`;
+            } catch (error) {
+                apiResponse.textContent = `Error getting version: ${error.message}`;
+            }
+        } else {
+            apiResponse.textContent = 'Please start the test first';
+        }
+    });
+
+    // Tips Function
+    document.getElementById('sendTip').addEventListener('click', () => {
+        const tipInput = document.getElementById('tipAmount');
+        const tipAmount = parseInt(tipInput.value);
+        
+        if (!tipAmount || tipAmount < 1) {
+            apiResponse.textContent = 'Please enter a valid tip amount';
+            return;
+        }
+
+        if (camExtension) {
+            // Integrate with CamExtension
+            camExtension.receiveTip(tipAmount, "tipper");
+            
+            apiResponse.textContent = `Tip sent: ${tipAmount} tokens`;
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML += `<div class="tip-message">Tip sent: ${tipAmount} tokens</div>`;
+            tipInput.value = '';
+        } else {
+            apiResponse.textContent = 'Please start the test first';
+        }
+    });
+});
+</script> 
