@@ -1,0 +1,307 @@
+<div class="api-documentation">
+    <h1>Standard API - Mobile Remote Control</h1>
+
+    <!-- Token Input -->
+    <div class="test-section">
+        <h3>1. Input Developer Token</h3>
+        <input type="text" id="devToken" placeholder="Enter Developer Token" class="form-control" value="tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle">
+        <button onclick="getQRCode()" class="btn btn-primary">Generate QR Code</button>
+    </div>
+
+    <!-- Get QR Section -->
+    <div class="test-section">
+        <h3>2. Scan QR Code By Remote App</h3>
+        <div id="qrcode" class="qr-container"></div>
+    </div>
+
+    <!-- Callback Section -->
+    <div class="test-section">
+        <h3>3. Callback Data</h3>
+        <p>Callback URL: <span id="callbackUrl">Waiting for QR generation...</span></p>
+        <div id="callbackData" class="data-box">Waiting for data...</div>
+    </div>
+
+    <!-- Toy Management -->
+    <div class="test-section">
+        <h3>4. Toy Management</h3>
+        <button onclick="getToys()" class="btn btn-primary">Get Toys</button>
+        <button onclick="getToyNames()" class="btn btn-primary">Get Toy Names</button>
+        <div id="toyList" class="data-box"></div>
+    </div>
+
+    <!-- Command Testing -->
+    <div class="test-section">
+        <h3>5. Test Commands</h3>
+        <div class="command-group">
+            <label>Vibration:</label>
+            <input type="range" id="vibrationStrength" min="0" max="20" value="10">
+            <button onclick="testVibration()" class="btn btn-primary">Test Vibration</button>
+        </div>
+        <div class="command-group">
+            <button onclick="testRotate()" class="btn btn-secondary">Test Rotate</button>
+            <button onclick="testPump()" class="btn btn-secondary">Test Pump</button>
+            <button onclick="stopAll()" class="btn btn-danger">Stop All</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+const API_BASE = '/api/v2';
+const DEFAULT_TOKEN = "tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle";
+
+function generateMD5(string) {
+    if (typeof CryptoJS === 'undefined') {
+        throw new Error('CryptoJS library is not loaded');
+    }
+    return CryptoJS.MD5(string).toString();
+}
+
+async function getQRCode() {
+    try {
+        const qrcodeDiv = document.getElementById('qrcode');
+        qrcodeDiv.innerHTML = 'Generating QR Code...';
+        
+        const token = document.getElementById('devToken').value || DEFAULT_TOKEN;
+        
+        const uid = "test_" + Math.random().toString(36).substr(2, 9);
+        const uname = "user_" + uid;
+        const utoken = generateMD5(uid + "salt");
+        
+        const response = await axios.post(
+            "https://api.lovense-api.com/api/lan/getQrCode",
+            {
+                token: token,
+                uid: uid,
+                uname: uname,
+                utoken: utoken,
+                v: 2
+            }
+        );
+        
+        if (response.data && response.data.code === 0) {
+            qrcodeDiv.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = response.data.data.qr;
+            img.style.maxWidth = '200px';
+            img.style.height = 'auto';
+            qrcodeDiv.appendChild(img);
+            
+            const callbackUrlText = document.getElementById('callbackUrl');
+            if (callbackUrlText) {
+                callbackUrlText.textContent = document.createTextNode(`${API_BASE}/lovense/callback/latest`).textContent;
+            }
+        } else {
+            qrcodeDiv.innerHTML = 'Error: ' + (response.data.message || 'Failed to generate QR code');
+        }
+    } catch (error) {
+        console.error('QR Code generation failed:', error);
+        document.getElementById('qrcode').innerHTML = 'Error: ' + error.message;
+    }
+}
+
+async function getToys() {
+    try {
+        document.getElementById('toyList').innerHTML = 'Fetching toys...';
+    } catch (error) {
+        document.getElementById('toyList').innerHTML = 'Failed to get toys: ' + error.message;
+    }
+}
+
+async function getToyNames() {
+    try {
+        document.getElementById('toyList').innerHTML = 'Fetching toy names...';
+    } catch (error) {
+        document.getElementById('toyList').innerHTML = 'Failed to get toy names: ' + error.message;
+    }
+}
+
+async function testVibration() {
+    const strength = document.getElementById('vibrationStrength').value;
+    try {
+        // Add vibration command API call here
+    } catch (error) {
+        console.error('Vibration test failed:', error);
+    }
+}
+
+async function testRotate() {
+    try {
+        // Add rotation command API call here
+    } catch (error) {
+        console.error('Rotation test failed:', error);
+    }
+}
+
+async function testPump() {
+    try {
+        // Add pump command API call here
+    } catch (error) {
+        console.error('Pump test failed:', error);
+    }
+}
+
+async function stopAll() {
+    try {
+        // Add stop all command API call here
+    } catch (error) {
+        console.error('Stop all failed:', error);
+    }
+}
+
+function initCallbackListener() {
+    const baseUrl = window.location.origin;
+    const callbackUrl = `${baseUrl}/api/v2/lovense/callback`;
+    
+    const callbackUrlText = document.getElementById('callbackUrl');
+    if (callbackUrlText) {
+        callbackUrlText.textContent = callbackUrl;
+    }
+
+    setInterval(async () => {
+        try {
+            const response = await axios.get(`${API_BASE}/lovense/callback/latest`);
+            if (response.data) {
+                document.getElementById('callbackData').innerHTML = 
+                    `<pre>${JSON.stringify(response.data, null, 2)}</pre>`;
+            }
+        } catch (error) {
+            console.error('Failed to fetch callback data:', error);
+            document.getElementById('callbackData').innerHTML = 
+                'Error fetching callback data: ' + error.message;
+        }
+    }, 20000);
+}
+
+document.addEventListener('DOMContentLoaded', initCallbackListener);
+</script>
+
+<style>
+.api-documentation {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+}
+
+.test-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h3 {
+  color: #34495e;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.btn-primary {
+  background: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2980b9;
+}
+
+.btn-secondary {
+  background: #95a5a6;
+  color: white;
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: white;
+}
+
+.data-box {
+  background: #f8f9fa;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-top: 1rem;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+.qr-container {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 4px;
+}
+
+.command-group {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+input[type="range"] {
+  width: 200px;
+  margin-right: 1rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1a1a1a;
+    color: #fff;
+  }
+
+  .test-section {
+    background: #2d2d2d;
+  }
+
+  .data-box {
+    background: #333;
+    border-color: #444;
+    color: #fff;
+  }
+
+  h1, h3 {
+    color: #fff;
+  }
+
+  .form-control {
+    background: #333;
+    border-color: #444;
+    color: #fff;
+  }
+}
+</style> 

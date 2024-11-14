@@ -5,6 +5,14 @@ router.get('/standard-solutions/standard-api', (req, res) => {
     res.render('api-pages/standard-solutions/standard-api');
 });
 
+router.get('/standard-solutions/standard-api-by-mobile-remote', (req, res) => {
+    res.render('api-pages/standard-solutions/standard-api-by-mobile-remote');
+});
+
+router.get('/standard-solutions/standard-api-by-pc-remote', (req, res) => {
+    res.render('api-pages/standard-solutions/standard-api-by-pc-remote');
+});
+
 router.get('/standard-solutions/standard-socket', (req, res) => {
     res.render('api-pages/standard-solutions/standard-socket');
 });
@@ -80,5 +88,8 @@ router.get('/game-engine/unreal-remote', (req, res) => {
     res.render('api-pages/game-engine/unreal-remote');
 });
 
+router.get('/standard-solutions/standard-api-qr', (req, res) => {
+    res.render('api-pages/standard-solutions/standard-api-qr');
+});
 
 module.exports = router; 

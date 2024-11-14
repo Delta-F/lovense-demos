@@ -1,140 +1,50 @@
 <div class="api-documentation">
-    <h1>Standard API Test Features</h1>
-
-    <!-- Auth Section -->
-    <div class="test-section">
-        <h3>1. Authentication</h3>
-        <input type="text" id="devToken" placeholder="Enter Developer Token" class="form-control">
-        <button onclick="authenticate()" class="btn btn-primary">Authenticate</button>
-        <div id="authStatus" class="status"></div>
-    </div>
-
-    <!-- QR Code Section -->
-    <div class="test-section">
-        <h3>2. QR Code Connection</h3>
-        <button onclick="getQRCode()" class="btn btn-primary">Generate QR Code</button>
-        <div id="qrcode" class="qr-container"></div>
-    </div>
-
-    <!-- Callback Section -->
-    <div class="test-section">
-        <h3>3. Callback Data</h3>
-        <p>Callback URL: xxx.com</p>
-        <div id="callbackData" class="data-box">Waiting for data...</div>
-    </div>
-
-    <!-- Toy Management -->
-    <div class="test-section">
-        <h3>4. Toy Management</h3>
-        <button onclick="getToys()" class="btn btn-primary">Get Toys</button>
-        <button onclick="getToyNames()" class="btn btn-primary">Get Toy Names</button>
-        <div id="toyList" class="data-box"></div>
-    </div>
-
-    <!-- Command Testing -->
-    <div class="test-section">
-        <h3>5. Test Commands</h3>
-        <div class="command-group">
-            <label>Vibration:</label>
-            <input type="range" id="vibrationStrength" min="0" max="20" value="10">
-            <button onclick="testVibration()" class="btn btn-primary">Test Vibration</button>
+    <h1>Standard API Solutions</h1>
+    
+    <div class="solution-options">
+        <div class="option-card">
+            <h2>QR Code Connection</h2>
+            <p>Connect using QR code scanning method</p>
+            <a href="/standard-solutions/standard-api-by-mobile-remote" class="btn btn-primary">View Guide</a>
         </div>
-        <div class="command-group">
-            <button onclick="testRotate()" class="btn btn-secondary">Test Rotate</button>
-            <button onclick="testPump()" class="btn btn-secondary">Test Pump</button>
-            <button onclick="stopAll()" class="btn btn-danger">Stop All</button>
+        
+        <div class="option-card">
+            <h2>Mobile Remote Connection</h2>
+            <p>Connect using Lovense Mobile Remote app</p>
+            <a href="/standard-solutions/standard-api-by-mobile-remote" class="btn btn-primary">View Guide</a>
+        </div>
+        
+        <div class="option-card">
+            <h2>PC Remote Connection</h2>
+            <p>Connect using Lovense PC Remote application</p>
+            <a href="/standard-solutions/standard-api-by-pc-remote" class="btn btn-primary">View Guide</a>
         </div>
     </div>
 </div>
 
-<script>
-const API_BASE = '/api/v2';
-let authToken = '';
-
-async function authenticate() {
-    const token = document.getElementById('devToken').value;
-    try {
-        // Add your authentication API call here
-        document.getElementById('authStatus').innerHTML = 'Authenticated';
-    } catch (error) {
-        document.getElementById('authStatus').innerHTML = 'Auth failed: ' + error.message;
-    }
-}
-
-async function getQRCode() {
-    try {
-        // Add your QR code generation API call here
-        // Display QR code in #qrcode element
-    } catch (error) {
-        console.error('QR Code generation failed:', error);
-    }
-}
-
-async function getToys() {
-    try {
-        // Add your get toys API call here
-        document.getElementById('toyList').innerHTML = 'Fetching toys...';
-    } catch (error) {
-        document.getElementById('toyList').innerHTML = 'Failed to get toys: ' + error.message;
-    }
-}
-
-async function getToyNames() {
-    try {
-        // Add your get toy names API call here
-        document.getElementById('toyList').innerHTML = 'Fetching toy names...';
-    } catch (error) {
-        document.getElementById('toyList').innerHTML = 'Failed to get toy names: ' + error.message;
-    }
-}
-
-async function testVibration() {
-    const strength = document.getElementById('vibrationStrength').value;
-    try {
-        // Add your vibration command API call here
-    } catch (error) {
-        console.error('Vibration test failed:', error);
-    }
-}
-
-async function testRotate() {
-    try {
-        // Add your rotation command API call here
-    } catch (error) {
-        console.error('Rotation test failed:', error);
-    }
-}
-
-async function testPump() {
-    try {
-        // Add your pump command API call here
-    } catch (error) {
-        console.error('Pump test failed:', error);
-    }
-}
-
-async function stopAll() {
-    try {
-        // Add your stop all command API call here
-    } catch (error) {
-        console.error('Stop all failed:', error);
-    }
-}
-
-// Simple callback data listener
-function initCallbackListener() {
-    // Add your callback handling logic here
-    setInterval(() => {
-        // Simulate callback updates
-        const data = 'Listening for callbacks...';
-        document.getElementById('callbackData').innerHTML = data;
-    }, 5000);
-}
-
-document.addEventListener('DOMContentLoaded', initCallbackListener);
-</script>
-
 <style>
+.solution-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.option-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+
+.option-card h2 {
+    margin-bottom: 15px;
+}
+
+.option-card p {
+    margin-bottom: 20px;
+}
+
 .api-documentation {
     padding: 20px;
     max-width: 800px;
@@ -190,6 +100,15 @@ document.addEventListener('DOMContentLoaded', initCallbackListener);
     margin-top: 10px;
     min-height: 200px;
     background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+
+.qr-container img {
+    max-width: 100%;
+    height: auto;
 }
 
 .command-group {

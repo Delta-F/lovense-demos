@@ -2,10 +2,15 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const apiRoutes = require('./routes/api');
+const lovenseRouter = require('./routes/api/v2/lovense');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const baseURL = 'https://cyjvxkqqlyge.sealosbja.site';
+const baseURL = 'fpzrvyrxdxpj.sealosbja.site';
+
+// Add JSON and URL-encoded parsing middleware BEFORE routes
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Handlebars setup
 app.engine('handlebars', exphbs.engine({
@@ -17,6 +22,7 @@ app.set('view engine', 'handlebars');
 // Add baseURL to all render calls
 app.use((req, res, next) => {
     res.locals.baseURL = baseURL;
+    res.locals.fullURL = `https://${baseURL}`;
     next();
 });
 
@@ -28,6 +34,7 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+// Standard Solutions
 app.get('/standard-api', (req, res) => {
     res.redirect('/standard-solutions/standard-api');
 });
@@ -100,9 +107,30 @@ app.get('/unreal-remote', (req, res) => {
     res.redirect('/game-engine/unreal-remote');
 });
 
-// Use API routes
-app.use('', apiRoutes);
+// Standard API routes
+app.use('/standard-solutions/standard-api', apiRoutes);
+app.use('/standard-solutions/standard-api-by-mobile-remote', apiRoutes);
+app.use('/standard-solutions/standard-api-by-pc-remote', apiRoutes);
+
+// Register the Lovense routes BEFORE the general API routes
+app.use('/api/v2/lovense', lovenseRouter);
+app.use('/', apiRoutes);
+
+// 404 handler
+app.use((req, res) => {
+    if (req.path.startsWith('/api/')) {
+        // Send JSON response for API routes
+        res.status(404).json({
+            success: false,
+            message: 'API endpoint not found'
+        });
+    } else {
+        // Send simple text for other routes
+        res.status(404).send('404 - Page Not Found');
+    }
+});
 
 app.listen(port, () => {
-    console.log(`Server running at ${baseURL}`);
+    console.log(`Server running at https://${baseURL}`);
+    console.log(`Server listening on port ${port}`);
 }); 

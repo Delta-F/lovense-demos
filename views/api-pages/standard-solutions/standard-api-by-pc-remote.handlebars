@@ -1,0 +1,178 @@
+<div class="api-documentation">
+    <h1>Standard API - PC Remote Control</h1>
+
+    <!-- Token Input -->
+    <div class="test-section">
+        <h3>1. Input Developer Token</h3>
+        <input type="text" id="devToken" placeholder="Enter Developer Token" class="form-control" value="tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle">
+    </div>
+
+    <!-- PC App Download -->
+    <div class="test-section">
+        <h3>2. Download Lovense Remote PC App</h3>
+        <p>Download the Lovense Remote app for your computer:</p>
+        <div class="download-links">
+            <a href="https://www.lovense.com/download" target="_blank" class="btn btn-primary">Download PC App</a>
+        </div>
+    </div>
+
+    <!-- Connection Instructions -->
+    <div class="test-section">
+        <h3>3. Connect Your Toy</h3>
+        <ol>
+            <li>Install and open the Lovense Remote app on your computer</li>
+            <li>Click "Add Toy" to connect a new device</li>
+            <li>Make sure your toy is charged and ready to connect</li>
+            <li>Follow the on-screen instructions to complete the connection</li>
+        </ol>
+    </div>
+
+    <!-- API Testing -->
+    <div class="test-section">
+        <h3>4. Test API Commands</h3>
+        <div class="command-group">
+            <label>Vibration:</label>
+            <input type="range" id="vibrationStrength" min="0" max="20" value="10">
+            <button onclick="testVibration()" class="btn btn-primary">Test Vibration</button>
+        </div>
+        <div class="command-group">
+            <button onclick="testRotate()" class="btn btn-secondary">Test Rotate</button>
+            <button onclick="testPump()" class="btn btn-secondary">Test Pump</button>
+            <button onclick="stopAll()" class="btn btn-danger">Stop All</button>
+        </div>
+        <div id="commandResponse" class="data-box">Command response will appear here...</div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+// Add the same JavaScript functions from standard-api.handlebars, 
+// but modify them to work with PC remote specifics
+</script>
+
+<style>
+.api-documentation {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+}
+
+.test-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h3 {
+  color: #34495e;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+ol {
+  padding-left: 1.5rem;
+  line-height: 1.6;
+}
+
+li {
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.download-links {
+  margin: 1.5rem 0;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2980b9;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.command-group {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.data-box {
+  background: #f8f9fa;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-top: 1rem;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1a1a1a;
+    color: #fff;
+  }
+
+  .test-section {
+    background: #2d2d2d;
+  }
+
+  h1, h3 {
+    color: #fff;
+  }
+
+  li {
+    color: #ddd;
+  }
+
+  .command-group {
+    background: #333;
+  }
+
+  .data-box {
+    background: #333;
+    border-color: #444;
+    color: #fff;
+  }
+
+  .form-control {
+    background: #333;
+    border-color: #444;
+    color: #fff;
+  }
+}
+</style> 
