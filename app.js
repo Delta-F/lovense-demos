@@ -39,6 +39,14 @@ app.get('/standard-api', (req, res) => {
     res.redirect('/standard-solutions/standard-api');
 });
 
+app.get('/standard-api/mobile-remote', (req, res) => {
+    res.render('standard-solutions/standard-api-by-mobile-remote');
+});
+
+app.get('/standard-api/pc-remote', (req, res) => {
+    res.render('standard-solutions/standard-api-by-pc-remote');
+});
+
 app.get('/standard-socket', (req, res) => {
     res.redirect('/standard-solutions/standard-socket');
 });

@@ -1,35 +1,28 @@
 <div class="api-documentation">
     <h1>Standard API - PC Remote Control</h1>
 
-    <!-- Token Input -->
+    <!-- Quick Start -->
     <div class="test-section">
-        <h3>1. Input Developer Token</h3>
-        <input type="text" id="devToken" placeholder="Enter Developer Token" class="form-control" value="tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle">
-    </div>
-
-    <!-- PC App Download -->
-    <div class="test-section">
-        <h3>2. Download Lovense Remote PC App</h3>
-        <p>Download the Lovense Remote app for your computer:</p>
-        <div class="download-links">
-            <a href="https://www.lovense.com/download" target="_blank" class="btn btn-primary">Download PC App</a>
-        </div>
-    </div>
-
-    <!-- Connection Instructions -->
-    <div class="test-section">
-        <h3>3. Connect Your Toy</h3>
+        <h3>1. Quick Start</h3>
         <ol>
-            <li>Install and open the Lovense Remote app on your computer</li>
-            <li>Click "Add Toy" to connect a new device</li>
-            <li>Make sure your toy is charged and ready to connect</li>
-            <li>Follow the on-screen instructions to complete the connection</li>
+            <li><button onclick="window.open('https://www.lovense.com/app/remote', '_blank')">Download Lovense Remote PC App</button></li>
+            <li>Open Lovense Remote and connect your toy</li>
+            <li>Go to Settings → External Control → Enable "Allow Control"</li>
         </ol>
+    </div>
+
+    <!-- Search Toy -->
+    <div class="test-section">
+        <h3>2. Search Connected Toy</h3>
+        <div class="download-links">
+            <button onclick="searchToy()" class="btn btn-primary">Search Toy</button>
+        </div>
+        <div id="searchResponse" class="data-box">Response will appear here...</div>
     </div>
 
     <!-- API Testing -->
     <div class="test-section">
-        <h3>4. Test API Commands</h3>
+        <h3>3. Test API Commands</h3>
         <div class="command-group">
             <label>Vibration:</label>
             <input type="range" id="vibrationStrength" min="0" max="20" value="10">
@@ -48,6 +41,29 @@
 <script>
 // Add the same JavaScript functions from standard-api.handlebars, 
 // but modify them to work with PC remote specifics
+
+async function searchToy() {
+    const searchResponse = document.getElementById('searchResponse');
+    try {
+        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', {
+            command: "GetToys"
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Format and display the response
+        searchResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        
+        // Optional: Add success styling
+        searchResponse.style.color = '#28a745';
+    } catch (error) {
+        // Display error message
+        searchResponse.innerHTML = `Error: ${error.message}\n\nPlease make sure:\n1. Lovense Remote PC is running\n2. "Allow Control" is enabled in Settings`;
+        searchResponse.style.color = '#dc3545';
+    }
+}
 </script>
 
 <style>
