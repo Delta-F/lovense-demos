@@ -6,7 +6,9 @@ const lovenseRouter = require('./routes/api/v2/lovense');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const baseURL = 'fpzrvyrxdxpj.sealosbja.site';
+const port2 = 8080;
+const baseURL = 'thllpisofdki.sealosbja.site';
+const baseURL2 = 'fpzrvyrxdxpj.sealosbja.site';
 
 // Add JSON and URL-encoded parsing middleware BEFORE routes
 app.use(express.json());
@@ -21,8 +23,15 @@ app.set('view engine', 'handlebars');
 
 // Add baseURL to all render calls
 app.use((req, res, next) => {
-    res.locals.baseURL = baseURL;
-    res.locals.fullURL = `https://${baseURL}`;
+    // Determine which domain is being used
+    const host = req.get('host');
+    if (host.includes(baseURL2)) {
+        res.locals.baseURL = baseURL2;
+        res.locals.fullURL = `https://${baseURL2}:${port2}`;
+    } else {
+        res.locals.baseURL = baseURL;
+        res.locals.fullURL = `https://${baseURL}`;
+    }
     next();
 });
 
@@ -138,7 +147,13 @@ app.use((req, res) => {
     }
 });
 
+// Start servers on both ports
 app.listen(port, () => {
     console.log(`Server running at https://${baseURL}`);
     console.log(`Server listening on port ${port}`);
+});
+
+app.listen(port2, () => {
+    console.log(`Server running at https://${baseURL2}:${port2}`);
+    console.log(`Server listening on port ${port2}`);
 }); 

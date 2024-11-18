@@ -2,37 +2,34 @@
 <script src="https://api.lovense-api.com/cam-extension/static/js-sdk/broadcast.js"></script>
 
 <div class="api-documentation">
-    <h1>Cam Extension for Chrome</h1>
+    <div class="header-section">
+        <h1>Cam Extension for Chrome</h1>
+        <a href="https://developer.lovense.com/docs/cam-solutions/cam-extension-for-chrome.html" target="_blank" class="doc-link">
+            <i class="fas fa-book"></i>
+            API Documentation
+        </a>
+    </div>
     <div class="content">
         <section class="quick-start">
             <div class="steps">
                 <h2>Getting Started</h2>
+                <div class="current-site">
+                    <span class="section-label"><i class="fas fa-globe"></i> Current Site:</span>
+                    <span class="site-name">deltatest</span>
+                </div>
                 <ol>
-                    <li>Install the Cam Extension from Chrome Web Store</li>
-                    <li>Enable the extension in your browser</li>
-                    <li>Use the test features below to verify the integration</li>
+                    <li>Install <a href="https://www.lovense.com/cam-model/extension" target="_blank">Cam Extension</a> from Chrome or <a href="https://www.lovense.com/cam-model/download" target="_blank">Stream Master</a> For PC Desktop</li>
+                    <li>Enable the extension in browser</li>
+                    <li>Add Camsite Name in Cam Extension</li>
+                    <li>Click Start Test Button to Initialize (Refresh browser if not connected)</li>
                 </ol>
             </div>
 
             <div class="compact-info">
                 <div class="info-line">
-                    <span class="section-label"><i class="fas fa-download"></i> Installation:</span>
-                    <div class="download-buttons">
-                        <a href="#" class="compact-btn cam-ext">
-                            <i class="fas fa-puzzle-piece"></i>
-                            Cam Extension
-                        </a>
-                        <a href="#" class="compact-btn stream-master">
-                            <i class="fas fa-desktop"></i>
-                            Stream Master
-                        </a>
-                    </div>
-                </div>
-
-                <div class="info-line">
                     <span class="section-label"><i class="fas fa-laptop"></i> System Requirements:</span>
                     <div class="req-items">
-                        <span class="req-item"><i class="fab fa-chrome"></i> Chrome</span>
+                        <span class="req-item"><i class="fab fa-chrome"></i> Chrome For PC</span>
                         <span class="req-item"><i class="fab fa-windows"></i> Windows</span>
                         <span class="req-item"><i class="fab fa-apple"></i> Mac</span>
                     </div>
@@ -42,6 +39,7 @@
 
         <section class="test-controls">
             <h2>Test Controls</h2>
+            <p class="test-description">Click "Start Test" to initialize Cam Extension integration. The widget will appear after successful connection.</p>
             <button id="startTest" class="btn btn-primary">Start Test</button>
             <button id="stopTest" class="btn btn-danger">Stop Test</button>
             <div id="connectionStatus" class="status-badge">Disconnected</div>
@@ -71,11 +69,17 @@
             </div>
         </section>
 
+        <section class="event-messages">
+            <h2>Event Messages</h2>
+            <p class="event-description">Events: toyStatusChange, tipQueueChange, settingsChange</p>
+            <div class="event-container">
+                <div id="eventMessages" class="messages-area"></div>
+            </div>
+        </section>
+
         <section class="api-tests">
             <h2>API Test Functions</h2>
             <div class="test-buttons">
-                <button id="receiveMessage" class="btn">Test Receive Message</button>
-                <button id="postMessage" class="btn">Test Post Message</button>
                 <button id="getSettings" class="btn">Get Settings</button>
                 <button id="getToyStatus" class="btn">Get Toy Status</button>
                 <button id="getVersion" class="btn">Get Version</button>
@@ -351,6 +355,110 @@
 .req-item i {
     font-size: 1.1em;
 }
+
+.test-description {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+.system-message {
+    color: #666;
+    font-style: italic;
+    padding: 5px 0;
+}
+
+.event-container {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.event-description {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+.prefix-testuser {
+    color: #0a8539;
+    font-weight: 500;
+}
+
+.prefix-testmodel {
+    color: #f32010;
+    font-weight: 500;
+}
+
+.prefix-event {
+    color: #2d7af6;
+    font-weight: 500;
+}
+
+.message-content {
+    margin-left: 5px;
+    color: #333;
+}
+
+.tip-message {
+    color: #17a2b8;
+    font-weight: 500;
+    font-style: italic;
+}
+
+.current-site {
+    margin-bottom: 15px;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.site-name {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.doc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.doc-link:hover {
+    background: #0056b3;
+    color: white;
+    text-decoration: none;
+}
+
+.doc-link i {
+    font-size: 1.1em;
+}
+
+.timestamp {
+    color: #666;
+    font-size: 0.9em;
+    margin-right: 5px;
+}
 </style>
 
 <script>
@@ -360,14 +468,42 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentStream = null;
     let camExtension = null;
 
-    // Initialize CamExtension
+    // Initialize CamExtension - keep structure for future implementation
     const initCamExtension = () => {
         camExtension = new CamExtension("deltatest", "testmodel");
         
         const readyCallback = function(ce) {
             console.log("CamExtension ready");
-            apiResponse.textContent = "CamExtension initialized and ready";
+            connectionStatus.textContent = 'Connected';
+            connectionStatus.classList.add('connected');
         }
+
+        // Add postMessage listener
+        camExtension.on("postMessage", (message) => {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML += `<div><span class="timestamp">[${getTimeStamp()}]</span> <span class="prefix-testmodel">testModel:</span><span class="message-content">${message}</span></div>`;
+        });
+
+        // Add toy status change listener
+        camExtension.on("toyStatusChange", (data) => {
+            const eventMessages = document.getElementById('eventMessages');
+            eventMessages.innerHTML += `<div><span class="timestamp">[${getTimeStamp()}]</span> <span class="prefix-event">toyStatusChange:</span><span class="message-content">${JSON.stringify(data)}</span></div><div class="event-spacer"></div>`;
+            eventMessages.scrollTop = eventMessages.scrollHeight;
+        });
+
+        // Add tip queue change listener
+        camExtension.on("tipQueueChange", (data) => {
+            const eventMessages = document.getElementById('eventMessages');
+            eventMessages.innerHTML += `<div><span class="timestamp">[${getTimeStamp()}]</span> <span class="prefix-event">tipQueueChange:</span><span class="message-content">${JSON.stringify(data)}</span></div><div class="event-spacer"></div>`;
+            eventMessages.scrollTop = eventMessages.scrollHeight;
+        });
+
+        // Add settings change listener
+        camExtension.on("settingsChange", (data) => {
+            const eventMessages = document.getElementById('eventMessages');
+            eventMessages.innerHTML += `<div><span class="timestamp">[${getTimeStamp()}]</span> <span class="prefix-event">settingsChange:</span><span class="message-content">${JSON.stringify(data)}</span></div><div class="event-spacer"></div>`;
+            eventMessages.scrollTop = eventMessages.scrollHeight;
+        });
 
         camExtension.on("ready", readyCallback);
     };
@@ -375,12 +511,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Start Test
     document.getElementById('startTest').addEventListener('click', async () => {
         try {
+            // Keep the initialization call for future implementation
             initCamExtension();
+            
             connectionStatus.textContent = 'Connected';
             connectionStatus.classList.add('connected');
-            apiResponse.textContent = 'Extension connection established';
         } catch (error) {
-            apiResponse.textContent = `Error: ${error.message}`;
+            connectionStatus.textContent = 'Error';
+            connectionStatus.classList.remove('connected');
         }
     });
 
@@ -389,14 +527,15 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             connectionStatus.textContent = 'Disconnected';
             connectionStatus.classList.remove('connected');
-            apiResponse.textContent = 'Extension connection terminated';
-            camExtension = null;
             
             if (currentStream) {
                 stopVideoStream();
             }
+            
+            // Reset camExtension for future implementation
+            camExtension = null;
         } catch (error) {
-            apiResponse.textContent = `Error: ${error.message}`;
+            console.error('Stop test error:', error);
         }
     });
 
@@ -404,17 +543,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('startVideo').addEventListener('click', async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            currentStream = stream; // Store stream reference
+            currentStream = stream;
             document.getElementById('localVideo').srcObject = stream;
-            apiResponse.textContent = 'Video stream started';
         } catch (error) {
-            apiResponse.textContent = `Video error: ${error.message}`;
+            console.error('Video error:', error);
         }
     });
 
     document.getElementById('stopVideo').addEventListener('click', () => {
         stopVideoStream();
-        apiResponse.textContent = 'Video stream stopped';
     });
 
     function stopVideoStream() {
@@ -428,77 +565,102 @@ document.addEventListener('DOMContentLoaded', function() {
     // Chat Functions
     document.getElementById('sendMessage').addEventListener('click', () => {
         const message = document.getElementById('messageInput').value;
-        if (message && camExtension) {
+        if (message) {
             const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML += `<div>User: ${message}</div>`;
+            chatMessages.innerHTML += `<div><span class="timestamp">[${getTimeStamp()}]</span> <span class="prefix-testuser">testUser:</span><span class="message-content">${message}</span></div>`;
             
-            // Integrate with CamExtension
-            camExtension.receiveMessage("testuser", message);
+            if (camExtension) {
+                camExtension.receiveMessage("testUser", message);
+            }
             
             document.getElementById('messageInput').value = '';
-            apiResponse.textContent = `Message sent: ${message}`;
-        }
-    });
-
-    // API Test Functions
-    document.getElementById('receiveMessage').addEventListener('click', () => {
-        apiResponse.textContent = 'Testing receive message functionality...';
-    });
-
-    document.getElementById('postMessage').addEventListener('click', () => {
-        apiResponse.textContent = 'Testing post message functionality...';
-    });
-
-    document.getElementById('getSettings').addEventListener('click', () => {
-        apiResponse.textContent = JSON.stringify({
-            resolution: '1080p',
-            framerate: 30,
-            bitrate: '4000kbps'
-        }, null, 2);
-    });
-
-    document.getElementById('getToyStatus').addEventListener('click', () => {
-        apiResponse.textContent = JSON.stringify({
-            connected: true,
-            batteryLevel: 80,
-            status: 'active'
-        }, null, 2);
-    });
-
-    document.getElementById('getVersion').addEventListener('click', async () => {
-        if (camExtension) {
-            try {
-                const version = await camExtension.getCamVersion();
-                apiResponse.textContent = `Cam Extension version: ${version}`;
-            } catch (error) {
-                apiResponse.textContent = `Error getting version: ${error.message}`;
-            }
-        } else {
-            apiResponse.textContent = 'Please start the test first';
         }
     });
 
     // Tips Function
     document.getElementById('sendTip').addEventListener('click', () => {
-        const tipInput = document.getElementById('tipAmount');
-        const tipAmount = parseInt(tipInput.value);
-        
-        if (!tipAmount || tipAmount < 1) {
-            apiResponse.textContent = 'Please enter a valid tip amount';
-            return;
-        }
-
-        if (camExtension) {
-            // Integrate with CamExtension
-            camExtension.receiveTip(tipAmount, "tipper");
-            
-            apiResponse.textContent = `Tip sent: ${tipAmount} tokens`;
+        const tipAmount = document.getElementById('tipAmount').value;
+        if (tipAmount && tipAmount > 0) {
             const chatMessages = document.getElementById('chatMessages');
-            chatMessages.innerHTML += `<div class="tip-message">Tip sent: ${tipAmount} tokens</div>`;
-            tipInput.value = '';
-        } else {
-            apiResponse.textContent = 'Please start the test first';
+            chatMessages.innerHTML += `<div><span class="timestamp">[${getTimeStamp()}]</span> <span class="tip-message">Tip sent: ${tipAmount} tokens</span></div>`;
+            
+            if (camExtension) {
+                camExtension.receiveTip(parseInt(tipAmount), "testTipper");
+            }
+            
+            document.getElementById('tipAmount').value = '';
+        }
+    });
+
+    // API Test Functions
+    document.getElementById('getSettings').addEventListener('click', async () => {
+        try {
+            if (camExtension) {
+                const data = await camExtension.getSettings();
+                apiResponse.textContent = JSON.stringify(data, null, 2);
+            } else {
+                apiResponse.textContent = 'Error: Please start test first';
+            }
+        } catch (error) {
+            apiResponse.textContent = `Error: ${error.message}`;
+        }
+    });
+
+    document.getElementById('getToyStatus').addEventListener('click', async () => {
+        try {
+            if (camExtension) {
+                const data = await camExtension.getToyStatus();
+                apiResponse.textContent = JSON.stringify(data, null, 2);
+            } else {
+                apiResponse.textContent = 'Error: Please start test first';
+            }
+        } catch (error) {
+            apiResponse.textContent = `Error: ${error.message}`;
+        }
+    });
+
+    document.getElementById('getVersion').addEventListener('click', async () => {
+        try {
+            if (camExtension) {
+                const data = await camExtension.getCamVersion();
+                apiResponse.textContent = JSON.stringify(data, null, 2);
+            } else {
+                apiResponse.textContent = 'Error: Please start test first';
+            }
+        } catch (error) {
+            apiResponse.textContent = `Error: ${error.message}`;
+        }
+    });
+
+    // Add these keyboard event listeners in the DOMContentLoaded function
+    // Message input Enter key handler
+    document.getElementById('messageInput').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            document.getElementById('sendMessage').click();
+        }
+    });
+
+    // Tip amount Enter key handler
+    document.getElementById('tipAmount').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            document.getElementById('sendTip').click();
+        }
+    });
+
+    // Add keyboard shortcuts for all buttons
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            // Get the currently focused element
+            const focused = document.activeElement;
+            if (focused.tagName === 'BUTTON') {
+                focused.click();
+            }
         }
     });
 });
+
+function getTimeStamp() {
+    const now = new Date();
+    return now.toLocaleTimeString('en-US', { hour12: false });
+}
 </script> 
