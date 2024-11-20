@@ -1,6 +1,1023 @@
 <div class="api-documentation">
-    <h1>Cam Kit for Web</h1>
-    <div class="content">
-        <p>Documentation for Cam Kit for Web will be added here.</p>
+    <div class="header-section">
+        <h1>Cam Kit for Web</h1>
+        <a href="https://developer.lovense.com/docs/cam-solutions/cam-kit-for-web.html" target="_blank" class="doc-link">
+            <i class="fas fa-book"></i>
+            API Documentation
+        </a>
     </div>
-</div> 
+
+    <div class="content">
+        <!-- Model Token Generation -->
+        <section class="test-section">
+            <h2>1. Generate Model Token</h2>
+            <div class="input-row">
+                <input type="text" id="devToken" class="form-control" placeholder="Enter developer token">
+                <input type="text" id="modelId" class="form-control" placeholder="Enter model ID">
+                <input type="text" id="modelName" class="form-control" placeholder="Enter model name">
+                <button onclick="generateMToken()" class="btn btn-primary">Generate mToken</button>
+            </div>
+            <div class="response-row">
+                <div class="info-display full-width">
+                    <pre id="mTokenResponse" class="response-box">Model token will appear here...</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Page -->
+        <section class="test-section">
+            <h2>2. Settings Page</h2>
+            <div class="input-row">
+                <button onclick="loadSettingsPage()" class="btn btn-primary">Load Settings Page</button>
+                <button onclick="openSettingsInNewTab()" class="btn btn-secondary">Open in New Tab</button>
+            </div>
+            <div class="iframe-container-small">
+                <iframe id="settingsFrame" src="about:blank" frameborder="0"></iframe>
+            </div>
+        </section>
+
+        <!-- Update the Start Test section -->
+        <section class="test-section">
+            <h2>3. Start Test</h2>
+            <p class="test-description">Click "Start Test" to load model.js and initialize the widget. The widget will appear after successful connection.</p>
+            <div class="test-controls">
+                <button onclick="startTest()" class="btn btn-primary">Start Test</button>
+                <button onclick="stopTest()" class="btn btn-danger">Stop Test</button>
+            </div>
+        </section>
+
+        <!-- Update Broadcasting Test section -->
+        <section class="test-section">
+            <h2>4. Broadcasting Test</h2>
+            <div class="broadcast-controls">
+                <button onclick="startBroadcast()" class="btn btn-primary">Start Broadcasting</button>
+                <button onclick="stopBroadcast()" class="btn btn-danger">Stop Broadcasting</button>
+            </div>
+            <div class="camera-area">
+                <div id="broadcastStatus" class="camera-display-small">Camera Display Area</div>
+            </div>
+            <div class="chat-container">
+                <div id="chatMessages" class="messages-area"></div>
+                <div class="input-area">
+                    <input type="text" id="messageInput" placeholder="Type your message...">
+                    <button onclick="sendMessage()" class="btn">Send Message</button>
+                    <input type="number" id="tipAmount" placeholder="Tip amount" min="1" class="tip-input">
+                    <button onclick="sendTip()" class="btn btn-success">Send Tip</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Update the API Methods Test section -->
+        <section class="test-section">
+            <h2>5. API Methods Test</h2>
+            <div class="api-test-buttons">
+                <div class="button-group">
+                    <button onclick="initCamApi()" class="btn btn-primary">Init Widget</button>
+                    <button onclick="destroyCamApi()" class="btn btn-primary">Destroy Widget</button>
+                    <button onclick="getToys()" class="btn btn-primary">Get Toys</button>
+                    <button onclick="getSettings()" class="btn btn-primary">Get Settings</button>
+                </div>
+            </div>
+            <div class="messages-container">
+                <div id="apiResponse" class="messages-area">API response will appear here...</div>
+            </div>
+        </section>
+
+        <!-- Update the Events Information section -->
+        <section class="test-section">
+            <h2>6. Events Information</h2>
+            <div class="messages-container">
+                <div id="eventMessages" class="messages-area">Events will appear here...</div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<style>
+.api-documentation {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.doc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.test-section {
+    margin-bottom: 30px;
+    padding: 25px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 5px;
+}
+
+.input-group label {
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+}
+
+.response-label {
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .input-group label,
+    .response-label {
+        color: #aaa;
+    }
+}
+
+.form-control {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.response-box {
+    padding: 15px;
+    background: #f8f9fa;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    margin-top: 10px;
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+.iframe-container {
+    width: 100%;
+    height: 600px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#settingsFrame {
+    width: 125%;
+    height: 125%;
+    transform: scale(0.8);
+    transform-origin: 0 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #1a1a1a;
+        color: #fff;
+    }
+
+    .test-section {
+        background: #2d2d2d;
+        border-color: #444;
+    }
+
+    .form-control {
+        background: #333;
+        border-color: #444;
+        color: #fff;
+    }
+
+    .response-box {
+        background: #333;
+        border-color: #555;
+        color: #fff;
+    }
+}
+
+.broadcast-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.event-container {
+    height: 300px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.messages-area {
+    padding: 15px;
+}
+
+.event-description {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+.test-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.system-message {
+    color: #666;
+    font-style: italic;
+    padding: 5px 0;
+}
+
+.timestamp {
+    color: #666;
+    font-size: 0.9em;
+    margin-right: 5px;
+}
+
+.prefix-event {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.message-content {
+    margin-left: 5px;
+    color: #333;
+}
+
+.model-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.info-display {
+    margin: 10px 0;
+}
+
+.info-display pre {
+    margin: 0;
+    font-size: 14px;
+}
+
+.model-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.input-row .form-control {
+    flex: 1;
+}
+
+.input-row .btn {
+    white-space: nowrap;
+}
+
+.code-sample {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.code-sample pre {
+    margin: 0;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.code-sample code {
+    color: #333;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .code-sample {
+        background: #2d2d2d;
+        border-color: #444;
+    }
+    
+    .code-sample code {
+        color: #fff;
+    }
+}
+
+.camera-area {
+    margin-top: 15px;
+}
+
+.camera-display {
+    padding: 15px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .camera-display {
+        background: #333;
+        border-color: #444;
+        color: #fff;
+    }
+}
+
+.chat-container {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input-area {
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    gap: 10px;
+}
+
+#messageInput {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.tip-input {
+    width: 100px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.event-line {
+    padding: 5px 0;
+    font-family: monospace;
+}
+
+.event-spacer {
+    height: 8px;
+}
+
+.prefix-event {
+    color: #0066cc;
+    font-weight: 500;
+    margin: 0 5px;
+}
+
+.message-content {
+    color: #333;
+    white-space: pre-wrap;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .message-content {
+        color: #fff;
+    }
+}
+
+.iframe-container-small {
+    width: 100%;
+    height: 500px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.api-test-buttons {
+    margin-bottom: 15px;
+}
+
+.button-group {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+}
+
+.button-group .btn {
+    flex: 0 0 auto;
+    min-width: 70px;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.chat-container {
+    margin-top: 15px;
+}
+
+.response-row {
+    margin-top: 15px;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.info-display {
+    margin: 0;
+}
+
+.camera-display-small {
+    padding: 15px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 150px;
+    max-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    white-space: pre-wrap;
+    overflow: hidden;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .camera-display-small {
+        background: #333;
+        border-color: #444;
+        color: #fff;
+    }
+}
+
+.api-response-container {
+    height: 300px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .api-response-container {
+        border-color: #444;
+    }
+}
+
+.messages-container {
+    height: 300px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow-y: auto;
+    margin-top: 10px;
+    background: #f8f9fa;  /* Light grey background */
+}
+
+.messages-area {
+    padding: 15px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .messages-container {
+        background: #333;
+        border-color: #444;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Token validation
+    window.validateToken = async function() {
+        const token = document.getElementById('devToken').value;
+        const tokenResponse = document.getElementById('tokenResponse');
+        
+        try {
+            // Add token validation logic here
+            tokenResponse.textContent = 'Token validation pending...';
+        } catch (error) {
+            tokenResponse.textContent = `Error: ${error.message}`;
+        }
+    };
+
+    // Generate model token
+    window.generateMToken = async function() {
+        const defaultDevToken = "tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle";
+        const defaultModelId = "testModel123";
+        
+        let devToken = document.getElementById('devToken');
+        let modelId = document.getElementById('modelId');
+        let modelName = document.getElementById('modelName');
+
+        // Fill in defaults if blank and update input fields
+        if (!devToken.value) {
+            devToken.value = defaultDevToken;
+        }
+        if (!modelId.value) {
+            modelId.value = defaultModelId;
+        }
+        if (!modelName.value) {
+            modelName.value = `model_${modelId.value}`;
+        }
+        
+        const mTokenResponse = document.getElementById('mTokenResponse');
+
+        try {
+            // Make API request
+            const response = await fetch('https://api.lovense-api.com/api/cam/model/getToken', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `dToken=${encodeURIComponent(devToken.value)}&mInfo=${encodeURIComponent(JSON.stringify({
+                    mId: modelId.value,
+                    mName: modelName.value
+                }))}`
+            });
+
+            const data = await response.json();
+            mTokenResponse.textContent = JSON.stringify(data, null, 2);
+            
+            if (data.result === true && data.data?.mToken) {
+                mTokenResponse.style.color = '#28a745';
+            } else {
+                mTokenResponse.style.color = '#dc3545';
+            }
+        } catch (error) {
+            mTokenResponse.textContent = `Error: ${error.message}`;
+            mTokenResponse.style.color = '#dc3545';
+        }
+    };
+
+    // Add keyboard support
+    document.getElementById('devToken').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            validateToken();
+        }
+    });
+
+    document.getElementById('modelId').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            generateMToken();
+        }
+    });
+
+    document.getElementById('modelName').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            generateMToken();
+        }
+    });
+
+    // Add these functions to the existing script
+    function getTimeStamp() {
+        const now = new Date();
+        return now.toLocaleTimeString('en-US', { hour12: false });
+    }
+
+    // Add script loading function
+    function loadModelScript(mToken) {
+        return new Promise((resolve, reject) => {
+            const existingScript = document.querySelector('script[src*="model.js"]');
+            if (existingScript) {
+                existingScript.remove();
+            }
+
+            const script = document.createElement('script');
+            script.src = `https://api.lovense-api.com/api/cam/model/v2/model.js?mToken=${encodeURIComponent(mToken)}`;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load model.js'));
+            document.body.appendChild(script);
+        });
+    }
+
+    // Update the startTest function
+    window.startTest = async function() {
+        try {
+            // Get mToken from the response
+            const mTokenResponse = document.getElementById('mTokenResponse');
+            const responseData = JSON.parse(mTokenResponse.textContent);
+            const mToken = responseData.data?.mToken;
+
+            if (!mToken) {
+                throw new Error('Please generate mToken first');
+            }
+
+            // Load the model.js script
+            await loadModelScript(mToken);
+
+            // Check if script loaded properly
+            if (typeof lovense !== 'undefined') {
+                // Add message listener
+                lovense.addMessageListener(function(data) {
+                    const eventMessages = document.getElementById('eventMessages');
+                    eventMessages.innerHTML += `
+                        <div class="event-line">
+                            <span class="timestamp">[${getTimeStamp()}]</span>
+                            <span class="prefix-event">Message:</span>
+                            <span class="message-content">${JSON.stringify(data, null, 2)}</span>
+                        </div>
+                        <div class="event-spacer"></div>
+                    `;
+                    eventMessages.scrollTop = eventMessages.scrollHeight;
+                });
+                
+                console.log('Widget initialized and message listener added');
+            } else {
+                throw new Error('Lovense model script not loaded properly');
+            }
+        } catch (error) {
+            console.error('Test error:', error);
+        }
+    };
+
+    window.stopTest = async function() {
+        const testStatus = document.getElementById('testStatus');
+        try {
+            // Remove the script
+            const existingScript = document.querySelector('script[src*="model.js"]');
+            if (existingScript) {
+                existingScript.remove();
+            }
+            testStatus.textContent = 'Widget stopped';
+        } catch (error) {
+            testStatus.textContent = `Error: ${error.message}`;
+        }
+    };
+
+    // Update broadcasting functions to focus on livestream
+    window.startBroadcast = async function() {
+        const broadcastStatus = document.getElementById('broadcastStatus');
+        try {
+            if (typeof lovense === 'undefined') {
+                throw new Error('Please start test first to initialize the widget');
+            }
+
+            // Request camera access
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            broadcastStatus.innerHTML = ''; // Clear the text
+            
+            // Create and add video element
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.autoplay = true;
+            video.style.width = '100%';
+            video.style.height = '100%';
+            video.style.objectFit = 'contain';
+            
+            broadcastStatus.appendChild(video);
+            broadcastStatus.style.padding = '0'; // Remove padding when showing video
+            
+        } catch (error) {
+            if (error.name === 'NotAllowedError') {
+                broadcastStatus.textContent = 'Camera access denied. Please allow camera access and try again.';
+            } else if (error.name === 'NotFoundError') {
+                broadcastStatus.textContent = 'No camera found. Please connect a camera and try again.';
+            } else {
+                broadcastStatus.textContent = `Error: ${error.message}`;
+            }
+        }
+    };
+
+    window.stopBroadcast = async function() {
+        const broadcastStatus = document.getElementById('broadcastStatus');
+        try {
+            // Stop all video tracks
+            const video = broadcastStatus.querySelector('video');
+            if (video) {
+                const stream = video.srcObject;
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                video.remove();
+            }
+            
+            // Reset the display area
+            broadcastStatus.textContent = 'Camera Display Area';
+            broadcastStatus.style.padding = '15px'; // Restore padding
+            
+        } catch (error) {
+            broadcastStatus.textContent = `Error: ${error.message}`;
+        }
+    };
+
+    // Update the API Test Methods
+    window.initCamApi = async function() {
+        const apiResponse = document.getElementById('apiResponse');
+        apiResponse.innerHTML = ''; // Clear previous response
+        
+        try {
+            if (typeof lovense === 'undefined') {
+                throw new Error('Please click "Start Test" to initialize the widget first');
+            }
+
+            const mTokenResponse = document.getElementById('mTokenResponse');
+            const responseData = JSON.parse(mTokenResponse.textContent);
+            const mToken = responseData.data?.mToken;
+
+            if (!mToken) {
+                throw new Error('Please generate mToken first');
+            }
+
+            const result = await lovense.initCamApi(mToken);
+            apiResponse.innerHTML += `
+                <div>
+                    <span class="timestamp">[${getTimeStamp()}]</span>
+                    <span class="message-content">${JSON.stringify(result, null, 2)}</span>
+                </div>
+            `;
+        } catch (error) {
+            apiResponse.innerHTML += `
+                <div>
+                    <span class="timestamp">[${getTimeStamp()}]</span>
+                    <span class="message-content" style="color: #dc3545;">Error: ${error.message}</span>
+                </div>
+            `;
+        }
+    };
+
+    window.destroyCamApi = async function() {
+        const apiResponse = document.getElementById('apiResponse');
+        apiResponse.innerHTML = ''; // Clear previous response
+        
+        try {
+            if (typeof lovense === 'undefined') {
+                throw new Error('Please click "Start Test" to initialize the widget first');
+            }
+
+            const result = await lovense.destroyCamApi();
+            apiResponse.innerHTML += `
+                <div>
+                    <span class="timestamp">[${getTimeStamp()}]</span>
+                    <span class="message-content">${JSON.stringify(result, null, 2)}</span>
+                </div>
+            `;
+        } catch (error) {
+            apiResponse.innerHTML += `
+                <div>
+                    <span class="timestamp">[${getTimeStamp()}]</span>
+                    <span class="message-content" style="color: #dc3545;">Error: ${error.message}</span>
+                </div>
+            `;
+        }
+    };
+
+    window.getToys = async function() {
+        const apiResponse = document.getElementById('apiResponse');
+        apiResponse.innerHTML = ''; // Clear previous response
+        
+        try {
+            if (typeof lovense === 'undefined') {
+                throw new Error('Please click "Start Test" to initialize the widget first');
+            }
+
+            const result = await lovense.getToys();
+            apiResponse.innerHTML += `
+                <div>
+                    <span class="timestamp">[${getTimeStamp()}]</span>
+                    <span class="message-content">${JSON.stringify(result, null, 2)}</span>
+                </div>
+            `;
+        } catch (error) {
+            apiResponse.innerHTML += `
+                <div>
+                    <span class="timestamp">[${getTimeStamp()}]</span>
+                    <span class="message-content" style="color: #dc3545;">Error: ${error.message}</span>
+                </div>
+            `;
+        }
+    };
+
+    window.getSettings = async function() {
+        const apiResponse = document.getElementById('apiResponse');
+        apiResponse.innerHTML = ''; // Clear previous response
+        
+        try {
+            if (typeof lovense === 'undefined') {
+                throw new Error('Please click "Start Test" to initialize the widget first');
+            }
+
+            const result = await lovense.getSettings();
+            apiResponse.innerHTML += `
+                <div>
+                    <span class="timestamp">[${getTimeStamp()}]</span>
+                    <span class="message-content">${JSON.stringify(result, null, 2)}</span>
+                </div>
+            `;
+        } catch (error) {
+            apiResponse.innerHTML += `
+                <div>
+                    <span class="timestamp">[${getTimeStamp()}]</span>
+                    <span class="message-content" style="color: #dc3545;">Error: ${error.message}</span>
+                </div>
+            `;
+        }
+    };
+
+    // Event handlers
+    function addEventMessage(eventName, data) {
+        const eventMessages = document.getElementById('eventMessages');
+        eventMessages.innerHTML += `
+            <div>
+                <span class="timestamp">[${getTimeStamp()}]</span>
+                <span class="prefix-event">${eventName}:</span>
+                <span class="message-content">${JSON.stringify(data)}</span>
+            </div>
+            <div class="event-spacer"></div>
+        `;
+        eventMessages.scrollTop = eventMessages.scrollHeight;
+    }
+
+    // Update the loadSettingsPage function
+    window.loadSettingsPage = function() {
+        const mTokenResponse = document.getElementById('mTokenResponse');
+        const settingsFrame = document.getElementById('settingsFrame');
+        
+        try {
+            // Parse the mToken from the response
+            const responseData = JSON.parse(mTokenResponse.textContent);
+            const mToken = responseData.data?.mToken;
+            
+            if (mToken) {
+                const settingsUrl = `https://api.lovense-api.com/api/cam/model/v2/setting?mToken=${encodeURIComponent(mToken)}`;
+                settingsFrame.src = settingsUrl;
+            } else {
+                console.error('mToken not found in response');
+                alert('Please generate mToken first');
+            }
+        } catch (error) {
+            console.error('Error loading settings page:', error);
+            alert('Error loading settings page. Please make sure you have a valid mToken.');
+        }
+    };
+
+    // Add chat functions
+    window.sendMessage = function() {
+        const message = document.getElementById('messageInput').value;
+        if (message && typeof lovense !== 'undefined') {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML += `
+                <div>
+                    <span class="timestamp">[${getTimeStamp()}]</span>
+                    <span class="prefix-user">User:</span>
+                    <span class="message-content">${message}</span>
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            document.getElementById('messageInput').value = '';
+        }
+    };
+
+    window.sendTip = async function() {
+        const tipAmount = document.getElementById('tipAmount').value;
+        const chatMessages = document.getElementById('chatMessages');
+
+        try {
+            // First check: Widget initialization
+            if (typeof lovense === 'undefined') {
+                throw new Error('Please click "Start Test" to initialize the widget first');
+            }
+
+            // Second check: Tip amount validation
+            if (!tipAmount || tipAmount <= 0) {
+                throw new Error('Please enter a valid tip amount');
+                return;
+            }
+
+            // Third check: Toy connection and status
+            const toys = await lovense.getToys();
+            if (!toys || toys.length === 0) {
+                throw new Error('No toys connected. Please connect a toy first');
+            }
+
+            // Check if any toy is actually connected (status is not "off")
+            const connectedToy = toys.find(toy => toy.status !== "off");
+            if (!connectedToy) {
+                throw new Error('Toy is not connected properly. Please check toy connection');
+            }
+
+            // If all checks pass, send the tip
+            chatMessages.innerHTML += `
+                <div>
+                    <span class="timestamp">[${getTimeStamp()}]</span>
+                    <span class="tip-message">Tip sent: ${tipAmount} tokens</span>
+                </div>
+            `;
+            
+            lovense.receiveTip('testUser', parseInt(tipAmount));
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            document.getElementById('tipAmount').value = '';
+
+        } catch (error) {
+            chatMessages.innerHTML += `
+                <div>
+                    <span class="timestamp">[${getTimeStamp()}]</span>
+                    <span class="tip-message" style="color: #dc3545;">Error: ${error.message}</span>
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    };
+
+    // Add keyboard support for chat
+    document.getElementById('messageInput').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    document.getElementById('tipAmount').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            sendTip();
+        }
+    });
+
+    // Add openSettingsInNewTab function
+    window.openSettingsInNewTab = function() {
+        const mTokenResponse = document.getElementById('mTokenResponse');
+        
+        try {
+            const responseData = JSON.parse(mTokenResponse.textContent);
+            const mToken = responseData.data?.mToken;
+            
+            if (mToken) {
+                const settingsUrl = `https://api.lovense-api.com/api/cam/model/v2/setting?mToken=${encodeURIComponent(mToken)}`;
+                window.open(settingsUrl, '_blank');
+            } else {
+                alert('Please generate mToken first');
+            }
+        } catch (error) {
+            alert('Error opening settings page. Please make sure you have a valid mToken.');
+        }
+    };
+});
+</script> 
