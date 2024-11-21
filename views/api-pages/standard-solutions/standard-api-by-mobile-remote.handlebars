@@ -1,29 +1,56 @@
 <div class="api-documentation">
     <h1>Standard API - Mobile Remote Control</h1>
 
-    <!-- Token Input -->
+    <!-- Connection Method Selection -->
     <div class="test-section">
-        <h3>1. Input Developer Token</h3>
-        <input type="text" id="devToken" placeholder="Enter Developer Token" class="form-control" value="tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle">
-        <button onclick="getQRCode()" class="btn btn-primary">Generate QR Code</button>
+        <h3>1. Choose Connection Method</h3>
+        <div class="connection-methods">
+            <button onclick="selectMethod('qr')" class="btn btn-method" id="qrMethod">QR Code Scan</button>
+            <button onclick="selectMethod('game')" class="btn btn-method" id="gameMethod">Game Mode</button>
+        </div>
     </div>
 
-    <!-- Get QR Section -->
-    <div class="test-section">
-        <h3>2. Scan QR Code By Remote App</h3>
-        <div id="qrcode" class="qr-container"></div>
+    <!-- QR Code Connection Section -->
+    <div id="qrSection" class="test-section connection-section">
+        <h3>2. QR Code Connection</h3>
+        <div class="qr-setup">
+            <div class="token-input-group">
+                <input type="text" id="devToken" placeholder="tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle" class="form-control">
+                <button onclick="getQRCode()" class="btn btn-primary">Generate QR Code</button>
+            </div>
+            <div id="qrcode" class="qr-container compact"></div>
+            <p class="info-text">Default Token: tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle</p>
+            <p class="info-text">Callback URL: <span id="callbackUrl">/callback/latest</span></p>
+            <div id="callbackData" class="data-box">Waiting for data...</div>
+        </div>
     </div>
 
-    <!-- Callback Section -->
-    <div class="test-section">
-        <h3>3. Callback Data</h3>
-        <p>Callback URL: <span id="callbackUrl">Waiting for QR generation...</span></p>
-        <div id="callbackData" class="data-box">Waiting for data...</div>
+    <!-- Game Mode Connection Section -->
+    <div id="gameSection" class="test-section connection-section" style="display: none;">
+        <h3>2. Game Mode Connection</h3>
+        <div class="game-setup">
+            <p class="info-text">Go to Discover -> Game Mode -> Turn on the "Enable LAN" switch -> input IP and Port</p>
+            <p class="info-text">Default IP: 192.168.31.32, Port: 30010</p>
+            <div class="game-mode-inputs">
+                <input type="text" id="localIp" placeholder="Enter Local IP" class="form-control" value="192.168.31.32">
+                <input type="text" id="port" placeholder="Enter Port" class="form-control" value="30010">
+                <button onclick="connectGameMode()" class="btn btn-primary">Connect</button>
+            </div>
+            <div class="request-json compact">
+                <p class="info-text">Request JSON:</p>
+                <pre class="data-box">
+{
+    "command": "GetToys"
+}
+URL: https://192.168.31.32:30010/command</pre>
+            </div>
+            <div id="gameModeStatus" class="data-box">Not connected</div>
+        </div>
     </div>
 
     <!-- Toy Management -->
     <div class="test-section">
-        <h3>4. Toy Management</h3>
+        <h3>3. Toy Management</h3>
         <button onclick="getToys()" class="btn btn-primary">Get Toys</button>
         <button onclick="getToyNames()" class="btn btn-primary">Get Toy Names</button>
         <div id="toyList" class="data-box"></div>
@@ -31,17 +58,105 @@
 
     <!-- Command Testing -->
     <div class="test-section">
-        <h3>5. Test Commands</h3>
-        <div class="command-group">
-            <label>Vibration:</label>
-            <input type="range" id="vibrationStrength" min="0" max="20" value="10">
-            <button onclick="testVibration()" class="btn btn-primary">Test Vibration</button>
+        <h3>4. Test Commands</h3>
+        <div class="function-test-container">
+            <div class="button-container">
+                <div class="toy-id-group">
+                    <label>Toy ID:</label>
+                    <input type="text" id="toyId" class="form-control" placeholder="e.g., ff922f7fd345">
+                </div>
+                <button onclick="testFunction()" class="btn btn-primary">Test Function</button>
+            </div>
+            
+            <!-- Action sliders -->
+            <div class="action-sliders">
+                <div class="action-group">
+                    <label>Vibrate (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="vibrate" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="vibrate" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Rotate (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="rotate" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="rotate" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Pump (0-3):</label>
+                    <div class="strength-control">
+                        <input type="range" id="pump" class="strength-slider" min="0" max="3" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="pump" min="0" max="3" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Thrusting (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="thrusting" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="thrusting" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Fingering (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="fingering" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="fingering" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Suction (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="suction" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="suction" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Depth (0-3):</label>
+                    <div class="strength-control">
+                        <input type="range" id="depth" class="strength-slider" min="0" max="3" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="depth" min="0" max="3" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Stroke (0-100):</label>
+                    <div class="strength-control">
+                        <input type="range" id="stroke" class="strength-slider" min="0" max="100" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="stroke" min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>All (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="all" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="all" min="0" max="20" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="time-inputs">
+                <div class="input-group">
+                    <label>Total:</label>
+                    <input type="number" id="totalTime" class="form-control" placeholder="seconds">
+                </div>
+                <div class="input-group">
+                    <label>Running:</label>
+                    <input type="number" id="runningTime" class="form-control" placeholder="seconds">
+                </div>
+                <div class="input-group">
+                    <label>Pause:</label>
+                    <input type="number" id="pauseTime" class="form-control" placeholder="seconds">
+                </div>
+            </div>
+            <div id="commandResponse" class="data-box">Response will appear here...</div>
         </div>
-        <div class="command-group">
-            <button onclick="testRotate()" class="btn btn-secondary">Test Rotate</button>
-            <button onclick="testPump()" class="btn btn-secondary">Test Pump</button>
-            <button onclick="stopAll()" class="btn btn-danger">Stop All</button>
-        </div>
+    </div>
+
+    <!-- Solace Pro Commands -->
+    <div class="test-section">
+        <h3>5. Test Solace Pro Commands</h3>
+        <p class="info-text">In development...</p>
     </div>
 </div>
 
@@ -64,7 +179,9 @@ async function getQRCode() {
         const qrcodeDiv = document.getElementById('qrcode');
         qrcodeDiv.innerHTML = 'Generating QR Code...';
         
-        const token = document.getElementById('devToken').value || DEFAULT_TOKEN;
+        // Get token value and use default if empty or only whitespace
+        const tokenInput = document.getElementById('devToken').value;
+        const token = tokenInput.trim() || DEFAULT_TOKEN;
         
         const uid = "test_" + Math.random().toString(36).substr(2, 9);
         const uname = "user_" + uid;
@@ -104,7 +221,30 @@ async function getQRCode() {
 
 async function getToys() {
     try {
-        document.getElementById('toyList').innerHTML = 'Fetching toys...';
+        const isGameMode = document.getElementById('gameSection').style.display !== 'none';
+        let apiUrl;
+        
+        if (isGameMode) {
+            const localIp = document.getElementById('localIp').value;
+            const port = document.getElementById('port').value;
+            if (!localIp || !port) {
+                throw new Error('Please enter both IP and Port for Game Mode');
+            }
+            apiUrl = `https://${localIp}:${port}/command`;
+        } else {
+            apiUrl = 'https://127-0-0-1.lovense.club:30010/command';
+        }
+
+        const response = await axios.post(apiUrl, {
+            command: "GetToys"
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-platform': 'deltatest'
+            }
+        });
+        
+        document.getElementById('toyList').innerHTML = JSON.stringify(response.data, null, 2);
     } catch (error) {
         document.getElementById('toyList').innerHTML = 'Failed to get toys: ' + error.message;
     }
@@ -112,42 +252,32 @@ async function getToys() {
 
 async function getToyNames() {
     try {
-        document.getElementById('toyList').innerHTML = 'Fetching toy names...';
+        const isGameMode = document.getElementById('gameSection').style.display !== 'none';
+        let apiUrl;
+        
+        if (isGameMode) {
+            const localIp = document.getElementById('localIp').value;
+            const port = document.getElementById('port').value;
+            if (!localIp || !port) {
+                throw new Error('Please enter both IP and Port for Game Mode');
+            }
+            apiUrl = `https://${localIp}:${port}/command`;
+        } else {
+            apiUrl = 'https://127-0-0-1.lovense.club:30010/command';
+        }
+
+        const response = await axios.post(apiUrl, {
+            command: "GetToyName"
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-platform': 'deltatest'
+            }
+        });
+        
+        document.getElementById('toyList').innerHTML = JSON.stringify(response.data, null, 2);
     } catch (error) {
         document.getElementById('toyList').innerHTML = 'Failed to get toy names: ' + error.message;
-    }
-}
-
-async function testVibration() {
-    const strength = document.getElementById('vibrationStrength').value;
-    try {
-        // Add vibration command API call here
-    } catch (error) {
-        console.error('Vibration test failed:', error);
-    }
-}
-
-async function testRotate() {
-    try {
-        // Add rotation command API call here
-    } catch (error) {
-        console.error('Rotation test failed:', error);
-    }
-}
-
-async function testPump() {
-    try {
-        // Add pump command API call here
-    } catch (error) {
-        console.error('Pump test failed:', error);
-    }
-}
-
-async function stopAll() {
-    try {
-        // Add stop all command API call here
-    } catch (error) {
-        console.error('Stop all failed:', error);
     }
 }
 
@@ -175,7 +305,150 @@ function initCallbackListener() {
     }, 20000);
 }
 
-document.addEventListener('DOMContentLoaded', initCallbackListener);
+function selectMethod(method) {
+    // Reset button styles
+    document.querySelectorAll('.btn-method').forEach(btn => {
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+    });
+
+    // Show/hide appropriate sections
+    if (method === 'qr') {
+        document.getElementById('qrSection').style.display = 'block';
+        document.getElementById('gameSection').style.display = 'none';
+        document.getElementById('qrMethod').classList.add('btn-primary');
+        document.getElementById('qrMethod').classList.remove('btn-secondary');
+    } else {
+        document.getElementById('qrSection').style.display = 'none';
+        document.getElementById('gameSection').style.display = 'block';
+        document.getElementById('gameMethod').classList.add('btn-primary');
+        document.getElementById('gameMethod').classList.remove('btn-secondary');
+    }
+}
+
+async function connectGameMode() {
+    const localIp = document.getElementById('localIp').value;
+    const port = document.getElementById('port').value;
+    
+    if (!localIp || !port) {
+        document.getElementById('gameModeStatus').innerHTML = 'Please enter both IP and Port';
+        return;
+    }
+
+    try {
+        const response = await axios.post(`https://${localIp}:${port}/command`, {
+            command: "GetToys"
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-platform': 'deltatest'
+            }
+        });
+        
+        if (response.data) {
+            document.getElementById('gameModeStatus').innerHTML = 
+                `Connected successfully!\nToy info: ${JSON.stringify(response.data, null, 2)}`;
+            document.getElementById('gameModeStatus').style.color = '#28a745';
+        }
+    } catch (error) {
+        document.getElementById('gameModeStatus').innerHTML = 
+            `Connection failed: ${error.message}\n\nPlease make sure:\n1. IP and Port are correct\n2. Lovense Remote is running\n3. Game Mode is enabled`;
+        document.getElementById('gameModeStatus').style.color = '#dc3545';
+    }
+}
+
+// Initialize with QR method selected
+document.addEventListener('DOMContentLoaded', () => {
+    selectMethod('qr');
+    initCallbackListener();
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all sliders
+    const sliders = document.querySelectorAll('.strength-slider');
+    const numberInputs = document.querySelectorAll('.strength-number');
+
+    // Add listeners for sliders
+    sliders.forEach(slider => {
+        slider.addEventListener('input', function() {
+            const numberInput = this.nextElementSibling;
+            numberInput.value = this.value;
+        });
+    });
+
+    // Add listeners for number inputs
+    numberInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const slider = this.previousElementSibling;
+            const value = parseInt(this.value);
+            const max = parseInt(this.max);
+            
+            if (!isNaN(value) && value >= 0 && value <= max) {
+                slider.value = value;
+            }
+        });
+    });
+});
+
+async function testFunction() {
+    const commandResponse = document.getElementById('commandResponse');
+    const toyId = document.getElementById('toyId').value;
+    const totalTime = document.getElementById('totalTime').value;
+    const runningTime = document.getElementById('runningTime').value;
+    const pauseTime = document.getElementById('pauseTime').value;
+
+    try {
+        const actions = [];
+        const actionTypes = ['vibrate', 'rotate', 'pump', 'thrusting', 'fingering', 'suction', 'depth', 'stroke', 'all'];
+        
+        actionTypes.forEach(type => {
+            const value = document.getElementById(type).value;
+            if (value > 0) {
+                const actionName = type.charAt(0).toUpperCase() + type.slice(1);
+                actions.push(`${actionName}:${value}`);
+            }
+        });
+
+        if (actions.length === 0) {
+            throw new Error('Please set at least one action value above 0');
+        }
+
+        let apiUrl;
+        const isGameMode = document.getElementById('gameSection').style.display !== 'none';
+        
+        if (isGameMode) {
+            const localIp = document.getElementById('localIp').value;
+            const port = document.getElementById('port').value;
+            if (!localIp || !port) {
+                throw new Error('Please enter both IP and Port for Game Mode');
+            }
+            apiUrl = `https://${localIp}:${port}/command`;
+        } else {
+            apiUrl = 'https://127-0-0-1.lovense.club:30010/command';
+        }
+
+        const response = await axios.post(apiUrl, {
+            command: "Function",
+            action: actions.join(','),
+            timeSec: parseInt(totalTime),
+            loopRunningSec: parseInt(runningTime),
+            loopPauseSec: parseInt(pauseTime),
+            toy: toyId,
+            apiVer: 1
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-platform': 'deltatest'
+            }
+        });
+        
+        commandResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        commandResponse.style.color = '#28a745';
+    } catch (error) {
+        commandResponse.innerHTML = `Error: ${error.message}`;
+        commandResponse.style.color = '#dc3545';
+    }
+}
 </script>
 
 <style>
@@ -265,43 +538,177 @@ h3 {
   border-radius: 4px;
 }
 
-.command-group {
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 4px;
+.connection-methods {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
-input[type="range"] {
-  width: 200px;
-  margin-right: 1rem;
+.btn-method {
+    flex: 1;
+    padding: 1rem;
+    font-size: 1.1rem;
+}
+
+.game-mode-inputs {
+    display: grid;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.game-setup p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+@media (prefers-color-scheme: dark) {
+    .game-setup p {
+        color: #aaa;
+    }
+}
+
+/* Update action group styles for inline layout */
+.action-group {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.action-group label {
+    min-width: 140px;
+    font-size: 0.9em;
+    margin-right: 10px;
+    color: #666;
+}
+
+.strength-control {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 10px;
+}
+
+.strength-slider {
+    flex: 1;
+    margin: 0;
+}
+
+.strength-number {
+    width: 60px !important;
+    padding: 4px 8px !important;
+    margin: 0 !important;
+}
+
+/* Update time inputs for inline layout */
+.time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
+.time-inputs .input-group {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 10px;
+    margin: 0;
+}
+
+.time-inputs .input-group label {
+    min-width: 100px;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.time-inputs .form-control {
+    margin: 0;
 }
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
-  body {
-    background: #1a1a1a;
-    color: #fff;
-  }
+    .action-group {
+        background: #2d2d2d;
+    }
+    
+    .action-group label {
+        color: #aaa;
+    }
+    
+    .time-inputs {
+        background: #2d2d2d;
+    }
+}
 
-  .test-section {
-    background: #2d2d2d;
-  }
+.token-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
 
-  .data-box {
-    background: #333;
-    border-color: #444;
-    color: #fff;
-  }
+.token-input-group .form-control {
+    margin-bottom: 0;
+}
 
-  h1, h3 {
-    color: #fff;
-  }
+.token-input-group .btn {
+    margin: 0;
+    white-space: nowrap;
+}
 
-  .form-control {
-    background: #333;
-    border-color: #444;
-    color: #fff;
-  }
+.request-json {
+    margin: 1rem 0;
+}
+
+.request-json p {
+    margin-bottom: 0.5rem;
+    color: #666;
+    font-weight: 500;
+}
+
+@media (prefers-color-scheme: dark) {
+    .request-json p {
+        color: #aaa;
+    }
+}
+
+/* Reduce spacing between elements */
+.qr-container.compact {
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.info-text {
+    margin: 0.25rem 0;
+    color: #666;
+}
+
+.game-mode-inputs {
+    margin: 0.5rem 0;
+}
+
+.request-json.compact {
+    margin: 0.5rem 0;
+}
+
+.request-json.compact p {
+    margin-bottom: 0.25rem;
+}
+
+.data-box {
+    margin-top: 0.5rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .info-text {
+        color: #aaa;
+    }
 }
 </style> 
