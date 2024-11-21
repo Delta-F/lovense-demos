@@ -16,6 +16,7 @@
         <h3>2. Search Connected Toy</h3>
         <div class="download-links">
             <button onclick="searchToy()" class="btn btn-primary">Search Toy</button>
+            <button onclick="getToyName()" class="btn btn-primary">Get Toy Name</button>
         </div>
         <div id="searchResponse" class="data-box">Response will appear here...</div>
     </div>
@@ -23,17 +24,105 @@
     <!-- API Testing -->
     <div class="test-section">
         <h3>3. Test API Commands</h3>
-        <div class="command-group">
-            <label>Vibration:</label>
-            <input type="range" id="vibrationStrength" min="0" max="20" value="10">
-            <button onclick="testVibration()" class="btn btn-primary">Test Vibration</button>
+        <div class="function-test-container">
+            <div class="button-container">
+                <div class="toy-id-group">
+                    <label>Toy ID:</label>
+                    <input type="text" id="toyId" class="form-control" placeholder="e.g., ff922f7fd345">
+                </div>
+                <button onclick="testFunction()" class="btn btn-primary">Test Function</button>
+            </div>
+            
+            <!-- Add back the action sliders -->
+            <div class="action-sliders">
+                <div class="action-group">
+                    <label>Vibrate (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="vibrate" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="vibrate" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Rotate (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="rotate" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="rotate" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Pump (0-3):</label>
+                    <div class="strength-control">
+                        <input type="range" id="pump" class="strength-slider" min="0" max="3" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="pump" min="0" max="3" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Thrusting (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="thrusting" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="thrusting" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Fingering (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="fingering" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="fingering" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Suction (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="suction" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="suction" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Depth (0-3):</label>
+                    <div class="strength-control">
+                        <input type="range" id="depth" class="strength-slider" min="0" max="3" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="depth" min="0" max="3" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Stroke (0-100):</label>
+                    <div class="strength-control">
+                        <input type="range" id="stroke" class="strength-slider" min="0" max="100" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="stroke" min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>All (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="all" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="all" min="0" max="20" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="time-inputs">
+                <div class="input-group">
+                    <label>Total Time:</label>
+                    <input type="number" id="totalTime" class="form-control" placeholder="e.g., 20 seconds">
+                </div>
+                <div class="input-group">
+                    <label>Running Time:</label>
+                    <input type="number" id="runningTime" class="form-control" placeholder="e.g., 9 seconds">
+                </div>
+                <div class="input-group">
+                    <label>Pause Time:</label>
+                    <input type="number" id="pauseTime" class="form-control" placeholder="e.g., 4 seconds">
+                </div>
+            </div>
+            <div id="commandResponse" class="data-box">Response will appear here...</div>
         </div>
-        <div class="command-group">
-            <button onclick="testRotate()" class="btn btn-secondary">Test Rotate</button>
-            <button onclick="testPump()" class="btn btn-secondary">Test Pump</button>
-            <button onclick="stopAll()" class="btn btn-danger">Stop All</button>
-        </div>
-        <div id="commandResponse" class="data-box">Command response will appear here...</div>
+    </div>
+
+    <!-- Update the Solace Pro Commands section -->
+    <div class="test-section">
+        <h3>4. Test Solace Pro Commands</h3>
+        <p class="test-description">Use Position request and Pattern V2 for Solace Pro commands</p>
+        <p class="not-developed">Not developed yet</p>
     </div>
 </div>
 
@@ -64,6 +153,174 @@ async function searchToy() {
         searchResponse.style.color = '#dc3545';
     }
 }
+
+async function getToyName() {
+    const searchResponse = document.getElementById('searchResponse');
+    try {
+        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', {
+            command: "GetToyName"
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        searchResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        searchResponse.style.color = '#28a745';
+    } catch (error) {
+        searchResponse.innerHTML = `Error: ${error.message}`;
+        searchResponse.style.color = '#dc3545';
+    }
+}
+
+// Add event listeners for all sliders and number inputs
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all sliders
+    const sliders = document.querySelectorAll('.strength-slider');
+    const numberInputs = document.querySelectorAll('.strength-number');
+
+    // Add listeners for sliders
+    sliders.forEach(slider => {
+        slider.addEventListener('input', function() {
+            const numberInput = this.nextElementSibling;
+            numberInput.value = this.value;
+        });
+    });
+
+    // Add listeners for number inputs
+    numberInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const slider = this.previousElementSibling;
+            const value = parseInt(this.value);
+            const max = parseInt(this.max);
+            
+            if (!isNaN(value) && value >= 0 && value <= max) {
+                slider.value = value;
+            }
+        });
+    });
+});
+
+// Update the testFunction to handle multiple actions
+async function testFunction() {
+    const commandResponse = document.getElementById('commandResponse');
+    const toyId = document.getElementById('toyId').value;
+    const totalTime = document.getElementById('totalTime').value;
+    const runningTime = document.getElementById('runningTime').value;
+    const pauseTime = document.getElementById('pauseTime').value;
+
+    try {
+        // Collect all non-zero actions
+        const actions = [];
+        const actionTypes = ['vibrate', 'rotate', 'pump', 'thrusting', 'fingering', 'suction', 'depth', 'stroke', 'all'];
+        
+        actionTypes.forEach(type => {
+            const value = document.getElementById(type).value;
+            if (value > 0) {
+                // Capitalize first letter for the action string
+                const actionName = type.charAt(0).toUpperCase() + type.slice(1);
+                actions.push(`${actionName}:${value}`);
+            }
+        });
+
+        // Only proceed if there are actions to send
+        if (actions.length === 0) {
+            throw new Error('Please set at least one action value above 0');
+        }
+
+        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', {
+            command: "Function",
+            action: actions.join(','),
+            timeSec: parseInt(totalTime),
+            loopRunningSec: parseInt(runningTime),
+            loopPauseSec: parseInt(pauseTime),
+            toy: toyId,
+            apiVer: 1
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        commandResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        commandResponse.style.color = '#28a745';
+    } catch (error) {
+        commandResponse.innerHTML = `Error: ${error.message}`;
+        commandResponse.style.color = '#dc3545';
+    }
+}
+
+// Add Solace Pro test functions
+async function testPosition() {
+    const solaceResponse = document.getElementById('solaceResponse');
+    const toyId = document.getElementById('solaceToyId').value;
+    const position = document.getElementById('position').value;
+
+    try {
+        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', {
+            command: "Position",
+            action: position,
+            toy: toyId,
+            apiVer: 1
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        solaceResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        solaceResponse.style.color = '#28a745';
+    } catch (error) {
+        solaceResponse.innerHTML = `Error: ${error.message}`;
+        solaceResponse.style.color = '#dc3545';
+    }
+}
+
+async function testPatternV2() {
+    const solaceResponse = document.getElementById('solaceResponse');
+    const toyId = document.getElementById('solaceToyId').value;
+    const pattern = document.getElementById('pattern').value.split(',').map(Number);
+    const timing = document.getElementById('timing').value.split(',').map(Number);
+    const strength = document.getElementById('patternStrength').value;
+
+    try {
+        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', {
+            command: "PatternV2",
+            rule: pattern,
+            timing: timing,
+            strength: parseInt(strength),
+            toy: toyId,
+            apiVer: 1
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        solaceResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        solaceResponse.style.color = '#28a745';
+    } catch (error) {
+        solaceResponse.innerHTML = `Error: ${error.message}`;
+        solaceResponse.style.color = '#dc3545';
+    }
+}
+
+// Add event listener for position slider
+document.addEventListener('DOMContentLoaded', function() {
+    const positionSlider = document.getElementById('position');
+    const positionNumber = positionSlider.nextElementSibling;
+
+    positionSlider.addEventListener('input', function() {
+        positionNumber.value = this.value;
+    });
+
+    positionNumber.addEventListener('input', function() {
+        const value = parseInt(this.value);
+        if (!isNaN(value) && value >= 0 && value <= 100) {
+            positionSlider.value = value;
+        }
+    });
+});
 </script>
 
 <style>
@@ -190,5 +447,368 @@ li {
     border-color: #444;
     color: #fff;
   }
+}
+
+.input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-group label {
+    min-width: 180px;
+    font-size: 0.9em;
+}
+
+.button-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.form-control {
+    flex: 1;
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.function-test-container {
+    padding: 20px;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.toy-id-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.toy-id-group label {
+    min-width: 60px;
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+}
+
+.toy-id-group .form-control {
+    max-width: 200px;
+}
+
+.input-grid {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.input-group label {
+    min-width: 120px;
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+}
+
+.form-control {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9em;
+    background: #fff;
+}
+
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 20px 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .function-test-container {
+        background: #2d2d2d;
+    }
+
+    .input-group {
+        background: #333;
+        border-color: #444;
+    }
+
+    .input-group label {
+        color: #aaa;
+    }
+
+    .form-control {
+        background: #222;
+        border-color: #444;
+        color: #fff;
+    }
+}
+
+select.form-control {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 1em;
+    padding-right: 30px;
+}
+
+/* Dark mode support for select */
+@media (prefers-color-scheme: dark) {
+    select.form-control {
+        background-color: #222;
+        color: #fff;
+    }
+    
+    select.form-control option {
+        background-color: #222;
+        color: #fff;
+    }
+}
+
+.action-values {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.range-label {
+    color: #666;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+.strength-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.strength-slider {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    background: #ddd;
+    border-radius: 2px;
+    outline: none;
+}
+
+.strength-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #3498db;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.strength-number {
+    width: 50px !important;
+    padding: 4px 6px !important;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .range-label {
+        color: #aaa;
+    }
+    
+    .strength-slider {
+        background: #444;
+    }
+    
+    .strength-slider::-webkit-slider-thumb {
+        background: #3498db;
+    }
+}
+
+/* Update action list styles */
+.action-sliders {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 15px 0;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.action-group {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+    background: none;
+    border: none;
+}
+
+.action-group label {
+    min-width: 140px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.strength-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.strength-slider {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    background: #ddd;
+    border-radius: 2px;
+    outline: none;
+}
+
+.strength-number {
+    width: 45px !important;
+    padding: 4px !important;
+    text-align: center;
+    font-size: 0.9em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .action-group label {
+        color: #aaa;
+    }
+
+    .strength-slider {
+        background: #444;
+    }
+
+    .strength-number {
+        background: #222;
+        border-color: #444;
+        color: #fff;
+    }
+}
+
+/* Update scrollbar styling */
+.action-sliders::-webkit-scrollbar {
+    width: 8px;
+}
+
+.action-sliders::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.action-sliders::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.action-sliders::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Dark mode support for scrollbar */
+@media (prefers-color-scheme: dark) {
+    .action-sliders::-webkit-scrollbar-track {
+        background: #2d2d2d;
+    }
+    
+    .action-sliders::-webkit-scrollbar-thumb {
+        background: #666;
+    }
+    
+    .action-sliders::-webkit-scrollbar-thumb:hover {
+        background: #888;
+    }
+}
+
+.time-inputs {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.time-inputs .input-group {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.time-inputs .input-group label {
+    min-width: 100px;
+    white-space: nowrap;
+}
+
+.time-inputs .form-control {
+    min-width: 0;
+}
+
+.pattern-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.pattern-inputs .input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    background: none;
+    border: none;
+}
+
+.pattern-inputs .input-group label {
+    min-width: 140px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .pattern-inputs .input-group label {
+        color: #aaa;
+    }
+}
+
+.not-developed {
+    color: #dc3545;
+    font-weight: 500;
+    font-style: italic;
+    margin-top: 10px;
 }
 </style> 
