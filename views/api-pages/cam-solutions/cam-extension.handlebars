@@ -1,21 +1,15 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<script src="https://api.lovense-api.com/cam-extension/static/js-sdk/broadcast.js"></script>
-
 <div class="api-documentation">
-    <div class="header-section">
-        <h1>Cam Extension for Chrome</h1>
-        <a href="https://developer.lovense.com/docs/cam-solutions/cam-extension-for-chrome.html" target="_blank" class="doc-link">
-            <i class="fas fa-book"></i>
-            API Documentation
-        </a>
+    <h1>Cam Extension for Chrome</h1>
+    <div class="api-reference">
+        <p>This implementation is based on the <a href="https://developer.lovense.com/docs/cam-solutions/cam-extension-for-chrome.html" target="_blank">Official Lovense Cam Extension Documentation</a>.</p>
     </div>
     <div class="content">
-        <section class="quick-start">
+        <section class="quick-start test-section">
             <div class="steps">
                 <h2>Getting Started</h2>
                 <div class="current-site">
                     <span class="section-label"><i class="fas fa-globe"></i> Current Site:</span>
-                    <span class="site-name">deltatest</span>
+                    <span class="site-name">test:deltatest</span>
                 </div>
                 <ol>
                     <li>Install <a href="https://www.lovense.com/cam-model/extension" target="_blank">Cam Extension</a> from Chrome or <a href="https://www.lovense.com/cam-model/download" target="_blank">Stream Master</a> For PC Desktop</li>
@@ -93,9 +87,10 @@
 
 <style>
 .api-documentation {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
 .content {
@@ -425,33 +420,43 @@
     font-weight: 500;
 }
 
-.header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+.api-reference {
+    background: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0 4px 4px 0;
 }
 
-.doc-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: #007bff;
-    color: white;
+.api-reference p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+
+.api-reference a {
+    color: #3498db;
     text-decoration: none;
-    border-radius: 4px;
-    font-size: 0.9em;
+    font-weight: 500;
 }
 
-.doc-link:hover {
-    background: #0056b3;
-    color: white;
-    text-decoration: none;
+.api-reference a:hover {
+    text-decoration: underline;
 }
 
-.doc-link i {
-    font-size: 1.1em;
+@media (prefers-color-scheme: dark) {
+    .api-reference {
+        background: #2d2d2d;
+        border-left-color: #3498db;
+    }
+
+    .api-reference p {
+        color: #fff;
+    }
+
+    .api-reference a {
+        color: #5dade2;
+    }
 }
 
 .timestamp {
@@ -470,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize CamExtension - keep structure for future implementation
     const initCamExtension = () => {
-        camExtension = new CamExtension("deltatest", "testmodel");
+        camExtension = new CamExtension("test:deltatest", "testmodel");
         
         const readyCallback = function(ce) {
             console.log("CamExtension ready");
