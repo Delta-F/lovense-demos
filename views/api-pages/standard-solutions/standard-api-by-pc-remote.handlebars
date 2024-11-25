@@ -1,11 +1,6 @@
 <div class="api-documentation">
     <h1>Standard API - PC Remote Control</h1>
 
-    <!-- API Reference -->
-    <div class="api-reference">
-        <p>This implementation is based on the <a href="https://developer.lovense.com/docs/standard-solutions/standard-api.html" target="_blank">Official Lovense Standard API Documentation</a>.</p>
-    </div>
-
     <!-- Quick Start -->
     <div class="test-section">
         <h3>1. Quick Start</h3>
@@ -23,7 +18,19 @@
             <button onclick="searchToy()" class="btn btn-primary">Search Toy</button>
             <button onclick="getToyName()" class="btn btn-primary">Get Toy Name</button>
         </div>
-        <div id="searchResponse" class="data-box">Response will appear here...</div>
+        <div class="api-test-results">
+            <div class="request-box">
+                <h4>Request:</h4>
+                <div class="request-url">URL: https://127-0-0-1.lovense.club:30010/command</div>
+                <div class="timestamp" id="searchRequestTime">Timestamp: -</div>
+                <div id="searchRequest">Request will appear here...</div>
+            </div>
+            <div class="response-box">
+                <h4>Response:</h4>
+                <div class="timestamp" id="searchResponseTime">Timestamp: -</div>
+                <div id="searchResponse">Response will appear here...</div>
+            </div>
+        </div>
     </div>
 
     <!-- API Testing -->
@@ -36,6 +43,7 @@
                     <input type="text" id="toyId" class="form-control" placeholder="e.g., ff922f7fd345">
                 </div>
                 <button onclick="testFunction()" class="btn btn-primary">Test Function</button>
+                <button onclick="resetAllActions()" class="btn btn-secondary">Reset All</button>
             </div>
             
             <!-- Add back the action sliders -->
@@ -119,7 +127,19 @@
                     <input type="number" id="pauseTime" class="form-control" placeholder="e.g., 4 seconds">
                 </div>
             </div>
-            <div id="commandResponse" class="data-box">Response will appear here...</div>
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Request:</h4>
+                    <div class="request-url">URL: https://127-0-0-1.lovense.club:30010/command</div>
+                    <div class="timestamp" id="commandRequestTime">Timestamp: -</div>
+                    <div id="commandRequest">Request will appear here...</div>
+                </div>
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div class="timestamp" id="commandResponseTime">Timestamp: -</div>
+                    <div id="commandResponse">Response will appear here...</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -136,43 +156,77 @@
 // Add the same JavaScript functions from standard-api.handlebars, 
 // but modify them to work with PC remote specifics
 
+// Helper function to get formatted timestamp
+function getFormattedTimestamp() {
+    const now = new Date();
+    return now.toLocaleTimeString('en-US', { 
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        fractionalSecondDigits: 3
+    });
+}
+
 async function searchToy() {
+    const searchRequest = document.getElementById('searchRequest');
     const searchResponse = document.getElementById('searchResponse');
+    const searchRequestTime = document.getElementById('searchRequestTime');
+    const searchResponseTime = document.getElementById('searchResponseTime');
+    const requestData = {
+        command: "GetToys"
+    };
+    
+    // Update request timestamp and display
+    searchRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    searchRequest.innerHTML = JSON.stringify(requestData, null, 2);
+    
     try {
-        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', {
-            command: "GetToys"
-        }, {
+        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', requestData, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
         
-        // Format and display the response
+        // Update response timestamp and display
+        searchResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
         searchResponse.innerHTML = JSON.stringify(response.data, null, 2);
-        
-        // Optional: Add success styling
         searchResponse.style.color = '#28a745';
     } catch (error) {
-        // Display error message
+        // Update response timestamp and error display
+        searchResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
         searchResponse.innerHTML = `Error: ${error.message}\n\nPlease make sure:\n1. Lovense Remote PC is running\n2. "Allow Control" is enabled in Settings`;
         searchResponse.style.color = '#dc3545';
     }
 }
 
 async function getToyName() {
+    const searchRequest = document.getElementById('searchRequest');
     const searchResponse = document.getElementById('searchResponse');
+    const searchRequestTime = document.getElementById('searchRequestTime');
+    const searchResponseTime = document.getElementById('searchResponseTime');
+    const requestData = {
+        command: "GetToyName"
+    };
+    
+    // Update request timestamp and display
+    searchRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    searchRequest.innerHTML = JSON.stringify(requestData, null, 2);
+    
     try {
-        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', {
-            command: "GetToyName"
-        }, {
+        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', requestData, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
         
+        // Update response timestamp and display
+        searchResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
         searchResponse.innerHTML = JSON.stringify(response.data, null, 2);
         searchResponse.style.color = '#28a745';
     } catch (error) {
+        // Update response timestamp and error display
+        searchResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
         searchResponse.innerHTML = `Error: ${error.message}`;
         searchResponse.style.color = '#dc3545';
     }
@@ -208,7 +262,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Update the testFunction to handle multiple actions
 async function testFunction() {
+    const commandRequest = document.getElementById('commandRequest');
     const commandResponse = document.getElementById('commandResponse');
+    const commandRequestTime = document.getElementById('commandRequestTime');
+    const commandResponseTime = document.getElementById('commandResponseTime');
     const toyId = document.getElementById('toyId').value;
     const totalTime = document.getElementById('totalTime').value;
     const runningTime = document.getElementById('runningTime').value;
@@ -222,18 +279,16 @@ async function testFunction() {
         actionTypes.forEach(type => {
             const value = document.getElementById(type).value;
             if (value > 0) {
-                // Capitalize first letter for the action string
                 const actionName = type.charAt(0).toUpperCase() + type.slice(1);
                 actions.push(`${actionName}:${value}`);
             }
         });
 
-        // Only proceed if there are actions to send
         if (actions.length === 0) {
             throw new Error('Please set at least one action value above 0');
         }
 
-        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', {
+        const requestData = {
             command: "Function",
             action: actions.join(','),
             timeSec: parseInt(totalTime),
@@ -241,15 +296,25 @@ async function testFunction() {
             loopPauseSec: parseInt(pauseTime),
             toy: toyId,
             apiVer: 1
-        }, {
+        };
+
+        // Update request timestamp and display
+        commandRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        commandRequest.innerHTML = JSON.stringify(requestData, null, 2);
+
+        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', requestData, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
         
+        // Update response timestamp and display
+        commandResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
         commandResponse.innerHTML = JSON.stringify(response.data, null, 2);
         commandResponse.style.color = '#28a745';
     } catch (error) {
+        // Update response timestamp and error display
+        commandResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
         commandResponse.innerHTML = `Error: ${error.message}`;
         commandResponse.style.color = '#dc3545';
     }
@@ -326,6 +391,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Add the reset function
+function resetAllActions() {
+    const actionTypes = ['vibrate', 'rotate', 'pump', 'thrusting', 'fingering', 'suction', 'depth', 'stroke', 'all'];
+    
+    actionTypes.forEach(type => {
+        const slider = document.getElementById(type);
+        const numberInput = slider.nextElementSibling;
+        
+        slider.value = 0;
+        numberInput.value = 0;
+    });
+}
 </script>
 
 <style>
@@ -817,43 +895,53 @@ select.form-control {
     margin-top: 10px;
 }
 
-.api-reference {
-    background: #f8f9fa;
-    border-left: 4px solid #3498db;
-    padding: 1rem;
-    margin-bottom: 2rem;
-    border-radius: 0 4px 4px 0;
+.btn-secondary {
+    background: #6c757d;
+    color: white;
 }
 
-.api-reference p {
-    margin: 0;
-    font-size: 0.95rem;
-    color: #2c3e50;
-}
-
-.api-reference a {
-    color: #3498db;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.api-reference a:hover {
-    text-decoration: underline;
+.btn-secondary:hover {
+    background: #5a6268;
 }
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
-    .api-reference {
-        background: #2d2d2d;
-        border-left-color: #3498db;
+    .btn-secondary {
+        background: #495057;
     }
-
-    .api-reference p {
-        color: #fff;
+    
+    .btn-secondary:hover {
+        background: #373b3e;
     }
+}
 
-    .api-reference a {
-        color: #5dade2;
+/* Add these styles to your existing CSS */
+.request-url {
+    font-family: monospace;
+    color: #0066cc;
+    margin-bottom: 8px;
+    padding: 4px 0;
+    font-size: 0.9em;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .request-url {
+        color: #66b3ff;
+    }
+}
+
+.timestamp {
+    font-family: monospace;
+    color: #666;
+    font-size: 0.85em;
+    margin-bottom: 8px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .timestamp {
+        color: #999;
     }
 }
 </style> 
