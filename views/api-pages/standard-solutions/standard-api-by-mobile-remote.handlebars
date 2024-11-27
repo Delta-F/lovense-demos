@@ -35,30 +35,24 @@
         <h3>2. Game Mode Connection</h3>
         <div class="game-setup">
             <p class="info-text">Go to Discover -> Game Mode -> Turn on the "Enable LAN" switch -> input IP and Port</p>
-            <p class="info-text">Default IP: 192.168.31.32, Port: 30010</p>
             <div class="game-mode-inputs">
-                <input type="text" id="localIp" placeholder="Enter Local IP" class="form-control" value="192.168.31.32">
-                <input type="text" id="port" placeholder="Enter Port" class="form-control" value="30010">
+                <input type="text" id="localIp" placeholder="Enter Local IP" class="form-control">
+                <input type="text" id="port" placeholder="Enter Port" class="form-control">
                 <button onclick="connectGameMode()" class="btn btn-primary">Connect</button>
             </div>
-            <div class="request-json compact">
-                <p class="info-text">Request JSON:</p>
-                <pre class="data-box">
-{
-    "command": "GetToys"
-}
-URL: https://192.168.31.32:30010/command</pre>
-            </div>
-            <div id="gameModeStatus" class="data-box">Not connected</div>
+            <div id="gameModeRequest" class="data-box">Request will appear here...</div>
+            <div id="gameModeResponse" class="data-box">Response will appear here...</div>
         </div>
     </div>
 
     <!-- Toy Management -->
     <div class="test-section">
-        <h3>3. Toy Management</h3>
+        <h3>3. Get Toy Information</h3>
         <button onclick="getToys()" class="btn btn-primary">Get Toys</button>
         <button onclick="getToyNames()" class="btn btn-primary">Get Toy Names</button>
-        <div id="toyList" class="data-box"></div>
+        
+        <div id="getToyRequest" class="data-box">Request will appear here...</div>
+        <div id="getToyResponse" class="data-box">Response will appear here...</div>
     </div>
 
     <!-- Command Testing -->
@@ -224,6 +218,39 @@ async function getQRCode() {
     }
 }
 
+function formatRequestResponse(elementId, url = '', requestBody = '', responseData = '', error = null) {
+    const now = new Date().toISOString();
+    const container = document.getElementById(elementId);
+    
+    let html = `<div class="request-section">
+        <div class="section-header">Request (${now})</div>
+        <div class="section-url">URL: ${url}</div>
+        <div class="section-body">`;
+    
+    if (requestBody) {
+        html += `${JSON.stringify(requestBody, null, 2)}`;
+    } else {
+        html += 'Request will appear here...';
+    }
+    
+    html += `</div></div>
+    <div class="response-section">
+        <div class="section-header">Response (${now})</div>
+        <div class="section-body">`;
+    
+    if (responseData) {
+        html += `${JSON.stringify(responseData, null, 2)}`;
+    } else if (error) {
+        html += `<span class="error-text">Error: ${error}</span>`;
+    } else {
+        html += 'Response will appear here...';
+    }
+    
+    html += '</div></div>';
+    
+    container.innerHTML = html;
+}
+
 async function getToys() {
     try {
         const isGameMode = document.getElementById('gameSection').style.display !== 'none';
@@ -237,21 +264,33 @@ async function getToys() {
             }
             apiUrl = `https://${localIp}:${port}/command`;
         } else {
-            apiUrl = 'https://127-0-0-1.lovense.club:30010/command';
+            const callbackResponse = await axios.get(`${API_BASE}/lovense/callback/latest`);
+            if (!callbackResponse.data || !callbackResponse.data.domain || !callbackResponse.data.httpsPort) {
+                throw new Error('No connection data available. Please scan QR code first.');
+            }
+            
+            const { domain, httpsPort } = callbackResponse.data;
+            apiUrl = `https://${domain}:${httpsPort}/command`;
         }
 
-        const response = await axios.post(apiUrl, {
+        const requestBody = {
             command: "GetToys"
-        }, {
+        };
+
+        // Display request
+        document.getElementById('getToyRequest').innerHTML = `Request URL: ${apiUrl}\n\nRequest Body:\n${JSON.stringify(requestBody, null, 2)}`;
+
+        const response = await axios.post(apiUrl, requestBody, {
             headers: {
                 'Content-Type': 'application/json',
                 'X-platform': 'deltatest'
             }
         });
         
-        document.getElementById('toyList').innerHTML = JSON.stringify(response.data, null, 2);
+        // Display response
+        document.getElementById('getToyResponse').innerHTML = `Response:\n${JSON.stringify(response.data, null, 2)}`;
     } catch (error) {
-        document.getElementById('toyList').innerHTML = 'Failed to get toys: ' + error.message;
+        document.getElementById('getToyResponse').innerHTML = `Error: ${error.message}`;
     }
 }
 
@@ -268,21 +307,33 @@ async function getToyNames() {
             }
             apiUrl = `https://${localIp}:${port}/command`;
         } else {
-            apiUrl = 'https://127-0-0-1.lovense.club:30010/command';
+            const callbackResponse = await axios.get(`${API_BASE}/lovense/callback/latest`);
+            if (!callbackResponse.data || !callbackResponse.data.domain || !callbackResponse.data.httpsPort) {
+                throw new Error('No connection data available. Please scan QR code first.');
+            }
+            
+            const { domain, httpsPort } = callbackResponse.data;
+            apiUrl = `https://${domain}:${httpsPort}/command`;
         }
 
-        const response = await axios.post(apiUrl, {
+        const requestBody = {
             command: "GetToyName"
-        }, {
+        };
+
+        // Display request
+        document.getElementById('getToyRequest').innerHTML = `Request URL: ${apiUrl}\n\nRequest Body:\n${JSON.stringify(requestBody, null, 2)}`;
+
+        const response = await axios.post(apiUrl, requestBody, {
             headers: {
                 'Content-Type': 'application/json',
                 'X-platform': 'deltatest'
             }
         });
         
-        document.getElementById('toyList').innerHTML = JSON.stringify(response.data, null, 2);
+        // Display response
+        document.getElementById('getToyResponse').innerHTML = `Response:\n${JSON.stringify(response.data, null, 2)}`;
     } catch (error) {
-        document.getElementById('toyList').innerHTML = 'Failed to get toy names: ' + error.message;
+        document.getElementById('getToyResponse').innerHTML = `Error: ${error.message}`;
     }
 }
 
@@ -336,29 +387,39 @@ async function connectGameMode() {
     const port = document.getElementById('port').value;
     
     if (!localIp || !port) {
-        document.getElementById('gameModeStatus').innerHTML = 'Please enter both IP and Port';
+        document.getElementById('gameModeResponse').innerHTML = 'Please enter both IP and Port';
         return;
     }
 
+    const apiUrl = `https://${localIp}:${port}/command`;
+    const requestBody = {
+        command: "GetToys"
+    };
+
     try {
-        const response = await axios.post(`https://${localIp}:${port}/command`, {
-            command: "GetToys"
-        }, {
+        // Display request details
+        const requestTimestamp = new Date().toISOString();
+        const requestDisplay = `Request (${requestTimestamp})\nURL: ${apiUrl}\n\n${JSON.stringify(requestBody, null, 2)}`;
+        document.getElementById('gameModeRequest').innerHTML = requestDisplay;
+
+        const response = await axios.post(apiUrl, requestBody, {
             headers: {
                 'Content-Type': 'application/json',
                 'X-platform': 'deltatest'
             }
         });
         
-        if (response.data) {
-            document.getElementById('gameModeStatus').innerHTML = 
-                `Connected successfully!\nToy info: ${JSON.stringify(response.data, null, 2)}`;
-            document.getElementById('gameModeStatus').style.color = '#28a745';
-        }
+        // Display response details
+        const responseTimestamp = new Date().toISOString();
+        const responseDisplay = `Response (${responseTimestamp})\n\n${JSON.stringify(response.data, null, 2)}`;
+        document.getElementById('gameModeResponse').innerHTML = responseDisplay;
+        document.getElementById('gameModeResponse').style.color = '#28a745';
     } catch (error) {
-        document.getElementById('gameModeStatus').innerHTML = 
-            `Connection failed: ${error.message}\n\nPlease make sure:\n1. IP and Port are correct\n2. Lovense Remote is running\n3. Game Mode is enabled`;
-        document.getElementById('gameModeStatus').style.color = '#dc3545';
+        // Display error details
+        const errorTimestamp = new Date().toISOString();
+        const errorDisplay = `Error (${errorTimestamp})\n\n${error.message}`;
+        document.getElementById('gameModeResponse').innerHTML = errorDisplay;
+        document.getElementById('gameModeResponse').style.color = '#dc3545';
     }
 }
 
@@ -396,13 +457,29 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 async function testFunction() {
-    const commandResponse = document.getElementById('commandResponse');
     const toyId = document.getElementById('toyId').value;
-    const totalTime = document.getElementById('totalTime').value;
-    const runningTime = document.getElementById('runningTime').value;
-    const pauseTime = document.getElementById('pauseTime').value;
+    let apiUrl;
 
     try {
+        const isGameMode = document.getElementById('gameSection').style.display !== 'none';
+        
+        if (isGameMode) {
+            const localIp = document.getElementById('localIp').value;
+            const port = document.getElementById('port').value;
+            if (!localIp || !port) {
+                throw new Error('Please enter both IP and Port for Game Mode');
+            }
+            apiUrl = `https://${localIp}:${port}/command`;
+        } else {
+            const callbackResponse = await axios.get(`${API_BASE}/lovense/callback/latest`);
+            if (!callbackResponse.data || !callbackResponse.data.domain || !callbackResponse.data.httpsPort) {
+                throw new Error('No connection data available. Please scan QR code first.');
+            }
+            
+            const { domain, httpsPort } = callbackResponse.data;
+            apiUrl = `https://${domain}:${httpsPort}/command`;
+        }
+
         const actions = [];
         const actionTypes = ['vibrate', 'rotate', 'pump', 'thrusting', 'fingering', 'suction', 'depth', 'stroke', 'all'];
         
@@ -418,40 +495,30 @@ async function testFunction() {
             throw new Error('Please set at least one action value above 0');
         }
 
-        let apiUrl;
-        const isGameMode = document.getElementById('gameSection').style.display !== 'none';
-        
-        if (isGameMode) {
-            const localIp = document.getElementById('localIp').value;
-            const port = document.getElementById('port').value;
-            if (!localIp || !port) {
-                throw new Error('Please enter both IP and Port for Game Mode');
-            }
-            apiUrl = `https://${localIp}:${port}/command`;
-        } else {
-            apiUrl = 'https://127-0-0-1.lovense.club:30010/command';
-        }
-
-        const response = await axios.post(apiUrl, {
+        const requestBody = {
             command: "Function",
             action: actions.join(','),
-            timeSec: parseInt(totalTime),
-            loopRunningSec: parseInt(runningTime),
-            loopPauseSec: parseInt(pauseTime),
+            timeSec: parseInt(document.getElementById('totalTime').value) || 0,
+            loopRunningSec: parseInt(document.getElementById('runningTime').value) || 0,
+            loopPauseSec: parseInt(document.getElementById('pauseTime').value) || 0,
             toy: toyId,
             apiVer: 1
-        }, {
+        };
+
+        // Show initial request
+        formatRequestResponse('commandResponse', apiUrl, requestBody);
+
+        const response = await axios.post(apiUrl, requestBody, {
             headers: {
                 'Content-Type': 'application/json',
                 'X-platform': 'deltatest'
             }
         });
         
-        commandResponse.innerHTML = JSON.stringify(response.data, null, 2);
-        commandResponse.style.color = '#28a745';
+        // Show response
+        formatRequestResponse('commandResponse', apiUrl, requestBody, response.data);
     } catch (error) {
-        commandResponse.innerHTML = `Error: ${error.message}`;
-        commandResponse.style.color = '#dc3545';
+        formatRequestResponse('commandResponse', apiUrl, null, null, error.message);
     }
 }
 </script>
@@ -755,6 +822,176 @@ h3 {
 
     .api-reference a {
         color: #5dade2;
+    }
+}
+
+/* Request/Response Box Styling */
+.request-section,
+.response-section {
+    margin-bottom: 1rem;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.section-header {
+    padding: 0.5rem 1rem;
+    background: #e9ecef;
+    font-weight: 500;
+    color: #495057;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.section-url {
+    padding: 0.5rem 1rem;
+    background: #fff;
+    border-bottom: 1px solid #dee2e6;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+.section-body {
+    padding: 1rem;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 0.9em;
+    background: #fff;
+}
+
+.error-text {
+    color: #dc3545;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .request-section,
+    .response-section {
+        background: #2d2d2d;
+        border-color: #404040;
+    }
+
+    .section-header {
+        background: #404040;
+        color: #fff;
+        border-bottom-color: #505050;
+    }
+
+    .section-url,
+    .section-body {
+        background: #2d2d2d;
+        color: #fff;
+        border-bottom-color: #404040;
+    }
+
+    .error-text {
+        color: #ff6b6b;
+    }
+}
+
+/* Toy Information Section Styling */
+.api-info {
+    margin-top: 1rem;
+}
+
+.request-info {
+    background: #f8f9fa;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.request-info h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+    font-size: 1rem;
+}
+
+.url-info, .body-info {
+    margin: 0.5rem 0;
+}
+
+.label {
+    font-weight: 500;
+    color: #666;
+    margin-right: 0.5rem;
+}
+
+.url {
+    font-family: monospace;
+    word-break: break-all;
+}
+
+.body-content {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+    font-family: monospace;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .request-info {
+        background: #2d2d2d;
+    }
+
+    .request-info h4 {
+        color: #fff;
+    }
+
+    .label {
+        color: #aaa;
+    }
+
+    .body-content {
+        background: #1a1a1a;
+        border-color: #404040;
+        color: #fff;
+    }
+}
+
+/* Response Monitor Styling */
+.response-monitor {
+    margin-top: 1.5rem;
+}
+
+.response-monitor h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+    font-size: 1rem;
+}
+
+.monitor-content {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 1rem;
+    min-height: 100px;
+    font-family: monospace;
+    white-space: pre-wrap;
+}
+
+.monitor-placeholder {
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .response-monitor h4 {
+        color: #fff;
+    }
+
+    .monitor-content {
+        background: #1a1a1a;
+        border-color: #404040;
+        color: #fff;
+    }
+
+    .monitor-placeholder {
+        color: #adb5bd;
     }
 }
 </style> 
