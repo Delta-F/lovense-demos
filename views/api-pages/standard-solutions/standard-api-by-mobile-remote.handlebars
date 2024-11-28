@@ -10,13 +10,37 @@
     <div class="test-section">
         <h3>1. Choose Connection Method</h3>
         <div class="connection-methods">
-            <button onclick="selectMethod('qr')" class="btn btn-method" id="qrMethod">QR Code Scan</button>
             <button onclick="selectMethod('game')" class="btn btn-method" id="gameMethod">Game Mode</button>
+            <button onclick="selectMethod('qr')" class="btn btn-method" id="qrMethod">QR Code Scan</button>
+        </div>
+    </div>
+
+    <!-- Game Mode Connection Section -->
+    <div id="gameSection" class="test-section connection-section">
+        <h3>2. Game Mode Connection</h3>
+        <div class="game-setup">
+            <p class="info-text">Go to Discover -> Game Mode -> Turn on the "Enable LAN" switch -> input IP and Port</p>
+            <div class="game-mode-inputs">
+                <input type="text" id="localIp" placeholder="Enter Local IP" class="form-control">
+                <div class="port-selection">
+                    <label class="port-option">
+                        <input type="radio" name="port" value="20010" checked>
+                        HTTP (Port: 20010)
+                    </label>
+                    <label class="port-option">
+                        <input type="radio" name="port" value="30010">
+                        HTTPS (Port: 30010)
+                    </label>
+                </div>
+                <button onclick="connectGameMode()" class="btn btn-primary">Connect</button>
+            </div>
+            <div id="gameModeRequest" class="data-box">Request will appear here...</div>
+            <div id="gameModeResponse" class="data-box">Response will appear here...</div>
         </div>
     </div>
 
     <!-- QR Code Connection Section -->
-    <div id="qrSection" class="test-section connection-section">
+    <div id="qrSection" class="test-section connection-section" style="display: none;">
         <h3>2. QR Code Connection</h3>
         <div class="qr-setup">
             <div class="token-input-group">
@@ -27,21 +51,6 @@
             <p class="info-text">Default Token: tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle</p>
             <p class="info-text">Callback URL: <span id="callbackUrl">/callback/latest</span></p>
             <div id="callbackData" class="data-box">Waiting for data...</div>
-        </div>
-    </div>
-
-    <!-- Game Mode Connection Section -->
-    <div id="gameSection" class="test-section connection-section" style="display: none;">
-        <h3>2. Game Mode Connection</h3>
-        <div class="game-setup">
-            <p class="info-text">Go to Discover -> Game Mode -> Turn on the "Enable LAN" switch -> input IP and Port</p>
-            <div class="game-mode-inputs">
-                <input type="text" id="localIp" placeholder="Enter Local IP" class="form-control">
-                <input type="text" id="port" placeholder="Enter Port" class="form-control">
-                <button onclick="connectGameMode()" class="btn btn-primary">Connect</button>
-            </div>
-            <div id="gameModeRequest" class="data-box">Request will appear here...</div>
-            <div id="gameModeResponse" class="data-box">Response will appear here...</div>
         </div>
     </div>
 
@@ -251,6 +260,20 @@ function formatRequestResponse(elementId, url = '', requestBody = '', responseDa
     container.innerHTML = html;
 }
 
+function getChineseTimestamp() {
+    const options = {
+        timeZone: 'Asia/Shanghai',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    };
+    return new Date().toLocaleString('zh-CN', options);
+}
+
 async function getToys() {
     try {
         const isGameMode = document.getElementById('gameSection').style.display !== 'none';
@@ -258,11 +281,12 @@ async function getToys() {
         
         if (isGameMode) {
             const localIp = document.getElementById('localIp').value;
-            const port = document.getElementById('port').value;
-            if (!localIp || !port) {
-                throw new Error('Please enter both IP and Port for Game Mode');
+            const port = getSelectedPort();
+            if (!localIp) {
+                throw new Error('Please enter IP address');
             }
-            apiUrl = `https://${localIp}:${port}/command`;
+            const protocol = port === '30010' ? 'https' : 'http';
+            apiUrl = `${protocol}://${localIp}:${port}/command`;
         } else {
             const callbackResponse = await axios.get(`${API_BASE}/lovense/callback/latest`);
             if (!callbackResponse.data || !callbackResponse.data.domain || !callbackResponse.data.httpsPort) {
@@ -277,20 +301,34 @@ async function getToys() {
             command: "GetToys"
         };
 
-        // Display request
-        document.getElementById('getToyRequest').innerHTML = `Request URL: ${apiUrl}\n\nRequest Body:\n${JSON.stringify(requestBody, null, 2)}`;
+        // Display request with timestamp
+        const requestTimestamp = getChineseTimestamp();
+        document.getElementById('getToyRequest').innerHTML = 
+            `Request (${requestTimestamp})\nURL: ${apiUrl}\n\nRequest Body:\n${JSON.stringify(requestBody, null, 2)}`;
 
-        const response = await axios.post(apiUrl, requestBody, {
-            headers: {
-                'Content-Type': 'application/json',
-                'X-platform': 'deltatest'
-            }
-        });
+        // Configure headers based on connection mode
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        // Add CORS headers for QR code mode
+        if (!isGameMode) {
+            headers['Access-Control-Allow-Origin'] = '*';
+            headers['Access-Control-Allow-Credentials'] = 'true';
+            headers['Access-Control-Allow-Methods'] = '*';
+            headers['Access-Control-Allow-Headers'] = 'Origin, X-Requested-With, Content-Type, Accept';
+        }
+
+        const response = await axios.post(apiUrl, requestBody, { headers });
         
-        // Display response
-        document.getElementById('getToyResponse').innerHTML = `Response:\n${JSON.stringify(response.data, null, 2)}`;
+        // Display response with timestamp
+        const responseTimestamp = getChineseTimestamp();
+        document.getElementById('getToyResponse').innerHTML = 
+            `Response (${responseTimestamp})\n${JSON.stringify(response.data, null, 2)}`;
     } catch (error) {
-        document.getElementById('getToyResponse').innerHTML = `Error: ${error.message}`;
+        const errorTimestamp = getChineseTimestamp();
+        document.getElementById('getToyResponse').innerHTML = 
+            `Error (${errorTimestamp})\n${error.message}`;
     }
 }
 
@@ -320,8 +358,10 @@ async function getToyNames() {
             command: "GetToyName"
         };
 
-        // Display request
-        document.getElementById('getToyRequest').innerHTML = `Request URL: ${apiUrl}\n\nRequest Body:\n${JSON.stringify(requestBody, null, 2)}`;
+        // Display request with timestamp
+        const requestTimestamp = getChineseTimestamp();
+        document.getElementById('getToyRequest').innerHTML = 
+            `Request (${requestTimestamp})\nURL: ${apiUrl}\n\nRequest Body:\n${JSON.stringify(requestBody, null, 2)}`;
 
         const response = await axios.post(apiUrl, requestBody, {
             headers: {
@@ -330,10 +370,14 @@ async function getToyNames() {
             }
         });
         
-        // Display response
-        document.getElementById('getToyResponse').innerHTML = `Response:\n${JSON.stringify(response.data, null, 2)}`;
+        // Display response with timestamp
+        const responseTimestamp = getChineseTimestamp();
+        document.getElementById('getToyResponse').innerHTML = 
+            `Response (${responseTimestamp})\n${JSON.stringify(response.data, null, 2)}`;
     } catch (error) {
-        document.getElementById('getToyResponse').innerHTML = `Error: ${error.message}`;
+        const errorTimestamp = getChineseTimestamp();
+        document.getElementById('getToyResponse').innerHTML = 
+            `Error (${errorTimestamp})\n${error.message}`;
     }
 }
 
@@ -350,13 +394,17 @@ function initCallbackListener() {
         try {
             const response = await axios.get(`${API_BASE}/lovense/callback/latest`);
             if (response.data) {
+                const timestamp = getChineseTimestamp();
                 document.getElementById('callbackData').innerHTML = 
+                    `<div class="timestamp">Last Updated: ${timestamp}</div>` +
                     `<pre>${JSON.stringify(response.data, null, 2)}</pre>`;
             }
         } catch (error) {
             console.error('Failed to fetch callback data:', error);
+            const timestamp = getChineseTimestamp();
             document.getElementById('callbackData').innerHTML = 
-                'Error fetching callback data: ' + error.message;
+                `<div class="timestamp">Last Updated: ${timestamp}</div>` +
+                `<div class="error-text">Error fetching callback data: ${error.message}</div>`;
         }
     }, 20000);
 }
@@ -382,23 +430,28 @@ function selectMethod(method) {
     }
 }
 
+function getSelectedPort() {
+    return document.querySelector('input[name="port"]:checked').value;
+}
+
 async function connectGameMode() {
     const localIp = document.getElementById('localIp').value;
-    const port = document.getElementById('port').value;
+    const port = getSelectedPort();
     
-    if (!localIp || !port) {
-        document.getElementById('gameModeResponse').innerHTML = 'Please enter both IP and Port';
+    if (!localIp) {
+        document.getElementById('gameModeResponse').innerHTML = 'Please enter IP address';
         return;
     }
 
-    const apiUrl = `https://${localIp}:${port}/command`;
+    const protocol = port === '30010' ? 'https' : 'http';
+    const apiUrl = `${protocol}://${localIp}:${port}/command`;
     const requestBody = {
         command: "GetToys"
     };
 
     try {
         // Display request details
-        const requestTimestamp = new Date().toISOString();
+        const requestTimestamp = getChineseTimestamp();
         const requestDisplay = `Request (${requestTimestamp})\nURL: ${apiUrl}\n\n${JSON.stringify(requestBody, null, 2)}`;
         document.getElementById('gameModeRequest').innerHTML = requestDisplay;
 
@@ -410,22 +463,22 @@ async function connectGameMode() {
         });
         
         // Display response details
-        const responseTimestamp = new Date().toISOString();
+        const responseTimestamp = getChineseTimestamp();
         const responseDisplay = `Response (${responseTimestamp})\n\n${JSON.stringify(response.data, null, 2)}`;
         document.getElementById('gameModeResponse').innerHTML = responseDisplay;
         document.getElementById('gameModeResponse').style.color = '#28a745';
     } catch (error) {
         // Display error details
-        const errorTimestamp = new Date().toISOString();
+        const errorTimestamp = getChineseTimestamp();
         const errorDisplay = `Error (${errorTimestamp})\n\n${error.message}`;
         document.getElementById('gameModeResponse').innerHTML = errorDisplay;
         document.getElementById('gameModeResponse').style.color = '#dc3545';
     }
 }
 
-// Initialize with QR method selected
+// Initialize with Game Mode selected
 document.addEventListener('DOMContentLoaded', () => {
-    selectMethod('qr');
+    selectMethod('game');
     initCallbackListener();
 });
 
@@ -465,11 +518,12 @@ async function testFunction() {
         
         if (isGameMode) {
             const localIp = document.getElementById('localIp').value;
-            const port = document.getElementById('port').value;
-            if (!localIp || !port) {
-                throw new Error('Please enter both IP and Port for Game Mode');
+            const port = getSelectedPort();
+            if (!localIp) {
+                throw new Error('Please enter IP address');
             }
-            apiUrl = `https://${localIp}:${port}/command`;
+            const protocol = port === '30010' ? 'https' : 'http';
+            apiUrl = `${protocol}://${localIp}:${port}/command`;
         } else {
             const callbackResponse = await axios.get(`${API_BASE}/lovense/callback/latest`);
             if (!callbackResponse.data || !callbackResponse.data.domain || !callbackResponse.data.httpsPort) {
@@ -992,6 +1046,47 @@ h3 {
 
     .monitor-placeholder {
         color: #adb5bd;
+    }
+}
+
+.timestamp {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .timestamp {
+        color: #aaa;
+    }
+}
+
+.port-selection {
+    display: flex;
+    gap: 20px;
+    margin: 10px 0;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.port-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.port-option input[type="radio"] {
+    margin: 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .port-selection {
+        background: #2d2d2d;
     }
 }
 </style> 
