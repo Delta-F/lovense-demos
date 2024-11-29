@@ -5,7 +5,7 @@ This repository contains demo implementations and examples for various Lovense A
 ## 🌐 Temporary Access
 
 The demo site is temporarily accessible at:
-https://thllpisofdki.sealosbja.site/
+https://thllpisofdki.sealosbja.site/ and only valid at work hours.
 
 ## 🚀 Available Solutions
 
@@ -37,11 +37,6 @@ https://thllpisofdki.sealosbja.site/
 ## 📝 Note
 
 All demonstrations are based on the official Lovense API documentation available at [developer.lovense.com](https://developer.lovense.com)
-
-## 🔗 Related Resources
-
-For official documentation and support, please visit:
-- [Lovense Developer Portal](https://developer.lovense.com)
 
 ## ⚠️ Disclaimer
 
