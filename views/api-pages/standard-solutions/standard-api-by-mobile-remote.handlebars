@@ -20,12 +20,12 @@
             <div id="gameSection" class="connection-section">
                 <div class="game-setup">
                     <p class="info-text">Go to Discover -> Game Mode -> Turn on the "Enable LAN" switch -> input IP and Port</p>
-                    <div class="game-mode-inputs">
-                        <div class="input-port-group">
-                            <input type="text" id="localIp" placeholder="Enter Local IP" class="form-control">
-                            <input type="text" id="httpPort" placeholder="http port eg.20010" class="form-control">
-                            <input type="text" id="httpsPort" placeholder="https port eg.30010" class="form-control">
-                        </div>
+                    <div class="game-mode-controls">
+                        <input type="text" id="localIp" placeholder="Enter Local IP" class="form-control">
+                        <input type="text" id="port" placeholder="Port (e.g. 20010 or 30010)" class="form-control">
+                        <label class="https-checkbox">
+                            <input type="checkbox" id="useHttps" checked> Use HTTPS
+                        </label>
                         <button onclick="connectGameMode()" class="btn btn-primary">Connect</button>
                     </div>
                     <div id="gameModeRequest" class="data-box">Request will appear here...</div>
@@ -60,7 +60,7 @@
 
     <!-- Command Testing -->
     <div class="test-section">
-        <h3>4. Test Commands</h3>
+        <h3>4. Test `Function` Commands</h3>
         <div class="function-test-container">
             <div class="button-container">
                 <div class="toy-id-group">
@@ -153,7 +153,7 @@
                 </div>
             </div>
 
-            <div class="api-test-results"></div>
+            <div class="api-test-results">
                 <div class="request-box">
                     <h4>Request:</h4>
                     <div id="requestUrl" class="request-url">URL: </div>
@@ -166,7 +166,98 @@
                     <div id="commandResponse">Response will appear here...</div>
                 </div>
             </div>
-            {{!-- <div id="commandResponse" class="data-box">Response will appear here...</div> --}}
+        </div>
+    </div>
+
+    <!-- Pattern Testing -->
+    <div class="test-section">
+        <h3>5. Test `Pattern` Commands</h3>
+
+        <!-- Header with Toy ID and Input Method Toggle -->
+        <div class="pattern-header">
+            <div class="toy-id-group">
+                <label>Toy ID:</label>
+                <input type="text" id="patternToyId" class="form-control" placeholder="e.g., ff922f7fd345">
+                <button onclick="testPattern()" class="btn btn-primary">Test Pattern</button>
+            </div>
+            <div class="input-method-toggle">
+                <button onclick="togglePatternInput('form')" class="btn btn-method" id="formMethod">Form Input</button>
+                <button onclick="togglePatternInput('json')" class="btn btn-method" id="jsonMethod">JSON Input</button>
+            </div>
+        </div>
+
+        <div class="pattern-test-container">
+            <!-- Form Input Section -->
+            <div id="formInputSection" class="pattern-inputs">
+                <div class="pattern-inputs">
+                    <div class="feature-group">
+                        <div class="feature-header">
+                            <label>Features:</label>
+                            <button onclick="toggleAllFeatures()" class="btn btn-sm btn-secondary" id="toggleFeaturesBtn">Check All</button>
+                        </div>
+                        <div class="feature-checkboxes">
+                            <label><input type="checkbox" value="v" checked> Vibrate</label>
+                            <label><input type="checkbox" value="r"> Rotate</label>
+                            <label><input type="checkbox" value="p"> Pump</label>
+                            <label><input type="checkbox" value="t"> Thrust</label>
+                            <label><input type="checkbox" value="f"> Finger</label>
+                            <label><input type="checkbox" value="s"> Suction</label>
+                            <label><input type="checkbox" value="d"> Depth</label>
+                        </div>
+                    </div>
+
+                    <div class="pattern-group">
+                        <label>Pattern Strength (semicolon-separated numbers 0-20):</label>
+                        <input type="text" id="patternStrength" class="form-control" 
+                               placeholder="e.g., 20;20;5;20;10" value="20;20;5;20;10">
+                    </div>
+
+                    <div class="interval-group">
+                        <label>Interval (milliseconds, min 100):</label>
+                        <input type="number" id="patternInterval" class="form-control" 
+                               min="100" value="1000">
+                    </div>
+
+                    <div class="time-group">
+                        <label>Total Time (seconds):</label>
+                        <input type="number" id="patternTime" class="form-control" 
+                               min="1" value="9">
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON Input Section -->
+            <div id="jsonInputSection" class="pattern-inputs" style="display: none;">
+                <div class="json-input-group">
+                    <label>Pattern Request JSON:</label>
+                    <textarea id="patternJson" class="form-control json-textarea" rows="8" 
+                        placeholder='Example:
+{
+    "command": "Pattern",
+    "rule": "V:1;F:v;S:1000#",
+    "strength": "20;20;5;20;10",
+    "timeSec": 9,
+    "toy": "ff922f7fd345",
+    "apiVer": 2
+}'></textarea>
+                </div>
+            </div>
+
+            <button onclick="testPattern()" class="btn btn-primary">Test Pattern</button>
+
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Request:</h4>
+                    <div id="patternRequestUrl" class="request-url">URL: </div>
+                    <div class="timestamp" id="patternRequestTime">Timestamp: -</div>
+                    <div id="patternRequest">Request will appear here...</div>
+                </div>
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div class="timestamp" id="patternResponseTime">Timestamp: -</div>
+                    <div id="patternResponse">Response will appear here...</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -231,39 +322,6 @@ async function getQRCode() {
     }
 }
 
-function formatRequestResponse(elementId, url = '', requestBody = '', responseData = '', error = null) {
-    const now = new Date().toISOString();
-    const container = document.getElementById(elementId);
-    
-    let html = `<div class="request-section">
-        <div class="section-header">Request (${now})</div>
-        <div class="section-url">URL: ${url}</div>
-        <div class="section-body">`;
-    
-    if (requestBody) {
-        html += `${JSON.stringify(requestBody, null, 2)}`;
-    } else {
-        html += 'Request will appear here...';
-    }
-    
-    html += `</div></div>
-    <div class="response-section">
-        <div class="section-header">Response (${now})</div>
-        <div class="section-body">`;
-    
-    if (responseData) {
-        html += `${JSON.stringify(responseData, null, 2)}`;
-    } else if (error) {
-        html += `<span class="error-text">Error: ${error}</span>`;
-    } else {
-        html += 'Response will appear here...';
-    }
-    
-    html += '</div></div>';
-    
-    container.innerHTML = html;
-}
-
 function getChineseTimestamp() {
     const options = {
         timeZone: 'Asia/Shanghai',
@@ -280,35 +338,12 @@ function getChineseTimestamp() {
 
 async function getToys() {
     try {
-        const isGameMode = document.getElementById('gameSection').style.display !== 'none';
-        let apiUrl;
+        const apiUrl = getCurrentApiUrl();
         
-        if (isGameMode) {
-            const localIp = document.getElementById('localIp').value;
-            if (!localIp) {
-                throw new Error('Please enter IP address');
-            }
-
-            const { port, protocol } = getPort();
-            if (!port) {
-                throw new Error('Please enter a port number');
-            }
-
-            apiUrl = `${protocol}://${localIp}:${port}/command`;
-        } else {
-            const callbackResponse = await axios.get(`${API_BASE}/lovense/callback/latest`);
-            if (!callbackResponse.data || !callbackResponse.data.domain || !callbackResponse.data.httpsPort) {
-                throw new Error('No connection data available. Please scan QR code first.');
-            }
-            
-            const { domain, httpsPort } = callbackResponse.data;
-            apiUrl = `https://${domain}:${httpsPort}/command`;
-        }
-
         const requestBody = {
             command: "GetToys"
         };
-
+        
         // Display request with timestamp
         const requestTimestamp = getChineseTimestamp();
         document.getElementById('getToyRequest').innerHTML = 
@@ -323,49 +358,32 @@ async function getToys() {
         const responseTimestamp = getChineseTimestamp();
         document.getElementById('getToyResponse').innerHTML = 
             `Response (${responseTimestamp})\n${JSON.stringify(response.data, null, 2)}`;
+        
+        return response.data;
     } catch (error) {
         const errorTimestamp = getChineseTimestamp();
         document.getElementById('getToyResponse').innerHTML = 
             `Error (${errorTimestamp})\n${error.message}`;
+        throw error;
     }
 }
 
 async function getToyNames() {
     try {
-        const isGameMode = document.getElementById('gameSection').style.display !== 'none';
-        let apiUrl;
+        const apiUrl = getCurrentApiUrl();
         
-        if (isGameMode) {
-            const localIp = document.getElementById('localIp').value;
-            const port = document.getElementById('port').value;
-            if (!localIp || !port) {
-                throw new Error('Please enter both IP and Port for Game Mode');
-            }
-            apiUrl = `https://${localIp}:${port}/command`;
-        } else {
-            const callbackResponse = await axios.get(`${API_BASE}/lovense/callback/latest`);
-            if (!callbackResponse.data || !callbackResponse.data.domain || !callbackResponse.data.httpsPort) {
-                throw new Error('No connection data available. Please scan QR code first.');
-            }
-            
-            const { domain, httpsPort } = callbackResponse.data;
-            apiUrl = `https://${domain}:${httpsPort}/command`;
-        }
-
         const requestBody = {
             command: "GetToyName"
         };
-
+        
         // Display request with timestamp
         const requestTimestamp = getChineseTimestamp();
         document.getElementById('getToyRequest').innerHTML = 
             `Request (${requestTimestamp})\nURL: ${apiUrl}\n\nRequest Body:\n${JSON.stringify(requestBody, null, 2)}`;
-
+        
         const response = await axios.post(apiUrl, requestBody, {
             headers: {
                 'Content-Type': 'application/json'
-                //,
-                //'X-platform': 'deltatest'
             }
         });
         
@@ -429,45 +447,22 @@ function selectMethod(method) {
     }
 }
 
-function getPort() {
-    const httpPort = document.getElementById('httpPort').value;
-    const httpsPort = document.getElementById('httpsPort').value;
-    
-    if (httpPort && httpsPort) {
-        throw new Error('Please enter only one port (either HTTP or HTTPS)');
-    }
-    
-    return {
-        port: httpPort || httpsPort,
-        protocol: httpsPort ? 'https' : 'http'
-    };
-}
-
 async function connectGameMode() {
-    const localIp = document.getElementById('localIp').value;
+    const gameModeRequest = document.getElementById('gameModeRequest');
+    const gameModeResponse = document.getElementById('gameModeResponse');
     
-    if (!localIp) {
-        document.getElementById('gameModeResponse').innerHTML = 'Please enter IP address';
-        return;
-    }
-
     try {
-        const { port, protocol } = getPort();
-        if (!port) {
-            throw new Error('Please enter a port number');
-        }
-
-        const apiUrl = `${protocol}://${localIp}:${port}/command`;
-        const requestBody = {
+        const apiUrl = getApiUrl();
+        const requestData = {
             command: "GetToys"
         };
 
         // Display request details
         const requestTimestamp = getChineseTimestamp();
-        const requestDisplay = `Request (${requestTimestamp})\nURL: ${apiUrl}\n\n${JSON.stringify(requestBody, null, 2)}`;
-        document.getElementById('gameModeRequest').innerHTML = requestDisplay;
+        const requestDisplay = `Request (${requestTimestamp})\nURL: ${apiUrl}\n\n${JSON.stringify(requestData, null, 2)}`;
+        gameModeRequest.innerHTML = requestDisplay;
 
-        const response = await axios.post(apiUrl, requestBody, {
+        const response = await axios.post(apiUrl, requestData, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -476,14 +471,14 @@ async function connectGameMode() {
         // Display response details
         const responseTimestamp = getChineseTimestamp();
         const responseDisplay = `Response (${responseTimestamp})\n\n${JSON.stringify(response.data, null, 2)}`;
-        document.getElementById('gameModeResponse').innerHTML = responseDisplay;
-        document.getElementById('gameModeResponse').style.color = '#28a745';
+        gameModeResponse.innerHTML = responseDisplay;
+        gameModeResponse.style.color = '#28a745';
     } catch (error) {
         // Display error details
         const errorTimestamp = getChineseTimestamp();
         const errorDisplay = `Error (${errorTimestamp})\n\n${error.message}`;
-        document.getElementById('gameModeResponse').innerHTML = errorDisplay;
-        document.getElementById('gameModeResponse').style.color = '#dc3545';
+        gameModeResponse.innerHTML = errorDisplay;
+        gameModeResponse.style.color = '#dc3545';
     }
 }
 
@@ -492,6 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
     selectMethod('game');
     initCallbackListener();
 });
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // Get all sliders
@@ -519,27 +515,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Add input validation for ports
-    const httpPortInput = document.getElementById('httpPort');
-    const httpsPortInput = document.getElementById('httpsPort');
-
-    // When HTTP port is entered, clear HTTPS port
-    httpPortInput.addEventListener('input', function() {
-        if (this.value) {
-            httpsPortInput.value = '';
-            httpsPortInput.disabled = true;
-        } else {
-            httpsPortInput.disabled = false;
+    // Add port input validation
+    const portInput = document.getElementById('port');
+    portInput.addEventListener('input', function() {
+        const value = this.value;
+        const httpsCheckbox = document.getElementById('useHttps');
+        
+        // If port is 20010, force HTTP
+        if (value === '20010') {
+            httpsCheckbox.checked = false;
         }
-    });
-
-    // When HTTPS port is entered, clear HTTP port
-    httpsPortInput.addEventListener('input', function() {
-        if (this.value) {
-            httpPortInput.value = '';
-            httpPortInput.disabled = true;
-        } else {
-            httpPortInput.disabled = false;
+        // If port is 30010, force HTTPS
+        else if (value === '30010') {
+            httpsCheckbox.checked = true;
         }
     });
 });
@@ -554,35 +542,11 @@ async function testFunction() {
     const runningTime = document.getElementById('runningTime').value || 5;  // Default to 5 if blank
     const pauseTime = document.getElementById('pauseTime').value || 0;  // Default to 0 if blank
     
-    let apiUrl;
-
     try {
-        const isGameMode = document.getElementById('gameSection').style.display !== 'none';
-        
-        if (isGameMode) {
-            const localIp = document.getElementById('localIp').value;
-            if (!localIp) {
-                throw new Error('Please enter IP address');
-            }
-
-            const { port, protocol } = getPort();
-            if (!port) {
-                throw new Error('Please enter a port number');
-            }
-
-            apiUrl = `${protocol}://${localIp}:${port}/command`;
-        } else {
-            const callbackResponse = await axios.get(`${API_BASE}/lovense/callback/latest`);
-            if (!callbackResponse.data || !callbackResponse.data.domain || !callbackResponse.data.httpsPort) {
-                throw new Error('No connection data available. Please scan QR code first.');
-            }
-            
-            const { domain, httpsPort } = callbackResponse.data;
-            apiUrl = `https://${domain}:${httpsPort}/command`;
-        }
-
+        const apiUrl = getCurrentApiUrl();
         document.getElementById('requestUrl').innerHTML = `URL: ${apiUrl}`;
 
+        // Collect all non-zero actions
         const actions = [];
         const actionTypes = ['vibrate', 'rotate', 'pump', 'thrusting', 'fingering', 'suction', 'depth', 'stroke', 'all'];
         
@@ -629,6 +593,156 @@ async function testFunction() {
         commandResponse.style.color = '#dc3545';
     }
 }
+
+function togglePatternInput(method) {
+    // Update button styles
+    document.querySelectorAll('.input-method-toggle .btn-method').forEach(btn => {
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+    });
+    
+    const selectedBtn = document.getElementById(`${method}Method`);
+    selectedBtn.classList.add('btn-primary');
+    selectedBtn.classList.remove('btn-secondary');
+
+    // Show/hide appropriate sections
+    document.getElementById('formInputSection').style.display = method === 'form' ? 'flex' : 'none';
+    document.getElementById('jsonInputSection').style.display = method === 'json' ? 'flex' : 'none';
+}
+
+async function testPattern() {
+    const patternRequest = document.getElementById('patternRequest');
+    const patternResponse = document.getElementById('patternResponse');
+    const patternRequestTime = document.getElementById('patternRequestTime');
+    const patternResponseTime = document.getElementById('patternResponseTime');
+    
+    try {
+        let requestData;
+        const isJsonMode = document.getElementById('jsonInputSection').style.display !== 'none';
+        
+        if (isJsonMode) {
+            // Parse JSON input
+            const jsonInput = document.getElementById('patternJson').value;
+            try {
+                requestData = JSON.parse(jsonInput);
+            } catch (e) {
+                throw new Error('Invalid JSON format: ' + e.message);
+            }
+        } else {
+            // Get form input values
+            const toyId = document.getElementById('patternToyId').value;
+            const selectedFeatures = Array.from(document.querySelectorAll('.feature-checkboxes input:checked'))
+                .map(cb => cb.value)
+                .join(',');
+            const interval = document.getElementById('patternInterval').value;
+            const strength = document.getElementById('patternStrength').value;
+            const timeSec = document.getElementById('patternTime').value;
+
+            // Validate inputs
+            if (!toyId) throw new Error('Please enter a Toy ID');
+            if (!selectedFeatures) throw new Error('Please select at least one feature');
+            if (interval < 100) throw new Error('Interval must be at least 100ms');
+            if (!strength.match(/^\d+(?:;\d+)*$/)) {
+                throw new Error('Pattern strength must be semicolon-separated numbers');
+            }
+
+            // Build request data
+            requestData = {
+                command: "Pattern",
+                rule: `V:1;F:${selectedFeatures};S:${interval}#`,
+                strength: strength,
+                timeSec: parseInt(timeSec),
+                toy: toyId,
+                apiVer: 2
+            };
+        }
+
+        const apiUrl = getCurrentApiUrl();
+        document.getElementById('patternRequestUrl').innerHTML = `URL: ${apiUrl}`;
+        
+        // Update request timestamp and display
+        patternRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        patternRequest.innerHTML = JSON.stringify(requestData, null, 2);
+
+        const response = await axios.post(apiUrl, requestData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Update response timestamp and display
+        patternResponseTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        patternResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        patternResponse.style.color = '#28a745';
+    } catch (error) {
+        // Update response timestamp and error display
+        patternResponseTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        patternResponse.innerHTML = `Error: ${error.message}`;
+        patternResponse.style.color = '#dc3545';
+    }
+}
+
+function toggleAllFeatures() {
+    const checkboxes = document.querySelectorAll('.feature-checkboxes input[type="checkbox"]');
+    const button = document.getElementById('toggleFeaturesBtn');
+    const isAnyUnchecked = Array.from(checkboxes).some(cb => !cb.checked);
+    
+    checkboxes.forEach(cb => {
+        cb.checked = isAnyUnchecked;
+    });
+    
+    button.textContent = isAnyUnchecked ? 'Uncheck All' : 'Check All';
+}
+
+function getApiUrl() {
+    const localIp = document.getElementById('localIp').value;
+    const port = document.getElementById('port').value;
+    const useHttps = document.getElementById('useHttps').checked;
+    
+    if (!localIp || !port) {
+        throw new Error('Please enter both IP and Port');
+    }
+
+    // Determine protocol and domain based on port and checkbox
+    let protocol, domain;
+    
+    if (port === '20010') {
+        protocol = 'http';
+        domain = localIp;
+    } else if (port === '30010') {
+        protocol = 'https';
+        domain = `${localIp.replace(/\./g, '-')}.lovense.club`;
+    } else {
+        protocol = useHttps ? 'https' : 'http';
+        domain = protocol === 'https' ? 
+            `${localIp.replace(/\./g, '-')}.lovense.club` : 
+            localIp;
+    }
+
+    return `${protocol}://${domain}:${port}/command`;
+}
+
+// Add this helper function to determine the API URL consistently
+function getCurrentApiUrl() {
+    const isGameMode = document.getElementById('gameSection').style.display !== 'none';
+    
+    if (isGameMode) {
+        return getApiUrl(); // Use the game mode URL format
+    } else {
+        // For QR code mode, get URL from callback
+        const callbackData = document.getElementById('callbackData').textContent;
+        try {
+            const data = JSON.parse(callbackData);
+            if (!data || !data.domain || !data.httpsPort) {
+                throw new Error('No connection data available. Please scan QR code first.');
+            }
+            return `https://${data.domain}:${data.httpsPort}/command`;
+        } catch (error) {
+            throw new Error('Invalid callback data. Please scan QR code first.');
+        }
+    }
+}
+
 </script>
 
 <style>
@@ -745,6 +859,7 @@ h3 {
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 .input-port-group .form-control {
@@ -978,176 +1093,6 @@ h3 {
     }
 }
 
-/* Request/Response Box Styling */
-.request-section,
-.response-section {
-    margin-bottom: 1rem;
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.section-header {
-    padding: 0.5rem 1rem;
-    background: #e9ecef;
-    font-weight: 500;
-    color: #495057;
-    border-bottom: 1px solid #dee2e6;
-}
-
-.section-url {
-    padding: 0.5rem 1rem;
-    background: #fff;
-    border-bottom: 1px solid #dee2e6;
-    font-family: monospace;
-    font-size: 0.9em;
-}
-
-.section-body {
-    padding: 1rem;
-    white-space: pre-wrap;
-    font-family: monospace;
-    font-size: 0.9em;
-    background: #fff;
-}
-
-.error-text {
-    color: #dc3545;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .request-section,
-    .response-section {
-        background: #2d2d2d;
-        border-color: #404040;
-    }
-
-    .section-header {
-        background: #404040;
-        color: #fff;
-        border-bottom-color: #505050;
-    }
-
-    .section-url,
-    .section-body {
-        background: #2d2d2d;
-        color: #fff;
-        border-bottom-color: #404040;
-    }
-
-    .error-text {
-        color: #ff6b6b;
-    }
-}
-
-/* Toy Information Section Styling */
-.api-info {
-    margin-top: 1rem;
-}
-
-.request-info {
-    background: #f8f9fa;
-    border-radius: 4px;
-    padding: 1rem;
-    margin: 1rem 0;
-}
-
-.request-info h4 {
-    margin: 0 0 0.5rem 0;
-    color: #2c3e50;
-    font-size: 1rem;
-}
-
-.url-info, .body-info {
-    margin: 0.5rem 0;
-}
-
-.label {
-    font-weight: 500;
-    color: #666;
-    margin-right: 0.5rem;
-}
-
-.url {
-    font-family: monospace;
-    word-break: break-all;
-}
-
-.body-content {
-    background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 0.5rem;
-    margin: 0.5rem 0;
-    font-family: monospace;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .request-info {
-        background: #2d2d2d;
-    }
-
-    .request-info h4 {
-        color: #fff;
-    }
-
-    .label {
-        color: #aaa;
-    }
-
-    .body-content {
-        background: #1a1a1a;
-        border-color: #404040;
-        color: #fff;
-    }
-}
-
-/* Response Monitor Styling */
-.response-monitor {
-    margin-top: 1.5rem;
-}
-
-.response-monitor h4 {
-    margin: 0 0 0.5rem 0;
-    color: #2c3e50;
-    font-size: 1rem;
-}
-
-.monitor-content {
-    background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 1rem;
-    min-height: 100px;
-    font-family: monospace;
-    white-space: pre-wrap;
-}
-
-.monitor-placeholder {
-    color: #6c757d;
-    font-style: italic;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    .response-monitor h4 {
-        color: #fff;
-    }
-
-    .monitor-content {
-        background: #1a1a1a;
-        border-color: #404040;
-        color: #fff;
-    }
-
-    .monitor-placeholder {
-        color: #adb5bd;
-    }
-}
-
 .request-url {
     font-family: monospace;
     color: #0066cc;
@@ -1201,5 +1146,165 @@ h3 {
     .connection-section {
         border-top-color: #404040;
     }
+}
+
+.pattern-test-container {
+    padding: 20px;
+}
+
+.pattern-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.feature-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.feature-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.feature-checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.feature-checkboxes input[type="checkbox"] {
+    margin: 0;
+}
+
+.pattern-group, .interval-group, .time-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .feature-checkboxes label {
+        color: #fff;
+    }
+}
+
+.input-method-toggle {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.json-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.json-textarea {
+    font-family: monospace;
+    min-height: 200px;
+    white-space: pre;
+    resize: vertical;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .json-textarea {
+        background: #1a1a1a;
+        color: #fff;
+        border-color: #404040;
+    }
+}
+
+.pattern-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.pattern-header .toy-id-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pattern-header .toy-id-group label {
+    white-space: nowrap;
+    min-width: 60px;
+}
+
+.pattern-header .toy-id-group .form-control {
+    max-width: 200px;
+    margin: 0;
+}
+
+.pattern-header .toy-id-group .btn {
+    margin: 0;
+    white-space: nowrap;
+}
+
+.input-method-toggle {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.feature-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.feature-header .btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+}
+
+.https-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    color: #666;
+    cursor: pointer;
+}
+
+.https-checkbox input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .https-checkbox {
+        color: #aaa;
+    }
+}
+
+.game-mode-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.game-mode-controls .form-control {
+    margin: 0;
+    min-width: 120px;
+}
+
+.game-mode-controls .btn {
+    margin: 0;
+    white-space: nowrap;
 }
 </style> 

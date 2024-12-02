@@ -179,7 +179,6 @@
     <!-- Pattern Commands section -->
     <div class="test-section">
         <h3>5. Test `Pattern` Commands</h3>
-        <p class="test-description">Send custom patterns to toys. Leave features blank to make all functions respond.</p>
         
         <div class="function-test-container">
             <div class="button-container">
@@ -190,30 +189,73 @@
                 <button onclick="testPattern()" class="btn btn-primary">Test Pattern</button>
             </div>
 
-            <div class="pattern-inputs">
-                <div class="input-group">
-                    <label>Features:</label>
-                    <input type="text" id="features" class="form-control" 
-                           placeholder="e.g., v,r,p,t,f,s,d or leave blank for all">
-                    <div class="hint">v:vibrate, r:rotate, p:pump, t:thrust, f:finger, s:suction, d:depth</div>
-                </div>
-                
-                <div class="input-group">
-                    <label>Interval (ms):</label>
-                    <input type="number" id="interval" class="form-control" 
-                           placeholder="≥100" min="100" value="1000">
-                </div>
+            <!-- Add tabs for different input methods -->
+            <div class="pattern-tabs">
+                <button class="tab-btn active" onclick="switchPatternTab('form')">Form Input</button>
+                <button class="tab-btn" onclick="switchPatternTab('json')">JSON Input</button>
+            </div>
 
-                <div class="input-group">
-                    <label>Strength Pattern:</label>
-                    <input type="text" id="strengthPattern" class="form-control" 
-                           placeholder="e.g., 20;20;5;20;10">
-                </div>
+            <!-- Form Input Tab -->
+            <div id="pattern-form-tab" class="tab-content active">
+                <div class="pattern-inputs">
+                    <div class="features-group">
+                        <div class="input-group">
+                            <label>Features:</label>
+                            <button onclick="toggleAllFeatures()" class="btn btn-sm btn-secondary" id="toggleFeaturesBtn">Check All</button>
+                        </div>
+                        <div class="feature-checkboxes">
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="v" data-feature="vibrate"> Vibrate
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="r" data-feature="rotate"> Rotate
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="p" data-feature="pump"> Pump
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="t" data-feature="thrust"> Thrust
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="f" data-feature="finger"> Finger
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="s" data-feature="suction"> Suction
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="d" data-feature="depth"> Depth
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Interval (ms):</label>
+                        <input type="number" id="interval" class="form-control" 
+                               placeholder="≥100" min="100" value="1000">
+                    </div>
 
-                <div class="input-group">
-                    <label>Duration (sec):</label>
-                    <input type="number" id="patternDuration" class="form-control" 
-                           placeholder="Duration in seconds" value="9">
+                    <div class="input-group">
+                        <label>Strength Pattern:</label>
+                        <input type="text" id="strengthPattern" class="form-control" 
+                               placeholder="e.g., 20;20;5;20;10">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Duration (sec):</label>
+                        <input type="number" id="patternDuration" class="form-control" 
+                               placeholder="Duration in seconds" value="9">
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON Input Tab -->
+            <div id="pattern-json-tab" class="tab-content">
+                <div class="pattern-inputs">
+                    <div class="input-group">
+                        <label>Request JSON:</label>
+                        <textarea id="patternJson" class="form-control json-input" rows="8" 
+                                placeholder='{"command":"Pattern","rule":"V:1;F:v,r;S:1000#","strength":"20;10;5","timeSec":9,"apiVer":2}'></textarea>
+                    </div>
                 </div>
             </div>
 
@@ -683,56 +725,106 @@ function resetAllActions() {
     });
 }
 
+function switchPatternTab(tabName) {
+    // Remove active class from all tabs and content
+    document.querySelectorAll('.pattern-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    // Add active class to selected tab and content
+    document.querySelector(`.pattern-tabs .tab-btn[onclick*="${tabName}"]`).classList.add('active');
+    document.getElementById(`pattern-${tabName}-tab`).classList.add('active');
+}
+
+function toggleAllFeatures() {
+    const checkboxes = document.querySelectorAll('.feature-checkboxes input[type="checkbox"]');
+    const button = document.getElementById('toggleFeaturesBtn');
+    const isAnyUnchecked = Array.from(checkboxes).some(cb => !cb.checked);
+    
+    checkboxes.forEach(cb => {
+        cb.checked = isAnyUnchecked;
+    });
+    
+    button.textContent = isAnyUnchecked ? 'Uncheck All' : 'Check All';
+}
+
+function getSelectedFeatures() {
+    const checkboxes = document.querySelectorAll('.features-checkboxes input[type="checkbox"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value).join(',');
+}
+
 async function testPattern() {
     const patternRequest = document.getElementById('patternRequest');
     const patternResponse = document.getElementById('patternResponse');
     const patternRequestTime = document.getElementById('patternRequestTime');
     const patternResponseTime = document.getElementById('patternResponseTime');
     
-    const toyId = document.getElementById('patternToyId').value;
-    const features = document.getElementById('features').value;
-    const interval = document.getElementById('interval').value;
-    const strengthPattern = document.getElementById('strengthPattern').value;
-    const duration = document.getElementById('patternDuration').value;
-
+    // Check which tab is active
+    const isJsonTab = document.getElementById('pattern-json-tab').classList.contains('active');
+    
+    let requestData;
     try {
-        // Construct the rule string
-        const featurePart = features ? `F:${features}` : 'F:';
-        const rule = `V:1;${featurePart};S:${interval}#`;
+        if (isJsonTab) {
+            const jsonInput = document.getElementById('patternJson').value;
+            requestData = JSON.parse(jsonInput);
+        } else {
+            const toyId = document.getElementById('patternToyId').value;
+            const features = getSelectedFeatures();
+            const interval = document.getElementById('interval').value;
+            const strengthPattern = document.getElementById('strengthPattern').value;
+            const duration = document.getElementById('patternDuration').value;
 
-        const requestData = {
-            command: "Pattern",
-            rule: rule,
-            strength: strengthPattern,
-            timeSec: parseInt(duration),
-            apiVer: 2
-        };
+            // Construct the rule string
+            const featurePart = features ? `F:${features}` : 'F:';
+            const rule = `V:1;${featurePart};S:${interval}#`;
 
-        // Add toy ID if provided
-        if (toyId) {
-            requestData.toy = toyId;
+            requestData = {
+                command: "Pattern",
+                rule: rule,
+                strength: strengthPattern,
+                timeSec: parseInt(duration),
+                apiVer: 2
+            };
+
+            if (toyId) {
+                requestData.toy = toyId;
+            }
         }
 
-        // Update request timestamp and display
-        patternRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-        patternRequest.innerHTML = JSON.stringify(requestData, null, 2);
-
-        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', requestData, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        // Update response timestamp and display
-        patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-        patternResponse.innerHTML = JSON.stringify(response.data, null, 2);
-        patternResponse.style.color = '#28a745';
+        await sendPatternRequest(requestData);
     } catch (error) {
-        // Update response timestamp and error display
-        patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-        patternResponse.innerHTML = `Error: ${error.message}`;
-        patternResponse.style.color = '#dc3545';
+        handlePatternError(error);
     }
+}
+
+async function sendPatternRequest(requestData) {
+    const patternRequest = document.getElementById('patternRequest');
+    const patternResponse = document.getElementById('patternResponse');
+    const patternRequestTime = document.getElementById('patternRequestTime');
+    const patternResponseTime = document.getElementById('patternResponseTime');
+
+    // Update request timestamp and display
+    patternRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternRequest.innerHTML = JSON.stringify(requestData, null, 2);
+
+    const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', requestData, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    
+    // Update response timestamp and display
+    patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternResponse.innerHTML = JSON.stringify(response.data, null, 2);
+    patternResponse.style.color = '#28a745';
+}
+
+function handlePatternError(error) {
+    const patternResponse = document.getElementById('patternResponse');
+    const patternResponseTime = document.getElementById('patternResponseTime');
+    
+    patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternResponse.innerHTML = `Error: ${error.message}`;
+    patternResponse.style.color = '#dc3545';
 }
 </script>
 
@@ -1165,5 +1257,27 @@ select.form-control {
 
 .toy-id-container .toy-id-group input {
     max-width: 300px;
+}
+
+.features-group {
+    margin-bottom: 15px;
+}
+
+.btn-xs {
+    padding: 2px 6px;
+    font-size: 0.75em;
+    line-height: 1.2;
+}
+
+.feature-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-left: 120px;
+}
+
+.input-group .btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
 }
 </style> 
