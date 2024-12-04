@@ -40,8 +40,8 @@
                 <div class="input-group">
                     <input type="text" id="auth-token" class="form-control" placeholder="Enter AuthToken From Last Step">
                     <input type="text" id="platform" class="form-control" placeholder="Enter Platform Name">
-                    <button type="button" class="btn btn-primary" onclick="initializeSDK()">Initialize SDK</button>
-                    <button type="button" class="stop-button" onclick="stopSDK()">Stop SDK</button>
+                    <button type="button" class="primary-button" onclick="initializeSDK()">Initialize SDK</button>
+                    <button type="button" class="secondary-button" onclick="stopSDK()">Stop SDK</button>
                 </div>
             </form>
             <div class="api-test-results">
@@ -78,7 +78,7 @@
             <div class="livestream-container">
                 <div class="livestream-display">
                     <div class="video-placeholder">
-                        <span>Any User Scenarios</span>
+                        <span>e.g. Livestream Display</span>
                     </div>
                     <div class="generate-qr-button">
                         <button type="button" class="lovense-button" onclick="generateQRCode()">
@@ -89,12 +89,10 @@
                 </div>
                 <div class="qr-section">
                     <div class="qr-title">Scan QR Code</div>
-                    <div class="qr-options">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="use-default-qr" checked>
-                            Use default QR code for test
-                        </label>
-                    </div>
+                    <label class="qr-default">
+                        <input type="checkbox" id="use-default-qr">
+                        <span>Use default QR code for test</span>
+                    </label>
                     <div id="qr-display" class="qr-container">
                         <div class="qr-placeholder">
                             <span>QR Code will appear here</span>
@@ -102,6 +100,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="api-test-results">
                 <div class="request-box">
                     <h4>Request:</h4>
@@ -115,6 +114,7 @@
                     <div id="qrResponse">Response will appear here...</div>
                 </div>
             </div>
+            
         </section>
 
         <section id="toy-info">
@@ -129,7 +129,7 @@
             <div class="api-test-results">
                 <div class="request-box">
                     <h4>Request:</h4>
-                    <div class="request-url">URL: Search Toys</div>
+                    <div class="request-url">URL: </div>
                     <div class="timestamp" id="toyRequestTime">Timestamp: -</div>
                     <div id="toyRequest">Request will appear here...</div>
                 </div>
@@ -142,39 +142,82 @@
         </section>
 
         <section id="toy-commands">
-            <h2>5. Test Toy Commands</h2>
-            <form id="command-form" class="test-form">
-                <div class="command-inputs">
-                    <div class="form-group">
-                        <label>Vibrate (0-20):</label>
-                        <input type="number" id="vibrate" class="form-control" min="0" max="20">
+            <div class="test-section">
+                <h3>5. Test Function Commands</h3>
+                <div class="function-test-container">
+                    <div class="button-container">
+                        <div class="toy-id-group">
+                            <label>Toy ID:</label>
+                            <input type="text" id="toyId" class="form-control" placeholder="e.g., ff922f7fd345">
+                        </div>
+                        <div class="toy-id-group">
+                            <label>Time (seconds):</label>
+                            <input type="number" id="time" class="form-control" placeholder="seconds, set 5 if blank">
+                        </div>
+
+                        <button onclick="testFunction()" class="primary-button">Test Function</button>
+                        <button onclick="resetAllActions()" class="secondary-button">Reset All</button>
                     </div>
-                    <div class="form-group">
-                        <label>Rotate (0-20):</label>
-                        <input type="number" id="rotate" class="form-control" min="0" max="20">
-                    </div>
-                    <div class="form-group">
-                        <label>Pump (0-3):</label>
-                        <input type="number" id="pump" class="form-control" min="0" max="3">
-                    </div>
-                    <div class="form-group">
-                        <label>Time (seconds):</label>
-                        <input type="number" id="time" class="form-control" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Toy ID (optional):</label>
-                        <input type="text" id="toy-id" class="form-control">
+                    
+                    <!-- Action sliders -->
+                    <div class="action-sliders">
+                        <div class="action-group">
+                            <label>Vibrate (0-20):</label>
+                            <div class="strength-control">
+                                <input type="range" id="vibrate" class="strength-slider" min="0" max="20" value="0">
+                                <input type="number" class="form-control strength-number" data-slider="vibrate" min="0" max="20" value="0">
+                            </div>
+                        </div>
+                        <div class="action-group">
+                            <label>Rotate (0-20):</label>
+                            <div class="strength-control">
+                                <input type="range" id="rotate" class="strength-slider" min="0" max="20" value="0">
+                                <input type="number" class="form-control strength-number" data-slider="rotate" min="0" max="20" value="0">
+                            </div>
+                        </div>
+                        <div class="action-group">
+                            <label>Pump (0-3):</label>
+                            <div class="strength-control">
+                                <input type="range" id="pump" class="strength-slider" min="0" max="3" value="0">
+                                <input type="number" class="form-control strength-number" data-slider="pump" min="0" max="3" value="0">
+                            </div>
+                        </div>
+                        <div class="action-group">
+                            <label>Thrusting (0-20):</label>
+                            <div class="strength-control">
+                                <input type="range" id="thrusting" class="strength-slider" min="0" max="20" value="0">
+                                <input type="number" class="form-control strength-number" data-slider="thrusting" min="0" max="20" value="0">
+                            </div>
+                        </div>
+                        <div class="action-group">
+                            <label>Fingering (0-20):</label>
+                            <div class="strength-control">
+                                <input type="range" id="fingering" class="strength-slider" min="0" max="20" value="0">
+                                <input type="number" class="form-control strength-number" data-slider="fingering" min="0" max="20" value="0">
+                            </div>
+                        </div>
+                        <div class="action-group">
+                            <label>Suction (0-20):</label>
+                            <div class="strength-control">
+                                <input type="range" id="suction" class="strength-slider" min="0" max="20" value="0">
+                                <input type="number" class="form-control strength-number" data-slider="suction" min="0" max="20" value="0">
+                            </div>
+                        </div>
+                        <div class="action-group">
+                            <label>Depth (0-3):</label>
+                            <div class="strength-control">
+                                <input type="range" id="depth" class="strength-slider" min="0" max="3" value="0">
+                                <input type="number" class="form-control strength-number" data-slider="depth" min="0" max="3" value="0">
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="button-group">
-                    <button type="submit" class="primary-button">Send Command</button>
-                    <button type="button" id="stop-toy" class="secondary-button">Stop Toy</button>
-                </div>
-            </form>
+            </div>
+
             <div class="api-test-results">
                 <div class="request-box">
                     <h4>Request:</h4>
-                    <div class="request-url">URL: Toy Commands</div>
+                    <div class="request-url">URL: basicSDKInstance.sendToyCommand()</div>
                     <div class="timestamp" id="cmdRequestTime">Timestamp: -</div>
                     <div id="cmdRequest">Request will appear here...</div>
                 </div>
@@ -188,44 +231,112 @@
 
         <section id="pattern-commands">
             <h2>6. Test Pattern Commands</h2>
-            <form id="pattern-form" class="test-form">
-                <div class="pattern-inputs">
-                    <div class="form-group">
-                        <label>Pattern Strength:</label>
-                        <input type="text" id="pattern" class="form-control" placeholder="e.g., 6;8;10;12;14;20;20;20;16;14" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Time (seconds):</label>
-                        <input type="number" id="pattern-time" class="form-control" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Interval (ms):</label>
-                        <input type="number" id="interval" class="form-control" min="100" value="150">
-                    </div>
-                    <div class="checkbox-group">
-                        <label><input type="checkbox" id="vibrate-pattern" checked> Vibrate</label>
-                        <label><input type="checkbox" id="rotate-pattern"> Rotate</label>
-                        <label><input type="checkbox" id="pump-pattern"> Pump</label>
-                    </div>
+            <div class="function-test-container">
+                <!-- Pattern Type Selection -->
+                <div class="pattern-type-selection">
+                    <button onclick="switchPatternType('custom')" class="pattern-switch-btn active" id="customPatternBtn">Test Custom Pattern</button>
+                    <button onclick="switchPatternType('preset')" class="pattern-switch-btn" id="presetPatternBtn">Test Preset Pattern</button>
+                    <button onclick="switchPatternType('stop')" class="pattern-switch-btn" id="stopPatternBtn">Stop Toy Action</button>
                 </div>
-                <div class="button-group">
-                    <button type="submit" class="primary-button">Send Pattern</button>
-                </div>
-            </form>
 
-            <div class="preset-commands">
-                <h3>Preset Patterns</h3>
-                <button onclick="sendPreset('pulse')" class="primary-button">Pulse</button>
-                <button onclick="sendPreset('wave')" class="primary-button">Wave</button>
-                <button onclick="sendPreset('fireworks')" class="primary-button">Fireworks</button>
-                <button onclick="sendPreset('earthquake')" class="primary-button">Earthquake</button>
-                <button id="stop-pattern" class="secondary-button">Stop Pattern</button>
+                <!-- Custom Pattern Container -->
+                <div id="customPatternContainer" class="pattern-container">
+                    <div class="pattern-inputs">
+                        <div class="pattern-params">
+                            <div class="toy-id-group">
+                                <label>Toy ID:</label>
+                                <input type="text" id="pattern-toy-id" class="form-control" placeholder="e.g., ff922f7fd345">
+                            </div>
+                            <div class="toy-id-group">
+                                <label>Time (seconds):</label>
+                                <input type="number" id="pattern-time" class="form-control" value="60">
+                            </div>
+                            <div class="toy-id-group">
+                                <label>Interval (ms):</label>
+                                <input type="number" id="pattern-interval" class="form-control" value="150">
+                            </div>
+                        </div>
+                        <div class="toy-id-group pattern-strength-input">
+                            <label>Pattern Strength:</label>
+                            <input type="text" id="pattern-strength" class="form-control" 
+                                placeholder="e.g., 6;8;10;12;14;20;20;20;16;14">
+                        </div>
+                    </div>
+                    <div class="pattern-actions">
+                        <div class="action-checkboxes">
+                            <label class="action-checkbox">
+                                <input type="checkbox" id="pattern-vibrate" checked>
+                                <span>Vibrate</span>
+                            </label>
+                            <label class="action-checkbox">
+                                <input type="checkbox" id="pattern-rotate">
+                                <span>Rotate</span>
+                            </label>
+                            <label class="action-checkbox">
+                                <input type="checkbox" id="pattern-pump">
+                                <span>Pump</span>
+                            </label>
+                            <label class="action-checkbox">
+                                <input type="checkbox" id="pattern-thrusting">
+                                <span>Thrusting</span>
+                            </label>
+                            <label class="action-checkbox">
+                                <input type="checkbox" id="pattern-fingering">
+                                <span>Fingering</span>
+                            </label>
+                            <label class="action-checkbox">
+                                <input type="checkbox" id="pattern-suction">
+                                <span>Suction</span>
+                            </label>
+                        </div>
+                        <div class="pattern-button">
+                            <button onclick="testPattern()" class="primary-button">Test Pattern</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preset Pattern Container -->
+                <div id="presetPatternContainer" class="pattern-container" style="display: none;">
+                    <div class="pattern-inputs">
+                        <div class="pattern-params">
+                            <div class="toy-id-group">
+                                <label>Toy ID:</label>
+                                <input type="text" id="preset-toy-id" class="form-control" placeholder="e.g., ff922f7fd345">
+                            </div>
+                            <div class="toy-id-group">
+                                <label>Time (seconds):</label>
+                                <input type="number" id="preset-time" class="form-control" placeholder="0 for indefinite">
+                            </div>
+                        </div>
+                        <div class="preset-buttons">
+                            <button onclick="testPresetPattern('pulse')" class="primary-button">Pulse</button>
+                            <button onclick="testPresetPattern('wave')" class="primary-button">Wave</button>
+                            <button onclick="testPresetPattern('fireworks')" class="primary-button">Fireworks</button>
+                            <button onclick="testPresetPattern('earthquake')" class="primary-button">Earthquake</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stop Toy Action Container -->
+                <div id="stopActionContainer" class="pattern-container" style="display: none;">
+                    <div class="pattern-inputs">
+                        <div class="pattern-params">
+                            <div class="toy-id-group">
+                                <label>Toy ID:</label>
+                                <input type="text" id="stop-toy-id" class="form-control" placeholder="e.g., ff922f7fd345">
+                            </div>
+                        </div>
+                        <div class="preset-buttons">
+                            <button onclick="stopToyAction()" class="primary-button">Stop Toy Action</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="api-test-results">
                 <div class="request-box">
                     <h4>Request:</h4>
-                    <div class="request-url">URL: Pattern Commands</div>
+                    <div class="request-url">URL: basicSdkInstance.sendPatternCommand()</div>
                     <div class="timestamp" id="patternRequestTime">Timestamp: -</div>
                     <div id="patternRequest">Request will appear here...</div>
                 </div>
@@ -286,14 +397,6 @@ h1, h2 {
     padding-bottom: 10px;
 }
 
-.code-example {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    margin: 15px 0;
-}
-
 .test-form {
     margin: 20px 0;
 }
@@ -337,25 +440,20 @@ h1, h2 {
 .primary-button:hover {
     background: #007bff;
 }
-.btn-primary { background: #007bff; color: white; }
-.stop-button { background: #6c757d; color: white; }
 
 .secondary-button {
   background: #6c757d;
-  color: white;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s;
 }
 
 .secondary-button:hover {
     background: #5a6268;
-}
-
-.response-area {
-    margin-top: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
-    min-height: 50px;
 }
 
 .livestream-container {
@@ -367,7 +465,7 @@ h1, h2 {
 
 .livestream-display {
     flex: 1;
-    background: #000;
+    background: #000000a7;
     border-radius: 10px;
     overflow: hidden;
     position: relative;
@@ -437,7 +535,22 @@ h1, h2 {
     font-size: 1.1em;
     font-weight: 500;
     color: #333;
-    padding: 20px;
+    padding: 10px;
+}
+
+.qr-default {
+    font-size: 0.9em;
+    color: #666;
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.qr-default input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
 }
 
 .qr-container {
@@ -510,105 +623,13 @@ h1, h2 {
 }
 
 .form-control {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-bottom: 0;
-    font-size: 1rem;
-    height: 45px;
-    box-sizing: border-box;
-}
-
-.api-display {
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.request-area, .response-area {
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
-    padding: 15px;
-}
-
-.request-area h4, .response-area h4 {
-    margin-top: 0;
-    color: #555;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.code-block {
-    background: #fff;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    padding: 10px;
-    margin: 0;
-    min-height: 100px;
-    white-space: pre-wrap;
-    font-family: monospace;
-}
-
-button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.3s;
-}
-
-button:hover {
-    background: #0056b3;
-}
-
-button.secondary-button {
-    background: #6c757d;
-}
-
-button.secondary-button:hover {
-    background: #5a6268;
-}
-
-#command-form button,
-#pattern-form button,
-.preset-commands button {
-    margin-right: 10px;
-}
-
-.preset-commands {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.command-inputs, .pattern-inputs {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-.checkbox-group {
-    display: flex;
-    gap: 20px;
-    margin-top: 10px;
-}
-
-.checkbox-group label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.checkbox-group input[type="checkbox"] {
-    width: auto;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  background: #fff;
 }
 
 .request-url {
@@ -639,7 +660,7 @@ button.secondary-button:hover {
     display: flex;
     gap: 20px;
     margin: 20px 0;
-    padding: 15px;
+    padding: 5px;
     background: #f8f9fa;
     border-radius: 8px;
     border-left: 4px solid #3498db;
@@ -679,23 +700,192 @@ button.secondary-button:hover {
     text-decoration: underline;
 }
 
-.qr-options {
-    margin-bottom: 10px;
-    text-align: left;
-    width: 100%;
-    padding: 0 20px;
+/* Function Test Styles */
+.function-test-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
 }
 
-.checkbox-label {
+.button-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.toy-id-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.toy-id-group label {
+    min-width: 60px;
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+}
+
+.toy-id-group .form-control {
+    max-width: 200px;
+}
+
+.action-group {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.action-group label {
+    min-width: 120px;
+    font-size: 0.9em;
+    margin-right: 10px;
+    color: #666;
+}
+
+.strength-control {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 8px;
+}
+
+.strength-slider {
+    flex: 1;
+    margin: 0;
+    min-width: 200px;
+}
+
+.strength-number {
+    width: 45px !important;
+    padding: 2px 4px !important;
+    margin: 0 !important;
+    text-align: center;
+    font-size: 0.85em !important;
+}
+
+.time-inputs {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.time-inputs .input-group {
+    flex: 1;
+    max-width: 200px;
+}
+
+.action-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 10px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.action-checkbox {
     display: flex;
     align-items: center;
     gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.action-checkbox input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.action-checkbox span {
     color: #666;
     font-size: 0.9em;
 }
 
-.checkbox-label input[type="checkbox"] {
+.pattern-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.pattern-strength-input {
+    width: 100%;
+}
+
+.pattern-strength-input input {
+    max-width: none !important;
+}
+
+.pattern-strength-input label {
+    min-width: 130px;
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+}
+
+.pattern-params {
+    display: flex;
+    gap: 15px;
+}
+
+.pattern-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.action-checkboxes {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
     margin: 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.pattern-button {
+    padding: 15px 0;
+}
+
+.pattern-type-selection {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.pattern-switch-btn {
+    padding: 10px 20px;
+    border: 1px solid #007bff;
+    background: transparent;
+    color: #007bff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.pattern-switch-btn.active {
+    background: #007bff;
+    color: white;
+}
+
+.preset-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pattern-container {
+    transition: all 0.3s ease;
 }
 </style> 
 
@@ -712,11 +902,6 @@ button.secondary-button:hover {
             second: '2-digit',
             fractionalSecondDigits: 3
         });
-    }
-
-    // Add this helper function at the start of the script
-    function isSuccessResponse(data) {
-        return data.code === 200 || data.message === 'Success';
     }
 
     // Auth Token Handler
@@ -751,7 +936,7 @@ button.secondary-button:hover {
             // Update response timestamp and display
             searchResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
             searchResponse.innerHTML = JSON.stringify(data, null, 2);
-            searchResponse.style.color = isSuccessResponse(data) ? '#28a745' : '#dc3545';
+            searchResponse.style.color = '#28a745';
 
             // If successful, update the auth token input
             if (data.token) {
@@ -772,7 +957,7 @@ button.secondary-button:hover {
         const initRequestTime = document.getElementById('initRequestTime');
         const initResponseTime = document.getElementById('initResponseTime');
 
-        const authToken = document.getElementById('auth-token').value.trim() || 'VkCNidfMTJFJB0lz7l98keLwTmXJcf+gTFBPc+biH8peKdSu2nkmQmKELsSF2CVX';
+        const authToken = document.getElementById('auth-token').value.trim() || 'VkCNidfMTJFJB0lz7l98keLwTmXJcf+gTFBPc+biH8q3YrV5OoA0osXIaDfQe9CP';
         const platform = document.getElementById('platform').value.trim() || 'deltatest';
         const uid = document.getElementById('user-id').value.trim() || '8888';
 
@@ -891,7 +1076,41 @@ button.secondary-button:hover {
             return;
         }
 
-        // Rest of the existing code...
+        // For non-default QR code
+        // Update request timestamp and display
+        qrRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        document.querySelector('#qr-code .request-url').innerHTML = 'URL: basicSdkInstance.getQrcode()';
+        qrRequest.innerHTML = JSON.stringify({ action: 'get QR code' }, null, 2);
+
+        try {
+            const startTime = Date.now();
+            const qrCode = await basicSdkInstance.getQrcode();
+            
+            // Update response timestamp and display
+            qrResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            qrResponse.innerHTML = JSON.stringify(qrCode, null, 2);
+            
+            // If we got a QR code URL, display it as an image
+            if (qrCode && qrCode.qrcodeUrl) {
+                qrDisplay.innerHTML = `<img src="${qrCode.qrcodeUrl}" alt="QR Code">`;
+                qrResponse.style.color = '#28a745';
+            } else {
+                qrDisplay.innerHTML = `
+                    <div class="qr-placeholder">
+                        <span class="error">Failed to generate QR code</span>
+                    </div>`;
+                qrResponse.style.color = '#dc3545';
+            }
+        } catch (error) {
+            // Update response timestamp and error display
+            qrResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            qrResponse.innerHTML = JSON.stringify({ code: 400, message: error.message }, null, 2);
+            qrResponse.style.color = '#dc3545';
+            qrDisplay.innerHTML = `
+                <div class="qr-placeholder">
+                    <span class="error">Error: ${error.message}</span>
+                </div>`;
+        }
     }
 
     // Update Toy Info Handlers
@@ -906,6 +1125,7 @@ button.secondary-button:hover {
         // Update request timestamp and display
         const requestData = { action: 'get app status' };
         toyRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        document.querySelector('#toy-info .request-url').innerHTML = 'URL: basicSdkInstance.getAppStatus()';
         toyRequest.innerHTML = JSON.stringify(requestData, null, 2);
 
         try {
@@ -931,9 +1151,9 @@ button.secondary-button:hover {
         const toyRequestTime = document.getElementById('toyRequestTime');
         const toyResponseTime = document.getElementById('toyResponseTime');
         
-        // Update request timestamp and display
         const requestData = { action: 'get toys list' };
         toyRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        document.querySelector('#toy-info .request-url').innerHTML = 'URL: basicSdkInstance.getToys()';
         toyRequest.innerHTML = JSON.stringify(requestData, null, 2);
 
         try {
@@ -961,6 +1181,7 @@ button.secondary-button:hover {
         
         const requestData = { action: 'get online toys' };
         toyRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        document.querySelector('#toy-info .request-url').innerHTML = 'URL: basicSdkInstance.getOnlineToys()';
         toyRequest.innerHTML = JSON.stringify(requestData, null, 2);
 
         try {
@@ -987,6 +1208,7 @@ button.secondary-button:hover {
         
         const requestData = { action: 'check toy online status' };
         toyRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        document.querySelector('#toy-info .request-url').innerHTML = 'URL: basicSdkInstance.checkToyOnline()';
         toyRequest.innerHTML = JSON.stringify(requestData, null, 2);
 
         try {
@@ -1013,6 +1235,7 @@ button.secondary-button:hover {
         
         const requestData = { action: 'get device info' };
         toyRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        document.querySelector('#toy-info .request-url').innerHTML = 'URL: basicSdkInstance.getDeviceInfo()';
         toyRequest.innerHTML = JSON.stringify(requestData, null, 2);
 
         try {
@@ -1028,99 +1251,6 @@ button.secondary-button:hover {
             toyResponse.style.color = '#dc3545';
         }
     }
-
-    // Update Command Handler
-    document.getElementById('command-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
-
-        const cmdRequest = document.getElementById('cmdRequest');
-        const cmdResponse = document.getElementById('cmdResponse');
-        const cmdRequestTime = document.getElementById('cmdRequestTime');
-        const cmdResponseTime = document.getElementById('cmdResponseTime');
-
-        const command = {
-            vibrate: parseInt(document.getElementById('vibrate').value) || 0,
-            rotate: parseInt(document.getElementById('rotate').value) || 0,
-            pump: parseInt(document.getElementById('pump').value) || 0,
-            time: parseInt(document.getElementById('time').value) || 1,
-            toyId: document.getElementById('toy-id').value.trim()
-        };
-
-        // Update request timestamp and display
-        cmdRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-        cmdRequest.innerHTML = JSON.stringify(command, null, 2);
-
-        try {
-            const startTime = Date.now();
-            const response = await basicSdkInstance.toyCommand(command);
-            
-            // Update response timestamp and display
-            cmdResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            cmdResponse.innerHTML = JSON.stringify(response, null, 2);
-            cmdResponse.style.color = isSuccessResponse(response) ? '#28a745' : '#dc3545';
-        } catch (error) {
-            cmdResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            cmdResponse.innerHTML = JSON.stringify({ code: 400, message: error.message }, null, 2);
-            cmdResponse.style.color = '#dc3545';
-        }
-    });
-
-    // Stop Toy Handler
-    document.getElementById('stop-toy').addEventListener('click', async () => {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
-        
-        document.getElementById('command-request').textContent = 
-            `[${new Date().toISOString()}] Stopping toy`;
-
-        try {
-            const startTime = Date.now();
-            const response = await basicSdkInstance.stopToy();
-            document.getElementById('command-response').textContent = 
-                `[${new Date().toISOString()}] (${Date.now() - startTime}ms) ${JSON.stringify(response)}`;
-        } catch (error) {
-            document.getElementById('command-response').textContent = 
-                `[${new Date().toISOString()}] Error: ${error.message}`;
-        }
-    });
-
-    // Update Pattern Handler
-    document.getElementById('pattern-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
-
-        const patternRequest = document.getElementById('patternRequest');
-        const patternResponse = document.getElementById('patternResponse');
-        const patternRequestTime = document.getElementById('patternRequestTime');
-        const patternResponseTime = document.getElementById('patternResponseTime');
-
-        const pattern = {
-            pattern: document.getElementById('pattern').value.split(';').map(Number),
-            time: parseInt(document.getElementById('pattern-time').value) || 1,
-            interval: parseInt(document.getElementById('interval').value) || 150,
-            vibrate: document.getElementById('vibrate-pattern').checked,
-            rotate: document.getElementById('rotate-pattern').checked,
-            pump: document.getElementById('pump-pattern').checked
-        };
-
-        // Update request timestamp and display
-        patternRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-        patternRequest.innerHTML = JSON.stringify(pattern, null, 2);
-
-        try {
-            const startTime = Date.now();
-            const response = await basicSdkInstance.patternCommand(pattern);
-            
-            // Update response timestamp and display
-            patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            patternResponse.innerHTML = JSON.stringify(response, null, 2);
-            patternResponse.style.color = isSuccessResponse(response) ? '#28a745' : '#dc3545';
-        } catch (error) {
-            patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            patternResponse.innerHTML = JSON.stringify({ code: 400, message: error.message }, null, 2);
-            patternResponse.style.color = '#dc3545';
-        }
-    });
 
     // Preset Pattern Handler
     async function sendPreset(type) {
@@ -1140,56 +1270,236 @@ button.secondary-button:hover {
         }
     }
 
-    // Stop Pattern Handler
-    document.getElementById('stop-pattern').addEventListener('click', async () => {
+    // Sync slider and number input values
+    document.querySelectorAll('.strength-slider').forEach(slider => {
+        slider.addEventListener('input', function() {
+            const numberId = this.id;
+            document.querySelector(`input[data-slider="${numberId}"]`).value = this.value;
+        });
+    });
+
+    document.querySelectorAll('.strength-number').forEach(number => {
+        number.addEventListener('input', function() {
+            const sliderId = this.dataset.slider;
+            document.getElementById(sliderId).value = this.value;
+        });
+    });
+
+    // Test Function Handler
+    async function testFunction() {
         if (!basicSdkInstance) return alert('Please initialize SDK first');
-        
-        document.getElementById('pattern-request').textContent = 
-            `[${new Date().toISOString()}] Stopping pattern`;
+
+        const cmdRequest = document.getElementById('cmdRequest');
+        const cmdResponse = document.getElementById('cmdResponse');
+        const cmdRequestTime = document.getElementById('cmdRequestTime');
+        const cmdResponseTime = document.getElementById('cmdResponseTime');
+
+        // Build command object only with non-zero values
+        const command = {
+            time: parseInt(document.getElementById('time').value) || 5
+        };
+
+        // Add toyId if provided
+        const toyId = document.getElementById('toyId').value.trim();
+        if (toyId) {
+            command.toyId = toyId;
+        }
+
+        // Update the actions array to remove 'stroke' and 'all'
+        const actions = [
+            'vibrate', 'rotate', 'pump', 'thrusting', 
+            'fingering', 'suction', 'depth'
+        ];
+
+        actions.forEach(action => {
+            const value = parseInt(document.getElementById(action).value) || 0;
+            if (value > 0) {
+                command[action] = value;
+            }
+        });
+
+        // Update request timestamp and display
+        cmdRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        cmdRequest.innerHTML = JSON.stringify(command, null, 2);
 
         try {
             const startTime = Date.now();
-            const response = await basicSdkInstance.stopPattern();
-            document.getElementById('pattern-response').textContent = 
-                `[${new Date().toISOString()}] (${Date.now() - startTime}ms) ${JSON.stringify(response)}`;
+            const response = await basicSdkInstance.sendToyCommand(command);
+            
+            // Update response timestamp and display
+            cmdResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            cmdResponse.innerHTML = JSON.stringify(response, null, 2);
+            cmdResponse.style.color = '#28a745';
         } catch (error) {
-            document.getElementById('pattern-response').textContent = 
-                `[${new Date().toISOString()}] Error: ${error.message}`;
+            cmdResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            cmdResponse.innerHTML = JSON.stringify({ code: 400, message: error.message }, null, 2);
+            cmdResponse.style.color = '#dc3545';
         }
-    });
+    }
 
-    // Livestream toy control handlers
-    document.querySelectorAll('.toy-button').forEach(button => {
-        button.addEventListener('click', async () => {
-            if (!basicSdkInstance) return alert('Please initialize SDK first');
+    // Update Reset All Actions
+    function resetAllActions() {
+        document.querySelectorAll('.strength-slider, .strength-number').forEach(input => {
+            input.value = 0;
+        });
+        document.getElementById('time').value = '';
+    }
 
-            const type = button.title.toLowerCase();
-            let command = {};
+    async function testPattern() {
+        if (!basicSdkInstance) return alert('Please initialize SDK first');
 
-            switch(type) {
-                case 'vibrator':
-                    command = { vibrate: 20, time: 1 };
-                    break;
-                case 'rotator':
-                    command = { rotate: 20, time: 1 };
-                    break;
-                case 'pump':
-                    command = { pump: 3, time: 1 };
-                    break;
-            }
+        const patternRequest = document.getElementById('patternRequest');
+        const patternResponse = document.getElementById('patternResponse');
+        const patternRequestTime = document.getElementById('patternRequestTime');
+        const patternResponseTime = document.getElementById('patternResponseTime');
 
-            document.getElementById('command-request').textContent = 
-                `[${new Date().toISOString()}] Sending livestream command ${JSON.stringify(command)}`;
+        // Build command object
+        const command = {
+            strength: document.getElementById('pattern-strength').value,
+            time: parseInt(document.getElementById('pattern-time').value) || 60,
+            interval: parseInt(document.getElementById('pattern-interval').value) || 150
+        };
 
-            try {
-                const startTime = Date.now();
-                const response = await basicSdkInstance.toyCommand(command);
-                document.getElementById('command-response').textContent = 
-                    `[${new Date().toISOString()}] (${Date.now() - startTime}ms) ${JSON.stringify(response)}`;
-            } catch (error) {
-                document.getElementById('command-response').textContent = 
-                    `[${new Date().toISOString()}] Error: ${error.message}`;
+        // Add toyId if provided
+        const toyId = document.getElementById('pattern-toy-id').value.trim();
+        if (toyId) {
+            command.toyId = toyId;
+        }
+
+        // Add actions if checked
+        const actions = ['vibrate', 'rotate', 'pump', 'thrusting', 'fingering', 'suction'];
+        actions.forEach(action => {
+            if (document.getElementById(`pattern-${action}`).checked) {
+                command[action] = true;
             }
         });
-    });
+
+        // Update request timestamp and display
+        document.querySelector('#pattern-commands .request-url').innerHTML = 'URL: basicSdkInstance.sendPatternCommand()';
+        patternRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        patternRequest.innerHTML = JSON.stringify(command, null, 2);
+
+        try {
+            const startTime = Date.now();
+            const response = await basicSdkInstance.sendPatternCommand(command);
+            
+            // Update response timestamp and display
+            patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            patternResponse.innerHTML = JSON.stringify(response, null, 2);
+            patternResponse.style.color = '#28a745';
+        } catch (error) {
+            patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            patternResponse.innerHTML = JSON.stringify({ code: 400, message: error.message }, null, 2);
+            patternResponse.style.color = '#dc3545';
+        }
+    }
+
+    function switchPatternType(type) {
+        const customContainer = document.getElementById('customPatternContainer');
+        const presetContainer = document.getElementById('presetPatternContainer');
+        const stopContainer = document.getElementById('stopActionContainer');
+        const customBtn = document.getElementById('customPatternBtn');
+        const presetBtn = document.getElementById('presetPatternBtn');
+        const stopBtn = document.getElementById('stopPatternBtn');
+
+        if (type === 'custom') {
+            customContainer.style.display = 'block';
+            presetContainer.style.display = 'none';
+            stopContainer.style.display = 'none';
+            customBtn.classList.add('active');
+            presetBtn.classList.remove('active');
+            stopBtn.classList.remove('active');
+        } else if (type === 'preset') {
+            customContainer.style.display = 'none';
+            presetContainer.style.display = 'block';
+            stopContainer.style.display = 'none';
+            customBtn.classList.remove('active');
+            presetBtn.classList.add('active');
+            stopBtn.classList.remove('active');
+        } else {
+            customContainer.style.display = 'none';
+            presetContainer.style.display = 'none';
+            stopContainer.style.display = 'block';
+            customBtn.classList.remove('active');
+            presetBtn.classList.remove('active');
+            stopBtn.classList.add('active');
+        }
+    }
+
+    async function testPresetPattern(presetName) {
+        if (!basicSdkInstance) return alert('Please initialize SDK first');
+
+        const patternRequest = document.getElementById('patternRequest');
+        const patternResponse = document.getElementById('patternResponse');
+        const patternRequestTime = document.getElementById('patternRequestTime');
+        const patternResponseTime = document.getElementById('patternResponseTime');
+
+        // Build command object
+        const command = {
+            name: presetName,
+            time: parseInt(document.getElementById('preset-time').value) || 0
+        };
+
+        // Add toyId if provided
+        const toyId = document.getElementById('preset-toy-id').value.trim();
+        if (toyId) {
+            command.toyId = toyId;
+        }
+
+        // Update request timestamp and display
+        patternRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        document.querySelector('#pattern-commands .request-url').innerHTML = 'URL: basicSdkInstance.sendPresetCommand()';
+        patternRequest.innerHTML = JSON.stringify(command, null, 2);
+
+        try {
+            const startTime = Date.now();
+            const response = await basicSdkInstance.sendPresetCommand(command);
+            
+            // Update response timestamp and display
+            patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            patternResponse.innerHTML = JSON.stringify(response, null, 2);
+            patternResponse.style.color = '#28a745';
+        } catch (error) {
+            patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            patternResponse.innerHTML = JSON.stringify({ code: 400, message: error.message }, null, 2);
+            patternResponse.style.color = '#dc3545';
+        }
+    }
+
+    async function stopToyAction() {
+        if (!basicSdkInstance) return alert('Please initialize SDK first');
+
+        const patternRequest = document.getElementById('patternRequest');
+        const patternResponse = document.getElementById('patternResponse');
+        const patternRequestTime = document.getElementById('patternRequestTime');
+        const patternResponseTime = document.getElementById('patternResponseTime');
+
+        // Build command object
+        const command = {};
+
+        // Add toyId if provided
+        const toyId = document.getElementById('stop-toy-id').value.trim();
+        if (toyId) {
+            command.toyId = toyId;
+        }
+
+        // Update request timestamp and display
+        patternRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        document.querySelector('#pattern-commands .request-url').innerHTML = 'URL: basicSdkInstance.stopToyAction()';
+        patternRequest.innerHTML = JSON.stringify(command, null, 2);
+
+        try {
+            const startTime = Date.now();
+            const response = await basicSdkInstance.stopToyAction(command);
+
+            // Update response timestamp and display
+            patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            patternResponse.innerHTML = JSON.stringify(response, null, 2);
+            patternResponse.style.color = '#28a745';
+        } catch (error) {
+            patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            patternResponse.innerHTML = JSON.stringify({ code: 400, message: error.message }, null, 2);
+            patternResponse.style.color = '#dc3545';
+        }
+    }
 </script>
