@@ -1,6 +1,133 @@
 <div class="api-documentation">
     <h1>Custom Cam Basic API</h1>
+    <!-- API Reference -->
+    <div class="api-reference">
+        <p>This implementation is based on the <a href="https://developer.lovense.com/docs/cam-solutions/basic-api.html" target="_blank">Official Lovense Custom Cam Basic API Documentation</a>.</p>
+    </div>
+
     <div class="content">
-        <p>Documentation for Custom Cam Basic API will be added here.</p>
+        <p>The Custom Cam Basic API shares the same test demos as the Standard API, with two key differences:</p>
+        
+        <ol>
+            <li>You need to use Lovense Connect for connecting toys</li>
+            <li>You can apply tip-triggered toy features for models</li>
+        </ol>
+
+        <h2>Test Demos</h2>
+        <p>You can explore the functionality through our Standard API demos:</p>
+        <ul>
+            <li><a href="/standard-solutions/standard-api-by-mobile-remote">Mobile Remote Demo</a></li>
+            <li><a href="/standard-solutions/standard-api-by-pc-remote">PC Remote Demo</a></li>
+        </ul>
+
+        <h2>Lovense Connect Downloads</h2>
+        <p>To get started, download Lovense Connect for your platform:</p>
+        <ul>
+            <li><a href="https://play.google.com/store/apps/details?id=com.lovense.connect">Android - Google Play Store</a></li>
+            <li><a href="https://apps.apple.com/us/app/lovense-connect/id1273067916">iOS - App Store</a></li>
+            <li><a href="https://www.lovense.com/files/apps/connect/Lovense_Connect.exe">Windows PC</a></li>
+            <li><a href="https://www.lovense.com/files/apps/connect/Lovense_Connect.dmg">Mac OS</a></li>
+        </ul>
     </div>
 </div> 
+
+<style>
+
+    .api-documentation {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.api-documentation h1 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2.2em;
+}
+
+.api-documentation h2 {
+    color: #444;
+    margin: 30px 0 15px;
+    font-size: 1.6em;
+}
+
+.api-documentation .content {
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.api-documentation p {
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.api-documentation ul,
+.api-documentation ol {
+    margin: 15px 0;
+    padding-left: 25px;
+}
+
+.api-documentation li {
+    margin-bottom: 10px;
+    line-height: 1.5;
+    color: #555;
+}
+
+.api-documentation a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.api-documentation a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.api-reference {
+    background: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.api-reference p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+
+.api-reference a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.api-reference a:hover {
+    text-decoration: underline;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .api-documentation {
+        padding: 15px;
+    }
+
+    .api-documentation h1 {
+        font-size: 1.8em;
+    }
+
+    .api-documentation h2 {
+        font-size: 1.4em;
+    }
+
+    .api-documentation .content {
+        padding: 15px;
+    }
+}
+</style>
