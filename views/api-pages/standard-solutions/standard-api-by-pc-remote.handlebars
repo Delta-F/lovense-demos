@@ -302,59 +302,108 @@
 
             <!-- Setup Tab -->
             <div id="setup-tab" class="tab-content active">
-                <div class="button-container">
-                    <button onclick="testPatternV2('Setup')" class="btn btn-primary">Test Setup</button>
-                    <button onclick="addPatternAction()" class="btn btn-secondary">Add Action</button>
-                    <button onclick="clearPatternActions()" class="btn btn-secondary">Clear All</button>
-                </div>
-
-                <div class="patternv2-inputs">
-                    <div class="pattern-actions" id="patternActions">
-                        <!-- Action rows will be added here dynamically -->
-                        <div class="action-row">
-                            <div class="input-group">
-                                <label>Timestamp (ms):</label>
-                                <input type="number" class="form-control ts-input" min="0" max="7200000" value="0">
+                <div class="command-container">
+                    <!-- Form inputs -->
+                    <div class="form-section">
+                        <h4>Form Input</h4>
+                        <div class="patternv2-inputs">
+                            <div class="pattern-actions" id="patternActions">
+                                <div class="action-row">
+                                    <div class="input-group">
+                                        <label>Timestamp (ms):</label>
+                                        <input type="number" class="form-control ts-input" min="0" max="7200000" value="0">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Position (0-100):</label>
+                                        <input type="number" class="form-control pos-input" min="0" max="100" value="10">
+                                    </div>
+                                    <button onclick="removePatternAction(this)" class="btn btn-danger remove-action">×</button>
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <label>Position (0-100):</label>
-                                <input type="number" class="form-control pos-input" min="0" max="100" value="10">
+                            <div class="action-buttons">
+                                <button onclick="addPatternAction()" class="btn btn-secondary">Add Action</button>
+                                <button onclick="clearPatternActions()" class="btn btn-secondary">Clear All</button>
                             </div>
-                            <button onclick="removePatternAction(this)" class="btn btn-danger remove-action">×</button>
                         </div>
+                    </div>
+
+                    <!-- Direct JSON input -->
+                    <div class="json-section">
+                        <h4>Direct JSON Input</h4>
+                        <div class="json-input-container">
+                            <textarea id="setupJsonInput" class="json-textarea" placeholder='[{"ts":0,"pos":10},{"ts":100,"pos":50}]'></textarea>
+                            <div class="hint">Input actions array only. Other parameters will use default values.</div>
+                        </div>
+                    </div>
+
+                    <!-- Submit button at the bottom -->
+                    <div class="submit-section">
+                        <button onclick="testPatternV2('Setup')" class="btn btn-primary">Test Setup Command</button>
                     </div>
                 </div>
             </div>
 
             <!-- Play Tab -->
             <div id="play-tab" class="tab-content">
-                <div class="button-container">
-                    <div class="input-group">
-                        <label>Start Time (ms):</label>
-                        <input type="number" id="startTime" class="form-control" value="100">
+                <div class="command-container">
+                    <!-- Form inputs -->
+                    <div class="form-section">
+                        <h4>Form Input</h4>
+                        <div class="patternv2-inputs">
+                            <div class="input-group">
+                                <label>Start Time (ms):</label>
+                                <input type="number" id="playStartTime" class="form-control" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Offset Time (ms):</label>
+                                <input type="number" id="playOffsetTime" class="form-control" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Total Running Time (ms):</label>
+                                <input type="number" id="playTimeMS" class="form-control" value="10000">
+                            </div>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label>Offset Time (ms):</label>
-                        <input type="number" id="offsetTime" class="form-control" value="300">
+
+                    <!-- Submit button -->
+                    <div class="submit-section">
+                        <button onclick="testPatternV2('Play')" class="btn btn-primary">Test Play Command</button>
                     </div>
-                    <button onclick="testPatternV2('Play')" class="btn btn-primary">Test Play</button>
                 </div>
             </div>
 
             <!-- Stop Tab -->
             <div id="stop-tab" class="tab-content">
-                <div class="button-container">
-                    <button onclick="testPatternV2('Stop')" class="btn btn-primary">Test Stop</button>
+                <div class="command-container">
+                    <div class="submit-section">
+                        <button onclick="testPatternV2('Stop')" class="btn btn-primary">Test Stop Command</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Sync Tab -->
+            <!-- Sync Time Tab -->
             <div id="sync-tab" class="tab-content">
-                <div class="button-container">
-                    <button onclick="testPatternV2('SyncTime')" class="btn btn-primary">Test Sync Time</button>
+                <div class="command-container">
+                    <div class="sync-info">
+                        <p>This function helps calculate the offset time from the server:</p>
+                        <ol>
+                            <li>Records time T1 before sending request</li>
+                            <li>Records time T2 after receiving response</li>
+                            <li>Calculates offset: (T2 - T1)</li>
+                        </ol>
+                        <div id="syncResults" class="sync-results">
+                            <div>Start Time (T1): <span id="syncT1">-</span></div>
+                            <div>End Time (T2): <span id="syncT2">-</span></div>
+                            <div>Calculated Offset: <span id="syncOffset">-</span></div>
+                        </div>
+                    </div>
+                    <div class="submit-section">
+                        <button onclick="testPatternV2('SyncTime')" class="btn btn-primary">Test Sync Time</button>
+                    </div>
                 </div>
             </div>
 
+            <!-- API test results -->
             <div class="api-test-results">
                 <div class="request-box">
                     <h4>Request:</h4>
@@ -627,7 +676,8 @@ async function testPatternV2(type) {
     const patternv2Response = document.getElementById('patternv2Response');
     const patternv2RequestTime = document.getElementById('patternv2RequestTime');
     const patternv2ResponseTime = document.getElementById('patternv2ResponseTime');
-    
+    const toyId = document.getElementById('patternv2ToyId').value;
+
     try {
         let requestData = {
             command: "PatternV2",
@@ -635,38 +685,57 @@ async function testPatternV2(type) {
             apiVer: 1
         };
 
-        // Get the common toy ID
-        const toyId = document.getElementById('patternv2ToyId').value;
+        if (toyId) {
+            requestData.toy = toyId;
+        }
 
         // Add type-specific properties
         switch(type) {
             case 'Setup':
-                const actionRows = document.querySelectorAll('.action-row');
-                const actions = Array.from(actionRows).map(row => ({
-                    ts: parseInt(row.querySelector('.ts-input').value),
-                    pos: parseInt(row.querySelector('.pos-input').value)
-                }));
-                requestData.actions = actions;
+                const jsonInput = document.getElementById('setupJsonInput').value.trim();
+                if (jsonInput) {
+                    // Parse actions array from JSON input
+                    const actions = JSON.parse(jsonInput);
+                    requestData.actions = actions;
+                } else {
+                    // Get actions from form inputs
+                    const actionRows = document.querySelectorAll('.action-row');
+                    requestData.actions = Array.from(actionRows).map(row => ({
+                        ts: parseInt(row.querySelector('.ts-input').value),
+                        pos: parseInt(row.querySelector('.pos-input').value)
+                    }));
+                }
                 break;
 
             case 'Play':
-                const startTime = parseInt(document.getElementById('startTime').value);
-                const offsetTime = parseInt(document.getElementById('offsetTime').value);
-                if (toyId) requestData.toy = toyId;  // Only add toy if provided
-                requestData.startTime = startTime;
-                requestData.offsetTime = offsetTime;
+                requestData.startTime = parseInt(document.getElementById('playStartTime')?.value || 0);
+                requestData.offsetTime = parseInt(document.getElementById('playOffsetTime')?.value || 0);
+                requestData.timeMs = parseInt(document.getElementById('playTimeMS')?.value || 10000);
                 break;
 
             case 'Stop':
-                if (toyId) requestData.toy = toyId;  // Only add toy if provided
+                // No additional properties needed
                 break;
 
             case 'SyncTime':
-                // No additional properties needed
-                break;
+                const t1 = Date.now();
+                document.getElementById('syncT1').textContent = new Date(t1).toISOString();
+                
+                // Send request and get response
+                const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', requestData);
+                
+                const t2 = Date.now();
+                document.getElementById('syncT2').textContent = new Date(t2).toISOString();
+                
+                const offset = t2 - t1;
+                document.getElementById('syncOffset').textContent = `${offset}ms`;
+                
+                // Update display
+                updateRequestResponse(requestData, response.data);
+                return; // Exit early as we've handled the response
         }
 
-        // Update request timestamp and display
+        // Update request display
         patternv2RequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
         patternv2Request.innerHTML = JSON.stringify(requestData, null, 2);
 
@@ -676,16 +745,30 @@ async function testPatternV2(type) {
             }
         });
         
-        // Update response timestamp and display
+        // Update response display
         patternv2ResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
         patternv2Response.innerHTML = JSON.stringify(response.data, null, 2);
         patternv2Response.style.color = '#28a745';
     } catch (error) {
-        // Update response timestamp and error display
         patternv2ResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
         patternv2Response.innerHTML = `Error: ${error.message}`;
         patternv2Response.style.color = '#dc3545';
     }
+}
+
+// Helper function to update request/response display
+function updateRequestResponse(request, response) {
+    const patternv2Request = document.getElementById('patternv2Request');
+    const patternv2Response = document.getElementById('patternv2Response');
+    const patternv2RequestTime = document.getElementById('patternv2RequestTime');
+    const patternv2ResponseTime = document.getElementById('patternv2ResponseTime');
+
+    patternv2RequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternv2Request.innerHTML = JSON.stringify(request, null, 2);
+    
+    patternv2ResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternv2Response.innerHTML = JSON.stringify(response, null, 2);
+    patternv2Response.style.color = '#28a745';
 }
 
 function switchPatternV2Tab(tabName) {
@@ -828,6 +911,81 @@ function handlePatternError(error) {
     patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
     patternResponse.innerHTML = `Error: ${error.message}`;
     patternResponse.style.color = '#dc3545';
+}
+
+function switchInputMethod(method) {
+    // Get the current active tab
+    const activeTab = document.querySelector('.tab-content.active');
+    const tabId = activeTab.id;
+    
+    // Update method tab buttons
+    document.querySelectorAll('.method-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`.method-tab-btn[onclick*="${method}"]`).classList.add('active');
+    
+    // Update input methods for the current tab
+    const formMethod = document.getElementById(`${tabId.replace('-tab', '')}-form`);
+    const jsonMethod = document.getElementById(`${tabId.replace('-tab', '')}-json`);
+    
+    if (method === 'form') {
+        formMethod.classList.add('active');
+        jsonMethod.classList.remove('active');
+    } else {
+        formMethod.classList.remove('active');
+        jsonMethod.classList.add('active');
+    }
+}
+
+async function testPatternV2Json(type) {
+    const jsonInput = document.getElementById(`${type.toLowerCase()}-json-input`).value;
+    try {
+        const requestData = JSON.parse(jsonInput);
+        const toyId = document.getElementById('patternv2ToyId').value;
+        
+        if (toyId) {
+            requestData.toy = toyId;
+        }
+        
+        await sendPatternV2Request(requestData);
+    } catch (error) {
+        handlePatternV2Error(error);
+    }
+}
+
+async function sendPatternV2Request(requestData) {
+    const patternv2Request = document.getElementById('patternv2Request');
+    const patternv2Response = document.getElementById('patternv2Response');
+    const patternv2RequestTime = document.getElementById('patternv2RequestTime');
+    const patternv2ResponseTime = document.getElementById('patternv2ResponseTime');
+
+    try {
+        // Update request timestamp and display
+        patternv2RequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        patternv2Request.innerHTML = JSON.stringify(requestData, null, 2);
+
+        const response = await axios.post('https://127-0-0-1.lovense.club:30010/command', requestData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Update response timestamp and display
+        patternv2ResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        patternv2Response.innerHTML = JSON.stringify(response.data, null, 2);
+        patternv2Response.style.color = '#28a745';
+    } catch (error) {
+        handlePatternV2Error(error);
+    }
+}
+
+function handlePatternV2Error(error) {
+    const patternv2Response = document.getElementById('patternv2Response');
+    const patternv2ResponseTime = document.getElementById('patternv2ResponseTime');
+    
+    patternv2ResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternv2Response.innerHTML = `Error: ${error.message}`;
+    patternv2Response.style.color = '#dc3545';
 }
 </script>
 
@@ -1307,5 +1465,158 @@ select.form-control {
 .input-group .btn-sm {
     padding: 0.25rem 0.75rem;
     font-size: 0.8rem;
+}
+
+.input-method-tabs {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.method-tab-btn {
+    padding: 8px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.method-tab-btn.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.input-method {
+    display: none;
+}
+
+.input-method.active {
+    display: block;
+}
+
+.json-input-container {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.json-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    font-family: monospace;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.command-container {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.form-section, .json-section {
+    margin-bottom: 20px;
+}
+
+.form-section h4, .json-section h4 {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.submit-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.json-input-container {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.json-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    font-family: monospace;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.patternv2-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.tab-btn.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.sync-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.sync-info p {
+    margin-bottom: 10px;
+}
+
+.sync-info ol {
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+
+.sync-results {
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    margin-top: 15px;
+}
+
+.sync-results div {
+    margin: 5px 0;
+    font-family: monospace;
+}
+
+.hint {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 5px;
 }
 </style> 
