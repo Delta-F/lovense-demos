@@ -36,11 +36,24 @@
             <!-- QR Code Connection Section -->
             <div id="qrSection" class="connection-section" style="display: none;">
                 <div class="qr-setup">
-                    <div class="token-input-group">
-                        <input type="text" id="devToken" placeholder="e.g. tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle" class="form-control">
-                        <button onclick="getQRCode()" class="btn btn-primary">Generate QR Code</button>
-                    </div>
+                    <p class="info-text">Please scan the QR code generated with Lovense Remote App for further test</p>
                     <div id="qrcode" class="qr-container compact"></div>
+                    
+                    <!-- Add QR Code API Results -->
+                    <div class="api-test-results">
+                        <div class="request-box">
+                            <h4>QR Code Request:</h4>
+                            <div id="qrRequestUrl" class="request-url">URL: </div>
+                            <div class="timestamp" id="qrRequestTime">Timestamp: -</div>
+                            <div id="qrRequest" class="data-box">Request will appear here...</div>
+                        </div>
+                        <div class="response-box">
+                            <h4>QR Code Response:</h4>
+                            <div class="timestamp" id="qrResponseTime">Timestamp: -</div>
+                            <div id="qrResponse" class="data-box">Response will appear here...</div>
+                        </div>
+                    </div>
+
                     <p class="info-text">Callback URL: <span id="callbackUrl">/callback/latest</span></p>
                     <div id="callbackData" class="data-box">Waiting for data...</div>
                 </div>
@@ -404,24 +417,35 @@ async function getQRCode() {
         const qrcodeDiv = document.getElementById('qrcode');
         qrcodeDiv.innerHTML = 'Generating QR Code...';
         
-        // Get token value and use default if empty or only whitespace
-        const tokenInput = document.getElementById('devToken').value;
-        const token = tokenInput.trim() || DEFAULT_TOKEN;
-        
+        const token = DEFAULT_TOKEN;  // Always use default token
         const uid = "test_" + Math.random().toString(36).substr(2, 9);
         const uname = "user_" + uid;
         const utoken = generateMD5(uid + "salt");
         
+        // Prepare request data
+        const requestData = {
+            token: token,
+            uid: uid,
+            uname: uname,
+            utoken: utoken,
+            v: 2
+        };
+
+        // Update request display
+        const requestTimestamp = getChineseTimestamp();
+        document.getElementById('qrRequestUrl').innerHTML = 'URL: https://api.lovense-api.com/api/lan/getQrCode';
+        document.getElementById('qrRequestTime').innerHTML = `Timestamp: ${requestTimestamp}`;
+        document.getElementById('qrRequest').innerHTML = JSON.stringify(requestData, null, 2);
+        
         const response = await axios.post(
             "https://api.lovense-api.com/api/lan/getQrCode",
-            {
-                token: token,
-                uid: uid,
-                uname: uname,
-                utoken: utoken,
-                v: 2
-            }
+            requestData
         );
+        
+        // Update response display
+        const responseTimestamp = getChineseTimestamp();
+        document.getElementById('qrResponseTime').innerHTML = `Timestamp: ${responseTimestamp}`;
+        document.getElementById('qrResponse').innerHTML = JSON.stringify(response.data, null, 2);
         
         if (response.data && response.data.code === 0) {
             qrcodeDiv.innerHTML = '';
@@ -441,6 +465,11 @@ async function getQRCode() {
     } catch (error) {
         console.error('QR Code generation failed:', error);
         document.getElementById('qrcode').innerHTML = 'Error: ' + error.message;
+        
+        // Update response display with error
+        const errorTimestamp = getChineseTimestamp();
+        document.getElementById('qrResponseTime').innerHTML = `Timestamp: ${errorTimestamp}`;
+        document.getElementById('qrResponse').innerHTML = `Error: ${error.message}`;
     }
 }
 
@@ -576,6 +605,7 @@ function selectMethod(method) {
         document.getElementById('gameSection').style.display = 'none';
         document.getElementById('qrMethod').classList.add('btn-primary');
         document.getElementById('qrMethod').classList.remove('btn-secondary');
+        getQRCode(); // Automatically generate QR code when switching to QR method
     } else {
         document.getElementById('qrSection').style.display = 'none';
         document.getElementById('gameSection').style.display = 'block';
@@ -1735,6 +1765,52 @@ h3 {
     
     .sync-results {
         background: #2d2d2d;
+    }
+}
+
+/* Add these styles to your existing CSS */
+.qr-setup .api-test-results {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    padding: 20px 0;
+}
+
+.qr-setup .request-box,
+.qr-setup .response-box {
+    margin-bottom: 15px;
+}
+
+.qr-setup h4 {
+    color: #666;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.qr-setup .data-box {
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .qr-setup h4 {
+        color: #aaa;
+    }
+    
+    .qr-setup .data-box {
+        background: #2d2d2d;
+        border-color: #404040;
+    }
+    
+    .qr-setup .api-test-results {
+        border-color: #404040;
     }
 }
 
