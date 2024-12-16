@@ -13,6 +13,10 @@ router.get('/standard-solutions/standard-api-by-pc-remote', (req, res) => {
     res.render('api-pages/standard-solutions/standard-api-by-pc-remote');
 });
 
+router.get('/standard-solutions/standard-api-by-server', (req, res) => {
+    res.render('api-pages/standard-solutions/standard-api-by-server');
+});
+
 router.get('/standard-solutions/standard-socket', (req, res) => {
     res.render('api-pages/standard-solutions/standard-socket');
 });

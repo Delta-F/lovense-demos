@@ -1,0 +1,1643 @@
+<div class="api-documentation">
+    <h1>Standard API - By Server Call</h1>
+    <!-- API Reference -->
+    <div class="api-reference">
+        <p>This implementation is based on the <a href="https://developer.lovense.com/docs/standard-solutions/standard-api.html#by-server" target="_blank">Official Lovense Standard API - By Server</a>.
+         By Server is another method to make the request call instead of using LAN.</p>
+    </div>
+
+    <!-- Search Toy -->
+    <div class="test-section">
+        <h3>1. Search Connected Toy</h3>
+        <p>You can input the developer `token` and `uid` of your app to test the function right away. Or get from <a href="./standard-api-by-mobile-remote"> Mobile Remote page</a> > By QR code > copy from the request body.
+        <div class="toy-id-group">
+            <input type="text" id="developer-token" class="form-control" placeholder="Enter developer Token">
+            <input type="text" id="user-id" class="form-control" placeholder="Enter uid (connected)">
+            <button onclick="searchToy()" class="btn btn-primary">Search Toy</button>
+            <button onclick="getToyName()" class="btn btn-primary">Get Toy Name</button>
+        </div>
+        <div class="api-test-results">
+            <div class="request-box">
+                <h4>Request:</h4>
+                <div class="request-url">URL: https://api.lovense-api.com/api/lan/v2/command</div>
+                <div class="timestamp" id="searchRequestTime">Timestamp: -</div>
+                <div id="searchRequest">Request will appear here...</div>
+            </div>
+            <div class="response-box">
+                <h4>Response:</h4>
+                <div class="timestamp" id="searchResponseTime">Timestamp: -</div>
+                <div id="searchResponse">Response will appear here...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Testing -->
+    <div class="test-section">
+        <h3>2. Test `Function` Commands</h3>
+        <div class="function-test-container">
+            <div class="button-container">
+                <div class="toy-id-group">
+                    <label>Toy ID:</label>
+                    <input type="text" id="toyId" class="form-control" placeholder="e.g., ff922f7fd345">
+                </div>
+                <button onclick="testFunction()" class="btn btn-primary">Test Function</button>
+                <button onclick="resetAllActions()" class="btn btn-secondary">Reset All</button>
+            </div>
+            
+            <!-- Action sliders -->
+            <div class="action-sliders">
+                <div class="action-group">
+                    <label>Vibrate (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="vibrate" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="vibrate" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Rotate (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="rotate" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="rotate" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Pump (0-3):</label>
+                    <div class="strength-control">
+                        <input type="range" id="pump" class="strength-slider" min="0" max="3" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="pump" min="0" max="3" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Thrusting (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="thrusting" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="thrusting" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Fingering (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="fingering" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="fingering" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Suction (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="suction" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="suction" min="0" max="20" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Depth (0-3):</label>
+                    <div class="strength-control">
+                        <input type="range" id="depth" class="strength-slider" min="0" max="3" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="depth" min="0" max="3" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>Stroke (0-100):</label>
+                    <div class="strength-control">
+                        <input type="range" id="stroke" class="strength-slider" min="0" max="100" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="stroke" min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="action-group">
+                    <label>All (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="all" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="all" min="0" max="20" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="time-inputs">
+                <div class="input-group">
+                    <label>Total:</label>
+                    <input type="number" id="totalTime" class="form-control" placeholder="seconds, set 5 if blank">
+                </div>
+                <div class="input-group">
+                    <label>Running:</label>
+                    <input type="number" id="runningTime" class="form-control" placeholder="seconds, set 5 if blank">
+                </div>
+                <div class="input-group">
+                    <label>Pause:</label>
+                    <input type="number" id="pauseTime" class="form-control" placeholder="seconds, set 0 if blank">
+                </div>
+            </div>
+
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Request:</h4>
+                    <div class="request-url">URL: https://api.lovense-api.com/api/lan/v2/command</div>
+                    <div class="timestamp" id="commandRequestTime">Timestamp: -</div>
+                    <div id="commandRequest">Request will appear here...</div>
+                </div>
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div class="timestamp" id="commandResponseTime">Timestamp: -</div>
+                    <div id="commandResponse">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update the Solace Pro Commands section -->
+    <div class="test-section">
+        <h3>3. Test `Position` Commands</h3>
+        <p class="test-description">Special Position request for Solace Pro. Note: Solace Pro also responds to Vibrate and Thrust commands in section 3.</p>
+        
+        <div class="function-test-container">
+            <div class="action-group">
+                <label>Position (0-100):</label>
+                <div class="strength-control">
+                    <input type="range" id="position" class="strength-slider" min="0" max="100" value="0">
+                    <input type="number" class="form-control strength-number" data-slider="position" min="0" max="100" value="0">
+                </div>
+                <button onclick="testPosition()" class="btn btn-primary" style="margin-left: 10px;">Test Position</button>
+            </div>
+
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Request:</h4>
+                    <div class="request-url">URL: https://api.lovense-api.com/api/lan/v2/command</div>
+                    <div class="timestamp" id="positionRequestTime">Timestamp: -</div>
+                    <div id="positionRequest">Request will appear here...</div>
+                </div>
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div class="timestamp" id="positionResponseTime">Timestamp: -</div>
+                    <div id="positionResponse">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pattern Commands section -->
+    <div class="test-section">
+        <h3>4. Test `Pattern` Commands</h3>
+        
+        <div class="function-test-container">
+            <div class="button-container">
+                <div class="toy-id-group">
+                    <label>Toy ID:</label>
+                    <input type="text" id="patternToyId" class="form-control" placeholder="e.g., ff922f7fd345">
+                </div>
+                <button onclick="testPattern()" class="btn btn-primary">Test Pattern</button>
+            </div>
+
+            <!-- Add tabs for different input methods -->
+            <div class="pattern-tabs">
+                <button class="tab-btn active" onclick="switchPatternTab('form')">Form Input</button>
+                <button class="tab-btn" onclick="switchPatternTab('json')">JSON Input</button>
+            </div>
+
+            <!-- Form Input Tab -->
+            <div id="pattern-form-tab" class="tab-content active">
+                <div class="pattern-inputs">
+                    <div class="features-group">
+                        <div class="input-group">
+                            <label>Features:</label>
+                            <button onclick="toggleAllFeatures()" class="btn btn-sm btn-secondary" id="toggleFeaturesBtn">Check All</button>
+                        </div>
+                        <div class="feature-checkboxes">
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="v" data-feature="vibrate"> Vibrate
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="r" data-feature="rotate"> Rotate
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="p" data-feature="pump"> Pump
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="t" data-feature="thrust"> Thrust
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="f" data-feature="finger"> Finger
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="s" data-feature="suction"> Suction
+                            </label>
+                            <label class="feature-checkbox">
+                                <input type="checkbox" value="d" data-feature="depth"> Depth
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Interval (ms):</label>
+                        <input type="number" id="interval" class="form-control" 
+                               placeholder="≥100" min="100" value="1000">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Strength Pattern:</label>
+                        <input type="text" id="strengthPattern" class="form-control" 
+                               placeholder="e.g., 20;20;5;20;10">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Duration (sec):</label>
+                        <input type="number" id="patternDuration" class="form-control" 
+                               placeholder="Duration in seconds" value="9">
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON Input Tab -->
+            <div id="pattern-json-tab" class="tab-content">
+                <div class="pattern-inputs">
+                    <div class="input-group">
+                        <label>Request JSON:</label>
+                        <textarea id="patternJson" class="form-control json-input" rows="8" 
+                                placeholder='{"command":"Pattern","rule":"V:1;F:v,r;S:1000#","strength":"20;10;5","timeSec":9,"apiVer":2}'></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Request:</h4>
+                    <div class="request-url">URL: https://api.lovense-api.com/api/lan/v2/command</div>
+                    <div class="timestamp" id="patternRequestTime">Timestamp: -</div>
+                    <div id="patternRequest">Request will appear here...</div>
+                </div>
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div class="timestamp" id="patternResponseTime">Timestamp: -</div>
+                    <div id="patternResponse">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update the PatternV2 Commands section -->
+    <div class="test-section">
+        <h3>5. Test `PatternV2` Commands</h3>
+        <p class="test-description">Send advanced pattern commands to Solace Pro. Each action consists of a timestamp (ms) and position value.</p>
+        
+        <div class="function-test-container">
+            <!-- Add common toy ID input at the top -->
+            <div class="toy-id-container">
+                <div class="toy-id-group">
+                    <label>Toy ID:</label>
+                    <input type="text" id="patternv2ToyId" class="form-control" placeholder="e.g., ff922f7fd345">
+                </div>
+            </div>
+
+            <!-- Add tabs for different PatternV2 operations -->
+            <div class="patternv2-tabs">
+                <button class="tab-btn active" onclick="switchPatternV2Tab('setup')">Setup</button>
+                <button class="tab-btn" onclick="switchPatternV2Tab('play')">Play</button>
+                <button class="tab-btn" onclick="switchPatternV2Tab('stop')">Stop</button>
+                <button class="tab-btn" onclick="switchPatternV2Tab('sync')">Sync Time</button>
+            </div>
+
+            <!-- Setup Tab -->
+            <div id="setup-tab" class="tab-content active">
+                <div class="command-container">
+                    <!-- Form inputs -->
+                    <div class="form-section">
+                        <h4>Form Input</h4>
+                        <div class="patternv2-inputs">
+                            <div class="pattern-actions" id="patternActions">
+                                <div class="action-row">
+                                    <div class="input-group">
+                                        <label>Timestamp (ms):</label>
+                                        <input type="number" class="form-control ts-input" min="0" max="7200000" value="0">
+                                    </div>
+                                    <div class="input-group">
+                                        <label>Position (0-100):</label>
+                                        <input type="number" class="form-control pos-input" min="0" max="100" value="10">
+                                    </div>
+                                    <button onclick="removePatternAction(this)" class="btn btn-danger remove-action">×</button>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button onclick="addPatternAction()" class="btn btn-secondary">Add Action</button>
+                                <button onclick="clearPatternActions()" class="btn btn-secondary">Clear All</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Direct JSON input -->
+                    <div class="json-section">
+                        <h4>Direct JSON Input</h4>
+                        <div class="json-input-container">
+                            <textarea id="setupJsonInput" class="json-textarea" placeholder='[{"ts":0,"pos":10},{"ts":100,"pos":50}]'></textarea>
+                            <div class="hint">Input actions array only. Other parameters will use default values.</div>
+                        </div>
+                    </div>
+
+                    <!-- Submit button at the bottom -->
+                    <div class="submit-section">
+                        <button onclick="testPatternV2('Setup')" class="btn btn-primary">Test Setup Command</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Play Tab -->
+            <div id="play-tab" class="tab-content">
+                <div class="command-container">
+                    <!-- Form inputs -->
+                    <div class="form-section">
+                        <h4>Form Input</h4>
+                        <div class="patternv2-inputs">
+                            <div class="input-group">
+                                <label>Start Time (ms):</label>
+                                <input type="number" id="playStartTime" class="form-control" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Offset Time (ms):</label>
+                                <input type="number" id="playOffsetTime" class="form-control" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Total Running Time (ms):</label>
+                                <input type="number" id="playTimeMS" class="form-control" value="10000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit button -->
+                    <div class="submit-section">
+                        <button onclick="testPatternV2('Play')" class="btn btn-primary">Test Play Command</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stop Tab -->
+            <div id="stop-tab" class="tab-content">
+                <div class="command-container">
+                    <div class="submit-section">
+                        <button onclick="testPatternV2('Stop')" class="btn btn-primary">Test Stop Command</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sync Time Tab -->
+            <div id="sync-tab" class="tab-content">
+                <div class="command-container">
+                    <div class="sync-info">
+                        <p>This function helps calculate the offset time from the server:</p>
+                        <ol>
+                            <li>Records time T1 before sending request</li>
+                            <li>Records time T2 after receiving response</li>
+                            <li>Calculates offset: (T2 - T1)</li>
+                        </ol>
+                        <div id="syncResults" class="sync-results">
+                            <div>Start Time (T1): <span id="syncT1">-</span></div>
+                            <div>End Time (T2): <span id="syncT2">-</span></div>
+                            <div>Calculated Offset: <span id="syncOffset">-</span></div>
+                        </div>
+                    </div>
+                    <div class="submit-section">
+                        <button onclick="testPatternV2('SyncTime')" class="btn btn-primary">Test Sync Time</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API test results -->
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Request:</h4>
+                    <div class="request-url">URL: https://api.lovense-api.com/api/lan/v2/command</div>
+                    <div class="timestamp" id="patternv2RequestTime">Timestamp: -</div>
+                    <div id="patternv2Request">Request will appear here...</div>
+                </div>
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div class="timestamp" id="patternv2ResponseTime">Timestamp: -</div>
+                    <div id="patternv2Response">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+// Add the same JavaScript functions from standard-api.handlebars, 
+// but modify them to work with PC remote specifics
+
+// Helper function to get formatted timestamp
+function getFormattedTimestamp() {
+    const now = new Date();
+    return now.toLocaleTimeString('en-US', { 
+        hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        fractionalSecondDigits: 3
+    });
+}
+
+async function searchToy() {
+    const searchRequest = document.getElementById('searchRequest');
+    const searchResponse = document.getElementById('searchResponse');
+    const searchRequestTime = document.getElementById('searchRequestTime');
+    const searchResponseTime = document.getElementById('searchResponseTime');
+    const token = document.getElementById('developer-token').value.trim() || 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
+    const uid = document.getElementById('user-id').value.trim() || 'test_1vhuswlzs';
+    
+    const requestData = {
+        command: "GetToys",
+        token: token,
+        uid: uid,
+        "apiVer": 1
+    };
+    
+    // Update request timestamp and display
+    searchRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    searchRequest.innerHTML = JSON.stringify(requestData, null, 2);
+    
+    try {
+        const response = await axios.post('https://api.lovense-api.com/api/lan/v2/command', requestData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Update response timestamp and display
+        searchResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        searchResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        searchResponse.style.color = '#28a745';
+    } catch (error) {
+        // Update response timestamp and error display
+        searchResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        searchResponse.innerHTML = `Error: ${error.message}\n\nPlease make sure:\n1. Lovense Remote PC is running\n2. "Allow Control" is enabled in Settings`;
+        searchResponse.style.color = '#dc3545';
+    }
+}
+
+async function getToyName() {
+    const searchRequest = document.getElementById('searchRequest');
+    const searchResponse = document.getElementById('searchResponse');
+    const searchRequestTime = document.getElementById('searchRequestTime');
+    const searchResponseTime = document.getElementById('searchResponseTime');
+    const token = document.getElementById('developer-token').value.trim() || 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
+    const uid = document.getElementById('user-id').value.trim() || 'test_1vhuswlzs';
+    
+    const requestData = {
+        command: "GetToyName",
+        "token": token,
+        "uid": uid,
+        "apiVer": 1
+    };
+    
+    // Update request timestamp and display
+    searchRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    searchRequest.innerHTML = JSON.stringify(requestData, null, 2);
+    
+    try {
+        const response = await axios.post('https://api.lovense-api.com/api/lan/v2/command', requestData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Update response timestamp and display
+        searchResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        searchResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        searchResponse.style.color = '#28a745';
+    } catch (error) {
+        // Update response timestamp and error display
+        searchResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        searchResponse.innerHTML = `Error: ${error.message}`;
+        searchResponse.style.color = '#dc3545';
+    }
+}
+
+// Add event listeners for all sliders and number inputs
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all sliders
+    const sliders = document.querySelectorAll('.strength-slider');
+    const numberInputs = document.querySelectorAll('.strength-number');
+
+    // Add listeners for sliders
+    sliders.forEach(slider => {
+        slider.addEventListener('input', function() {
+            const numberInput = this.nextElementSibling;
+            numberInput.value = this.value;
+        });
+    });
+
+    // Add listeners for number inputs
+    numberInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            const slider = this.previousElementSibling;
+            const value = parseInt(this.value);
+            const max = parseInt(this.max);
+            
+            if (!isNaN(value) && value >= 0 && value <= max) {
+                slider.value = value;
+            }
+        });
+    });
+});
+
+// Update the testFunction to handle multiple actions
+async function testFunction() {
+    const token = document.getElementById('developer-token').value.trim() || 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
+    const uid = document.getElementById('user-id').value.trim() || 'test_1vhuswlzs';
+    const commandRequest = document.getElementById('commandRequest');
+    const commandResponse = document.getElementById('commandResponse');
+    const commandRequestTime = document.getElementById('commandRequestTime');
+    const commandResponseTime = document.getElementById('commandResponseTime');
+    const toyId = document.getElementById('toyId').value;
+    const totalTime = document.getElementById('totalTime').value || 5;  // Default to 5 if blank
+    const runningTime = document.getElementById('runningTime').value || 5;  // Default to 5 if blank
+    const pauseTime = document.getElementById('pauseTime').value || 0;  // Default to 0 if blank
+
+    try {
+        // Collect all non-zero actions
+        const actions = [];
+        const actionTypes = ['vibrate', 'rotate', 'pump', 'thrusting', 'fingering', 'suction', 'depth', 'stroke', 'all'];
+        
+        actionTypes.forEach(type => {
+            const value = document.getElementById(type).value;
+            if (value > 0) {
+                const actionName = type.charAt(0).toUpperCase() + type.slice(1);
+                actions.push(`${actionName}:${value}`);
+            }
+        });
+
+        if (actions.length === 0) {
+            throw new Error('Please set at least one action value above 0');
+        }
+
+        const requestData = {
+            command: "Function",
+            token: token,
+            uid: uid,
+            action: actions.join(','),
+            timeSec: parseInt(totalTime),
+            loopRunningSec: parseInt(runningTime),
+            loopPauseSec: parseInt(pauseTime),
+            toy: toyId,
+            apiVer: 1
+        };
+
+        // Update request timestamp and display
+        commandRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        commandRequest.innerHTML = JSON.stringify(requestData, null, 2);
+
+        const response = await axios.post('https://api.lovense-api.com/api/lan/v2/command', requestData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Update response timestamp and display
+        commandResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        commandResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        commandResponse.style.color = '#28a745';
+    } catch (error) {
+        // Update response timestamp and error display
+        commandResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        commandResponse.innerHTML = `Error: ${error.message}`;
+        commandResponse.style.color = '#dc3545';
+    }
+}
+
+// Add Solace Pro test functions
+async function testPosition() {
+    const token = document.getElementById('developer-token').value.trim() || 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
+    const uid = document.getElementById('user-id').value.trim() || 'test_1vhuswlzs';
+    const positionRequest = document.getElementById('positionRequest');
+    const positionResponse = document.getElementById('positionResponse');
+    const positionRequestTime = document.getElementById('positionRequestTime');
+    const positionResponseTime = document.getElementById('positionResponseTime');
+    const position = document.getElementById('position').value;
+
+    try {
+        const requestData = {
+            command: "Position",
+            token: token,
+            uid: uid,
+            value: position,
+            apiVer: 1
+        };
+
+        // Update request timestamp and display
+        positionRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        positionRequest.innerHTML = JSON.stringify(requestData, null, 2);
+
+        const response = await axios.post('https://api.lovense-api.com/api/lan/v2/command', requestData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Update response timestamp and display
+        positionResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        positionResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        positionResponse.style.color = '#28a745';
+    } catch (error) {
+        // Update response timestamp and error display
+        positionResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        positionResponse.innerHTML = `Error: ${error.message}`;
+        positionResponse.style.color = '#dc3545';
+    }
+}
+
+function addPatternAction() {
+    const actionsContainer = document.getElementById('patternActions');
+    const newAction = document.createElement('div');
+    newAction.className = 'action-row';
+    
+    // Get the last timestamp value
+    const lastTs = actionsContainer.querySelector('.action-row:last-child .ts-input')?.value || 0;
+    const newTs = parseInt(lastTs) + 100; // Add 100ms to the last timestamp
+    
+    newAction.innerHTML = `
+        <div class="input-group">
+            <label>Timestamp (ms):</label>
+            <input type="number" class="form-control ts-input" min="0" max="7200000" value="${newTs}">
+        </div>
+        <div class="input-group">
+            <label>Position (0-100):</label>
+            <input type="number" class="form-control pos-input" min="0" max="100" value="50">
+        </div>
+        <button onclick="removePatternAction(this)" class="btn btn-danger remove-action">×</button>
+    `;
+    
+    actionsContainer.appendChild(newAction);
+}
+
+function removePatternAction(button) {
+    const actionsContainer = document.getElementById('patternActions');
+    if (actionsContainer.children.length > 1) {
+        button.closest('.action-row').remove();
+    }
+}
+
+function clearPatternActions() {
+    const actionsContainer = document.getElementById('patternActions');
+    // Keep only the first action row and reset its values
+    while (actionsContainer.children.length > 1) {
+        actionsContainer.lastChild.remove();
+    }
+    const firstRow = actionsContainer.firstChild;
+    if (firstRow) {
+        firstRow.querySelector('.ts-input').value = 0;
+        firstRow.querySelector('.pos-input').value = 10;
+    }
+}
+
+async function testPatternV2(type) {
+    const token = document.getElementById('developer-token').value.trim() || 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
+    const uid = document.getElementById('user-id').value.trim() || 'test_1vhuswlzs';
+    const patternv2Request = document.getElementById('patternv2Request');
+    const patternv2Response = document.getElementById('patternv2Response');
+    const patternv2RequestTime = document.getElementById('patternv2RequestTime');
+    const patternv2ResponseTime = document.getElementById('patternv2ResponseTime');
+    const toyId = document.getElementById('patternv2ToyId').value;
+
+    try {
+        let requestData = {
+            command: "PatternV2",
+            token: token,
+            uid: uid,
+            type: type,
+            apiVer: 1
+        };
+
+        if (toyId) {
+            requestData.toy = toyId;
+        }
+
+        // Add type-specific properties
+        switch(type) {
+            case 'Setup':
+                const jsonInput = document.getElementById('setupJsonInput').value.trim();
+                if (jsonInput) {
+                    // Parse actions array from JSON input
+                    const actions = JSON.parse(jsonInput);
+                    requestData.actions = actions;
+                } else {
+                    // Get actions from form inputs
+                    const actionRows = document.querySelectorAll('.action-row');
+                    requestData.actions = Array.from(actionRows).map(row => ({
+                        ts: parseInt(row.querySelector('.ts-input').value),
+                        pos: parseInt(row.querySelector('.pos-input').value)
+                    }));
+                }
+                break;
+
+            case 'Play':
+                requestData.startTime = parseInt(document.getElementById('playStartTime')?.value || 0);
+                requestData.offsetTime = parseInt(document.getElementById('playOffsetTime')?.value || 0);
+                requestData.timeMs = parseInt(document.getElementById('playTimeMS')?.value || 10000);
+                break;
+
+            case 'Stop':
+                // No additional properties needed
+                break;
+
+            case 'SyncTime':
+                const t1 = Date.now();
+                document.getElementById('syncT1').textContent = new Date(t1).toISOString();
+                
+                // Send request and get response
+                const response = await axios.post('https://api.lovense-api.com/api/lan/v2/command', requestData);
+                
+                const t2 = Date.now();
+                document.getElementById('syncT2').textContent = new Date(t2).toISOString();
+                
+                const offset = t2 - t1;
+                document.getElementById('syncOffset').textContent = `${offset}ms`;
+                
+                // Update display
+                updateRequestResponse(requestData, response.data);
+                return; // Exit early as we've handled the response
+        }
+
+        // Update request display
+        patternv2RequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        patternv2Request.innerHTML = JSON.stringify(requestData, null, 2);
+
+        const response = await axios.post('https://api.lovense-api.com/api/lan/v2/command', requestData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Update response display
+        patternv2ResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        patternv2Response.innerHTML = JSON.stringify(response.data, null, 2);
+        patternv2Response.style.color = '#28a745';
+    } catch (error) {
+        patternv2ResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        patternv2Response.innerHTML = `Error: ${error.message}`;
+        patternv2Response.style.color = '#dc3545';
+    }
+}
+
+// Helper function to update request/response display
+function updateRequestResponse(request, response) {
+    const patternv2Request = document.getElementById('patternv2Request');
+    const patternv2Response = document.getElementById('patternv2Response');
+    const patternv2RequestTime = document.getElementById('patternv2RequestTime');
+    const patternv2ResponseTime = document.getElementById('patternv2ResponseTime');
+
+    patternv2RequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternv2Request.innerHTML = JSON.stringify(request, null, 2);
+    
+    patternv2ResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternv2Response.innerHTML = JSON.stringify(response, null, 2);
+    patternv2Response.style.color = '#28a745';
+}
+
+function switchPatternV2Tab(tabName) {
+    // Remove active class from all tabs and content
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    // Add active class to selected tab and content
+    document.querySelector(`.tab-btn[onclick*="${tabName}"]`).classList.add('active');
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+}
+
+// Add event listener for position slider when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const positionSlider = document.getElementById('position');
+    const positionNumber = document.querySelector('[data-slider="position"]');
+
+    positionSlider.addEventListener('input', function() {
+        positionNumber.value = this.value;
+    });
+
+    positionNumber.addEventListener('input', function() {
+        const value = parseInt(this.value);
+        if (!isNaN(value) && value >= 0 && value <= 100) {
+            positionSlider.value = value;
+        }
+    });
+});
+
+// Add the reset function
+function resetAllActions() {
+    const actionTypes = ['vibrate', 'rotate', 'pump', 'thrusting', 'fingering', 'suction', 'depth', 'stroke', 'all'];
+    
+    actionTypes.forEach(type => {
+        const slider = document.getElementById(type);
+        const numberInput = slider.nextElementSibling;
+        
+        slider.value = 0;
+        numberInput.value = 0;
+    });
+}
+
+function switchPatternTab(tabName) {
+    // Remove active class from all tabs and content
+    document.querySelectorAll('.pattern-tabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    // Add active class to selected tab and content
+    document.querySelector(`.pattern-tabs .tab-btn[onclick*="${tabName}"]`).classList.add('active');
+    document.getElementById(`pattern-${tabName}-tab`).classList.add('active');
+}
+
+function toggleAllFeatures() {
+    const checkboxes = document.querySelectorAll('.feature-checkboxes input[type="checkbox"]');
+    const button = document.getElementById('toggleFeaturesBtn');
+    const isAnyUnchecked = Array.from(checkboxes).some(cb => !cb.checked);
+    
+    checkboxes.forEach(cb => {
+        cb.checked = isAnyUnchecked;
+    });
+    
+    button.textContent = isAnyUnchecked ? 'Uncheck All' : 'Check All';
+}
+
+function getSelectedFeatures() {
+    const checkboxes = document.querySelectorAll('.features-checkboxes input[type="checkbox"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value).join(',');
+}
+
+async function testPattern() {
+    const patternRequest = document.getElementById('patternRequest');
+    const patternResponse = document.getElementById('patternResponse');
+    const patternRequestTime = document.getElementById('patternRequestTime');
+    const patternResponseTime = document.getElementById('patternResponseTime');
+    const token = document.getElementById('developer-token').value.trim() || 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
+    const uid = document.getElementById('user-id').value.trim() || 'test_1vhuswlzs';
+    
+    // Check which tab is active
+    const isJsonTab = document.getElementById('pattern-json-tab').classList.contains('active');
+    
+    let requestData;
+    try {
+        if (isJsonTab) {
+            const jsonInput = document.getElementById('patternJson').value;
+            requestData = JSON.parse(jsonInput);
+        } else {
+            const toyId = document.getElementById('patternToyId').value;
+            const features = getSelectedFeatures();
+            const interval = document.getElementById('interval').value;
+            const strengthPattern = document.getElementById('strengthPattern').value;
+            const duration = document.getElementById('patternDuration').value;
+
+            // Construct the rule string
+            const featurePart = features ? `F:${features}` : 'F:';
+            const rule = `V:1;${featurePart};S:${interval}#`;
+
+            requestData = {
+                command: "Pattern",
+                token: token,
+                uid: uid,
+                rule: rule,
+                strength: strengthPattern,
+                timeSec: parseInt(duration),
+                apiVer: 2
+            };
+
+            if (toyId) {
+                requestData.toy = toyId;
+            }
+        }
+
+        await sendPatternRequest(requestData);
+    } catch (error) {
+        handlePatternError(error);
+    }
+}
+
+async function sendPatternRequest(requestData) {
+    const patternRequest = document.getElementById('patternRequest');
+    const patternResponse = document.getElementById('patternResponse');
+    const patternRequestTime = document.getElementById('patternRequestTime');
+    const patternResponseTime = document.getElementById('patternResponseTime');
+
+    const token = document.getElementById('developer-token').value.trim() || 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
+    const uid = document.getElementById('user-id').value.trim() || 'test_1vhuswlzs';
+    requestData.token=token;
+    requestData.uid=uid;
+
+    // Update request timestamp and display
+    patternRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternRequest.innerHTML = JSON.stringify(requestData, null, 2);
+
+    const response = await axios.post('https://api.lovense-api.com/api/lan/v2/command', requestData, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    
+    // Update response timestamp and display
+    patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternResponse.innerHTML = JSON.stringify(response.data, null, 2);
+    patternResponse.style.color = '#28a745';
+}
+
+function handlePatternError(error) {
+    const patternResponse = document.getElementById('patternResponse');
+    const patternResponseTime = document.getElementById('patternResponseTime');
+    
+    patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternResponse.innerHTML = `Error: ${error.message}`;
+    patternResponse.style.color = '#dc3545';
+}
+
+function switchInputMethod(method) {
+    // Get the current active tab
+    const activeTab = document.querySelector('.tab-content.active');
+    const tabId = activeTab.id;
+    
+    // Update method tab buttons
+    document.querySelectorAll('.method-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`.method-tab-btn[onclick*="${method}"]`).classList.add('active');
+    
+    // Update input methods for the current tab
+    const formMethod = document.getElementById(`${tabId.replace('-tab', '')}-form`);
+    const jsonMethod = document.getElementById(`${tabId.replace('-tab', '')}-json`);
+    
+    if (method === 'form') {
+        formMethod.classList.add('active');
+        jsonMethod.classList.remove('active');
+    } else {
+        formMethod.classList.remove('active');
+        jsonMethod.classList.add('active');
+    }
+}
+
+async function testPatternV2Json(type) {
+    const jsonInput = document.getElementById(`${type.toLowerCase()}-json-input`).value;
+    try {
+        const requestData = JSON.parse(jsonInput);
+        const toyId = document.getElementById('patternv2ToyId').value;
+        
+        if (toyId) {
+            requestData.toy = toyId;
+        }
+        
+        await sendPatternV2Request(requestData);
+    } catch (error) {
+        handlePatternV2Error(error);
+    }
+}
+
+async function sendPatternV2Request(requestData) {
+    const patternv2Request = document.getElementById('patternv2Request');
+    const patternv2Response = document.getElementById('patternv2Response');
+    const patternv2RequestTime = document.getElementById('patternv2RequestTime');
+    const patternv2ResponseTime = document.getElementById('patternv2ResponseTime');
+
+    const token = document.getElementById('developer-token').value.trim() || 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
+    const uid = document.getElementById('user-id').value.trim() || 'test_1vhuswlzs';
+    requestData.token=token;
+    requestData.uid=uid;
+
+    try {
+        // Update request timestamp and display
+        patternv2RequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        patternv2Request.innerHTML = JSON.stringify(requestData, null, 2);
+
+        const response = await axios.post('https://api.lovense-api.com/api/lan/v2/command', requestData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Update response timestamp and display
+        patternv2ResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        patternv2Response.innerHTML = JSON.stringify(response.data, null, 2);
+        patternv2Response.style.color = '#28a745';
+    } catch (error) {
+        handlePatternV2Error(error);
+    }
+}
+
+function handlePatternV2Error(error) {
+    const patternv2Response = document.getElementById('patternv2Response');
+    const patternv2ResponseTime = document.getElementById('patternv2ResponseTime');
+    
+    patternv2ResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+    patternv2Response.innerHTML = `Error: ${error.message}`;
+    patternv2Response.style.color = '#dc3545';
+}
+</script>
+
+<style>
+.api-documentation {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+}
+
+.test-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h3 {
+  color: #34495e;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+ol {
+  padding-left: 1.5rem;
+  line-height: 1.6;
+}
+
+li {
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.download-links {
+  margin: 1.5rem 0;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: #3498db;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2980b9;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+}
+
+/* API Reference styling */
+.api-reference {
+    background: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.api-reference p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+
+.api-reference a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.api-reference a:hover {
+    text-decoration: underline;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  background: #fff;
+}
+
+.command-group {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.data-box {
+  background: #f8f9fa;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-top: 1rem;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+.input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.button-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.function-test-container {
+    padding: 20px;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.toy-id-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.toy-id-group label {
+    min-width: 100px;
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+}
+
+.toy-id-group .form-control {
+    max-width: 300px;
+}
+
+select.form-control {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 1em;
+    padding-right: 30px;
+    background-color: #fff;
+}
+
+.action-values {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.range-label {
+    color: #666;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+.action-group {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.action-group label {
+    min-width: 120px;
+    font-size: 0.9em;
+    margin-right: 10px;
+    color: #666;
+}
+
+.strength-control {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 8px;
+}
+
+.strength-slider {
+    flex: 1;
+    margin: 0;
+    min-width: 200px;
+}
+
+.strength-number {
+    width: 45px !important;
+    padding: 2px 4px !important;
+    margin: 0 !important;
+    text-align: center;
+    font-size: 0.85em !important;
+}
+
+/* Update time inputs for inline layout */
+.time-inputs {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
+.time-inputs .input-group {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 10px;
+    margin: 0;
+}
+
+.time-inputs .input-group label {
+    min-width: 100px;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.time-inputs .form-control {
+    margin: 0;
+}
+
+.pattern-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.pattern-inputs .input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    background: none;
+    border: none;
+}
+
+.pattern-inputs .input-group label {
+    min-width: 140px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.not-developed {
+    color: #dc3545;
+    font-weight: 500;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+.request-url {
+    font-family: monospace;
+    color: #0066cc;
+    margin-bottom: 8px;
+    padding: 4px 0;
+    font-size: 0.9em;
+}
+
+.timestamp {
+    font-family: monospace;
+    color: #666;
+    font-size: 0.85em;
+    margin-bottom: 8px;
+}
+
+.sub-steps {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.sub-steps li {
+    margin-bottom: 0.25rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    .sub-steps {
+        color: #aaa;
+    }
+}
+
+.pattern-inputs {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.pattern-inputs .input-group {
+    margin-bottom: 12px;
+}
+
+.pattern-inputs .hint {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 4px;
+    margin-left: 10px;
+}
+
+.pattern-inputs label {
+    min-width: 120px;
+    font-weight: 500;
+}
+
+.pattern-inputs .form-control {
+    flex: 1;
+}
+
+.patternv2-inputs {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
+.pattern-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.action-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.action-row .input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.action-row .input-group label {
+    min-width: 120px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.action-row .form-control {
+    width: 100px;
+}
+
+.remove-action {
+    padding: 4px 10px;
+    font-size: 1.2em;
+    line-height: 1;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.remove-action:hover {
+    background: #c82333;
+}
+
+.patternv2-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.tab-btn.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.toy-id-container {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.toy-id-container .toy-id-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.features-group {
+    margin-bottom: 15px;
+}
+
+.btn-xs {
+    padding: 2px 6px;
+    font-size: 0.75em;
+    line-height: 1.2;
+}
+
+.feature-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-left: 120px;
+}
+
+.input-group .btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+}
+
+.input-method-tabs {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.method-tab-btn {
+    padding: 8px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.method-tab-btn.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.input-method {
+    display: none;
+}
+
+.input-method.active {
+    display: block;
+}
+
+.json-input-container {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.json-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    font-family: monospace;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.command-container {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+.form-section, .json-section {
+    margin-bottom: 20px;
+}
+
+.form-section h4, .json-section h4 {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.submit-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.json-input-container {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.json-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    font-family: monospace;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.patternv2-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.tab-btn.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.sync-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.sync-info p {
+    margin-bottom: 10px;
+}
+
+.sync-info ol {
+    margin-bottom: 15px;
+    padding-left: 20px;
+}
+
+.sync-results {
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    margin-top: 15px;
+}
+
+.sync-results div {
+    margin: 5px 0;
+    font-family: monospace;
+}
+
+.hint {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 5px;
+}
+</style> 
