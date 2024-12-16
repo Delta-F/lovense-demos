@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+router.get('/general/toy-supported-functions', (req, res) => {
+    res.render('api-pages/general/toy-supported-functions');
+});
+
 router.get('/standard-solutions/standard-api', (req, res) => {
     res.render('api-pages/standard-solutions/standard-api');
 });
@@ -90,10 +94,6 @@ router.get('/game-engine/unity-windows', (req, res) => {
 
 router.get('/game-engine/unreal-remote', (req, res) => {
     res.render('api-pages/game-engine/unreal-remote');
-});
-
-router.get('/standard-solutions/standard-api-qr', (req, res) => {
-    res.render('api-pages/standard-solutions/standard-api-qr');
 });
 
 module.exports = router; 

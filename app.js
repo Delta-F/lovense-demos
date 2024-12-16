@@ -43,6 +43,11 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+// General
+app.get('/toy-supported-functions', (req, res) => {
+    res.redirect('/general/toy-supported-functions');
+});
+
 // Standard Solutions
 app.get('/standard-api', (req, res) => {
     res.redirect('/standard-solutions/standard-api');
