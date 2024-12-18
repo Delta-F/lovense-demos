@@ -36,7 +36,12 @@
             <!-- QR Code Connection Section -->
             <div id="qrSection" class="connection-section" style="display: none;">
                 <div class="qr-setup">
-                    <p class="info-text">Please scan the QR code generated with Lovense Remote App for further test</p>
+                    <p class="info-text">Please scan the QR code generated with Lovense Remote App for further test.</p>
+                    <div class="userid-controls">
+                        {{!-- <label>User ID:</label> --}}
+                        <input type="text" id="custom-user-id" placeholder="Enter fixed User ID if you need, auto-generate if blank" class="form-control">
+                        <button onclick="getQRCode()" class="btn btn-primary">Generate QR Code</button>
+                    </div>
                     <div id="qrcode" class="qr-container compact"></div>
                     
                     <!-- Add QR Code API Results -->
@@ -418,7 +423,7 @@ async function getQRCode() {
         qrcodeDiv.innerHTML = 'Generating QR Code...';
         
         const token = DEFAULT_TOKEN;  // Always use default token
-        const uid = "test_" + Math.random().toString(36).substr(2, 9);
+        const uid = document.getElementById('custom-user-id').value || "test_" + Math.random().toString(36).substr(2, 9);
         const uname = "user_" + uid;
         const utoken = generateMD5(uid + "salt");
         
@@ -600,17 +605,16 @@ function selectMethod(method) {
     });
 
     // Show/hide appropriate sections
-    if (method === 'qr') {
-        document.getElementById('qrSection').style.display = 'block';
-        document.getElementById('gameSection').style.display = 'none';
-        document.getElementById('qrMethod').classList.add('btn-primary');
-        document.getElementById('qrMethod').classList.remove('btn-secondary');
-        getQRCode(); // Automatically generate QR code when switching to QR method
-    } else {
+    if (method === 'game') {
         document.getElementById('qrSection').style.display = 'none';
         document.getElementById('gameSection').style.display = 'block';
         document.getElementById('gameMethod').classList.add('btn-primary');
         document.getElementById('gameMethod').classList.remove('btn-secondary');
+    } else {
+        document.getElementById('qrSection').style.display = 'block';
+        document.getElementById('gameSection').style.display = 'none';
+        document.getElementById('qrMethod').classList.add('btn-primary');
+        document.getElementById('qrMethod').classList.remove('btn-secondary');
     }
 }
 
@@ -1631,9 +1635,21 @@ h3 {
     gap: 1rem;
 }
 
-.game-mode-controls .form-control {
+.game-mode-controls label {
+    min-width: 60px;
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+}
+
+.userid-controls .form-control {
+    max-width: 400px;
     margin: 0;
-    min-width: 120px;
+}
+
+.game-mode-controls .form-control {
+    max-width: 300px;
+    margin: 0;
 }
 
 .game-mode-controls .btn {
