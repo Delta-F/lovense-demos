@@ -44,6 +44,10 @@ app.get('/', (req, res) => {
 });
 
 // General
+app.get('/api-introduction', (req, res) => {
+    res.redirect('/general/api-introduction');
+});
+
 app.get('/toy-supported-functions', (req, res) => {
     res.redirect('/general/toy-supported-functions');
 });

@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+router.get('/general/api-introduction', (req, res) => {
+    res.render('api-pages/general/api-introduction');
+});
+
 router.get('/general/toy-supported-functions', (req, res) => {
     res.render('api-pages/general/toy-supported-functions');
 });
