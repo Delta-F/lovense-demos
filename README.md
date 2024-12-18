@@ -5,7 +5,7 @@ This repository contains demo implementations and examples for various Lovense A
 ## 🌐 Temporary Access
 
 The demo site is temporarily accessible at:
-https://thllpisofdki.sealosbja.site/ and only valid at work hours.
+https://thllpisofdki.sealosbja.site/general/api-introduction and only valid at work hours.
 
 ## 🚀 Available Solutions
 
