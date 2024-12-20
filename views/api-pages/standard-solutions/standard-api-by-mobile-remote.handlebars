@@ -72,8 +72,19 @@
         <button onclick="getToys()" class="btn btn-primary">Search Toys</button>
         <button onclick="getToyNames()" class="btn btn-primary">Get Toy Names</button>
         
-        <div id="getToyRequest" class="data-box">Request will appear here...</div>
-        <div id="getToyResponse" class="data-box">Response will appear here...</div>
+        <div class="api-test-results">
+            <div class="request-box">
+                <h4>Request:</h4>
+                <div class="request-url" id="requestUrl">URL: </div>
+                <div class="timestamp" id="getToyRequestTime">Timestamp: -</div>
+                <div id="getToyRequest">Request will appear here...</div>
+            </div>
+            <div class="response-box">
+                <h4>Response:</h4>
+                <div class="timestamp" id="getToyResponseTime">Timestamp: -</div>
+                <div id="getToyResponse">Response will appear here...</div>
+            </div>
+        </div>
     </div>
 
     <!-- Command Testing -->
@@ -187,9 +198,40 @@
         </div>
     </div>
 
+    <!-- Update the Solace Pro Commands section -->
+    <div class="test-section">
+        <h3>4. Test `Position` Commands</h3>
+        <p class="test-description">Special Position request for Solace Pro. Note: Solace Pro also responds to Vibrate and Thrust commands in section 3.</p>
+        
+        <div class="function-test-container">
+            <div class="action-group">
+                <label>Position (0-100):</label>
+                <div class="strength-control">
+                    <input type="range" id="position" class="strength-slider" min="0" max="100" value="0">
+                    <input type="number" class="form-control strength-number" data-slider="position" min="0" max="100" value="0">
+                </div>
+                <button onclick="testPosition()" class="btn btn-primary" style="margin-left: 10px;">Test Position</button>
+            </div>
+
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Request:</h4>
+                    <div class="request-url" id="requestUrl">URL: </div>
+                    <div class="timestamp" id="positionRequestTime">Timestamp: -</div>
+                    <div id="positionRequest">Request will appear here...</div>
+                </div>
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div class="timestamp" id="positionResponseTime">Timestamp: -</div>
+                    <div id="positionResponse">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Pattern Testing -->
     <div class="test-section">
-        <h3>4. Test `Pattern` Commands</h3>
+        <h3>5. Test `Pattern` Commands</h3>
 
         <!-- Header with Toy ID and Input Method Toggle -->
         <div class="pattern-header">
@@ -281,7 +323,7 @@
 
     <!-- Update the PatternV2 Commands section -->
     <div class="test-section">
-        <h3>5. Test `PatternV2` Commands</h3>
+        <h3>6. Test `PatternV2` Commands</h3>
         <p class="test-description">Send advanced pattern commands to Solace Pro. Each action consists of a timestamp (ms) and position value.</p>
         
         <div class="patternv2-container">
@@ -493,66 +535,74 @@ function getChineseTimestamp() {
 }
 
 async function getToys() {
+    const getToyRequest = document.getElementById('getToyRequest');
+    const getToyResponse = document.getElementById('getToyResponse');
+    const getToyRequestTime = document.getElementById('getToyRequestTime');
+    const getToyResponseTime = document.getElementById('getToyResponseTime');
+
     try {
         const apiUrl = getCurrentApiUrl();
         
-        const requestBody = {
+        const requestData = {
             command: "GetToys"
         };
         
-        // Display request with timestamp
-        const requestTimestamp = getChineseTimestamp();
-        document.getElementById('getToyRequest').innerHTML = 
-            `Request (${requestTimestamp})\nURL: ${apiUrl}\n\nRequest Body:\n${JSON.stringify(requestBody, null, 2)}`;
-        
-        const response = await axios.post(apiUrl, requestBody, { 
+        // Update request timestamp and display
+        getToyRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        getToyRequest.innerHTML = JSON.stringify(requestData, null, 2);
+
+        const response = await axios.post(apiUrl, requestData, { 
             headers: {
                 'Content-Type': 'application/json'
             }
         });
         
-        // Display response with timestamp
-        const responseTimestamp = getChineseTimestamp();
-        document.getElementById('getToyResponse').innerHTML = 
-            `Response (${responseTimestamp})\n${JSON.stringify(response.data, null, 2)}`;
-        
-        return response.data;
+        // Update response timestamp and display
+        getToyRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        getToyResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        getToyResponse.style.color = '#28a745';
     } catch (error) {
-        const errorTimestamp = getChineseTimestamp();
-        document.getElementById('getToyResponse').innerHTML = 
-            `Error (${errorTimestamp})\n${error.message}`;
-        throw error;
+        // Update response timestamp and error display
+        getToyRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        getToyResponse.innerHTML = `Error: ${error.message}`;
+        getToyResponse.style.color = '#dc3545';
     }
 }
 
 async function getToyNames() {
+    const getToyRequest = document.getElementById('getToyRequest');
+    const getToyResponse = document.getElementById('getToyResponse');
+    const getToyRequestTime = document.getElementById('getToyRequestTime');
+    const getToyResponseTime = document.getElementById('getToyResponseTime');
+
     try {
         const apiUrl = getCurrentApiUrl();
         
-        const requestBody = {
+        const requestData = {
             command: "GetToyName"
         };
         
-        // Display request with timestamp
-        const requestTimestamp = getChineseTimestamp();
-        document.getElementById('getToyRequest').innerHTML = 
-            `Request (${requestTimestamp})\nURL: ${apiUrl}\n\nRequest Body:\n${JSON.stringify(requestBody, null, 2)}`;
+        // Update request timestamp and display
+        getToyRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        getToyRequest.innerHTML = JSON.stringify(requestData, null, 2);
         
-        const response = await axios.post(apiUrl, requestBody, {
+        const response = await axios.post(apiUrl, requestData, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
         
-        // Display response with timestamp
-        const responseTimestamp = getChineseTimestamp();
-        document.getElementById('getToyResponse').innerHTML = 
-            `Response (${responseTimestamp})\n${JSON.stringify(response.data, null, 2)}`;
+        // Update response timestamp and display
+        getToyRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        getToyResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        getToyResponse.style.color = '#28a745';
     } catch (error) {
-        const errorTimestamp = getChineseTimestamp();
-        let errorMessage = `Error (${errorTimestamp})\n`;
-        
-        if (error.code === 'ERR_NETWORK') {
+        // Update response timestamp and error display
+        getToyRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        getToyResponse.innerHTML = `Error: ${error.message}`;
+        getToyResponse.style.color = '#dc3545';
+
+        {{!-- if (error.code === 'ERR_NETWORK') {
             errorMessage += 'Network Error: Unable to connect to the toy. Please ensure:\n';
             errorMessage += '1. The toy is connected and within range\n';
             errorMessage += '2. The correct IP and port are being used\n';
@@ -562,9 +612,7 @@ async function getToyNames() {
         } else {
             errorMessage += error.message;
         }
-        
-        document.getElementById('getToyResponse').innerHTML = errorMessage;
-        console.error('Detailed error:', error);
+        console.error('Detailed error:', error); --}}
     }
 }
 
@@ -762,6 +810,45 @@ async function testFunction() {
         commandResponseTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
         commandResponse.innerHTML = `Error: ${error.message}`;
         commandResponse.style.color = '#dc3545';
+    }
+}
+
+async function testPosition() {
+    const positionRequest = document.getElementById('positionRequest');
+    const positionResponse = document.getElementById('positionResponse');
+    const positionRequestTime = document.getElementById('positionRequestTime');
+    const positionResponseTime = document.getElementById('positionResponseTime');
+    const position = document.getElementById('position').value;
+    
+    try {
+        const apiUrl = getCurrentApiUrl();
+        document.getElementById('requestUrl').innerHTML = `URL: ${apiUrl}`;
+
+        const requestData = {
+            command: "Position",
+            value: position,
+            apiVer: 1
+        };
+        
+        // Update request timestamp and display
+        positionRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        positionRequest.innerHTML = JSON.stringify(requestData, null, 2);
+
+        const response = await axios.post(apiUrl, requestData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Update response timestamp and display
+        positionRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        positionResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        positionResponse.style.color = '#28a745';
+    } catch (error) {
+        // Update response timestamp and error display
+        positionRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        positionResponse.innerHTML = `Error: ${error.message}`;
+        positionResponse.style.color = '#dc3545';
     }
 }
 
