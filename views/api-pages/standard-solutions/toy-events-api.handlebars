@@ -1,6 +1,101 @@
 <div class="api-documentation">
     <h1>Toy Events API</h1>
+    <!-- API Reference -->
+    <div class="api-reference">
+        <p>This implementation is based on the <a href="https://developer.lovense.com/docs/standard-solutions/toy-events-api.html" target="_blank">Official Lovense Toy Events API Documentation</a>.</p>
+    </div>
+    
     <div class="content">
-        <p>Documentation for Toy Events API will be added here.</p>
+
+      <div class="test-section">
+        <h3> 1. Get websocket server address</h3>
+        // input ip and port for web socket reaching outline
+        // const ws = new WebSocket("ws://xxx.xxx.xxx.xxx:xxxxx/v1")
+
+      </div>
+
+      <div class="test-section">
+        <h3> 2. Connect to websocket server</h3>
+      </div>
+
+      <div class="test-section">
+        <h3> 3. Listen for events</h3>
+      </div>
+
+      <div class="test-section">
+        <h3> 4. Request access</h3>
+      </div>
+
+      <div class="test-section">
+        <h3> 5. Confirm connection</h3>
+      </div>
+
+      <div class="test-section">
+        <h3> 6. Maintain the connection</h3>
+      </div>
+
+      <div class="test-section">
+        <h3> 7. Events</h3>
+      </div>
+
+      <div class="test-section">
+        <h3> 8. Supported Toy Events</h3>
+      </div>
+
     </div>
 </div> 
+
+<style>
+.api-documentation {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+h1 {
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+}
+
+/* API Reference styling */
+.api-reference {
+    background: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.api-reference p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+
+.api-reference a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.api-reference a:hover {
+    text-decoration: underline;
+}
+
+.test-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h3 {
+  color: #34495e;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+</style>
