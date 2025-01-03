@@ -227,20 +227,17 @@
                     
                     <div class="input-group">
                         <label>Interval (ms):</label>
-                        <input type="number" id="interval" class="form-control" 
-                               placeholder="≥100" min="100" value="1000">
+                        <input type="number" id="interval" class="form-control" placeholder="Enter interval in ms ≥100. set 1000 if blank" min="100">
                     </div>
 
                     <div class="input-group">
                         <label>Strength Pattern:</label>
-                        <input type="text" id="strengthPattern" class="form-control" 
-                               placeholder="e.g., 20;20;5;20;10">
+                        <input type="text" id="strengthPattern" class="form-control" placeholder="Enter strength, set '20;20;5;20;10' if blank">
                     </div>
 
                     <div class="input-group">
                         <label>Duration (sec):</label>
-                        <input type="number" id="patternDuration" class="form-control" 
-                               placeholder="Duration in seconds" value="9">
+                        <input type="number" id="patternDuration" class="form-control" placeholder="Enter total run time in seconds, set 5 if blank">
                     </div>
                 </div>
             </div>
@@ -875,9 +872,9 @@ async function testPattern() {
         } else {
             const toyId = document.getElementById('patternToyId').value;
             const features = getSelectedFeatures();
-            const interval = document.getElementById('interval').value;
-            const strengthPattern = document.getElementById('strengthPattern').value;
-            const duration = document.getElementById('patternDuration').value;
+            const interval = document.getElementById('interval').value.trim() || 1000;
+            const strengthPattern = document.getElementById('strengthPattern').value.trim() || '20;20;5;20;10';
+            const duration = document.getElementById('patternDuration').value.trim() || 5;
 
             // Construct the rule string
             const featurePart = features ? `F:${features}` : 'F:';
