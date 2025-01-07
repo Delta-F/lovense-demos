@@ -1,101 +1,586 @@
 <div class="api-documentation">
     <h1>Toy Events API</h1>
-    <!-- API Reference -->
-    <div class="api-reference">
-        <p>This implementation is based on the <a href="https://developer.lovense.com/docs/standard-solutions/toy-events-api.html" target="_blank">Official Lovense Toy Events API Documentation</a>.</p>
+
+    <div class="test-section">
+        websocket自动定时发送心跳文本：<input type="text" value='{"type":"access","data":{"appName":"123"}}' id="msg">
+        <input type="button" value="手动send" onclick="dosend();"> &nbsp;&nbsp;
+        <input type="button" value="手动close" onclick="doclose();">
+        <br><br>
+        <textarea id="res" rows="40" cols="100"></textarea>
+        <textarea id="disconn" rows="30" cols="100"></textarea>
     </div>
+
+    <div class="test-section">
+        <h3>1. Request Access</h3>
+        <button onclick="test()">test</button>
+        <div class="connection-form">
+            <div class="connection-row">
+                <div class="form-group">
+                    <label for="serverIP">Server IP:</label>
+                    <input type="text" id="serverIP" placeholder="Enter GameMode IP">
+                </div>
+                <div class="form-group">
+                    <label for="serverPort">Port:</label>
+                    <input type="text" id="serverPort" placeholder="Enter GameMode Port">
+                </div>
+                <button id="connectBtn" onclick="handleConnect()">Connect</button>
+            </div>
+            <div class="connection-row">
+                <div class="form-group">
+                    <label for="appName">Website Name:</label>
+                    <input type="text" id="appName" placeholder="Enter Website Name">
+                </div>
+                <button id="requestAccessBtn" onclick="handleRequestAccess()">Request Access</button>
+            </div>
+            <div id="connectionStatus" class="status"></div>
+        </div>
+
+        <div class="message-display">
+            <div class="message-section">
+                <h4>Sent Messages:</h4>
+                <div id="sentLog" class="message-log"></div>
+            </div>
+            <div class="message-section">
+                <h4>Received Messages:</h4>
+                <div id="receivedLog" class="message-log"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Toy Events</h3>
+        <div id="eventLog" class="event-log"></div>
+    </div>
+</div>
+{{!-- 
+<script>
+let ws = null;
+
+function updateStatus(message, isError = false) {
+    const status = document.getElementById('connectionStatus');
+    status.textContent = message;
+    status.className = 'status ' + (isError ? 'error' : 'success');
+}
+
+function logMessage(type, data) {
+    const log = document.getElementById(type === 'sent' ? 'sentLog' : 'receivedLog');
+    const timestamp = new Date().toLocaleTimeString();
+    const entry = document.createElement('div');
     
-    <div class="content">
+    // Format JSON if the data is a string containing JSON
+    let formattedData;
+    try {
+        const jsonData = typeof data === 'string' ? JSON.parse(data) : data;
+        formattedData = JSON.stringify(jsonData, null, 2);
+    } catch {
+        formattedData = data;
+    }
+    
+    entry.textContent = `[${timestamp}]\n${formattedData}`;
+    log.appendChild(entry);
+    log.scrollTop = log.scrollHeight;
+}
 
-      <div class="test-section">
-        <h3> 1. Get websocket server address</h3>
-        // input ip and port for web socket reaching outline
-        // const ws = new WebSocket("ws://xxx.xxx.xxx.xxx:xxxxx/v1")
+function logEvent(event) {
+    const eventLog = document.getElementById('eventLog');
+    const timestamp = new Date().toLocaleTimeString();
+    const entry = document.createElement('div');
+    entry.textContent = `[${timestamp}] ${event}`;
+    eventLog.appendChild(entry);
+    eventLog.scrollTop = eventLog.scrollHeight;
+}
 
-      </div>
+function setupWebSocket(ip, port) {
+    const wsUrl = `wss://${ip}:${port}/v1`;
+    console.log('Setting up WebSocket connection to:', wsUrl);
+    
+    try {
+        console.log('Creating new WebSocket instance...');
+        ws = new WebSocket(wsUrl);
+        const connectBtn = document.getElementById('connectBtn');
+        const requestAccessBtn = document.getElementById('requestAccessBtn');
+        
+        ws.addEventListener("open", function(evt) {
+            console.log('WebSocket open event:', evt);
+            console.log('WebSocket connection established');
+            updateStatus('Connected successfully');
+            if (requestAccessBtn) requestAccessBtn.disabled = false;
+            if (connectBtn) connectBtn.textContent = 'Disconnect';
+        });
+        
+        ws.addEventListener("message", function(event) {
+            console.log('Received raw message:', event.data);
+            try {
+                const { type, data } = JSON.parse(event.data);
+                console.log('Parsed message:', { type, data });
+                logMessage('received', { type, data });
+                
+                switch (type) {
+                    case "toy-list":
+                        console.log('Toy list received:', data);
+                        logEvent(`Toy List: ${JSON.stringify(data)}`);
+                        break;
+                    case "toy-status":
+                        console.log('Toy status update:', data);
+                        logEvent(`Status Update: ${JSON.stringify(data)}`);
+                        break;
+                    case "button-down":
+                        console.log('Button press event:', data);
+                        logEvent(`Button Press: ${JSON.stringify(data)}`);
+                        break;
+                    default:
+                        console.log('Unknown event type:', type, 'with data:', data);
+                        logEvent(`Unknown Event (${type}): ${JSON.stringify(data)}`);
+                }
+            } catch (error) {
+                console.error('Error parsing message:', error);
+                console.log('Raw message that failed:', event.data);
+            }
+        });
+        
+        ws.addEventListener("error", function(evt) {
+            console.error('WebSocket error event:', evt);
+            console.log('WebSocket error details:', {
+                type: evt.type,
+                bubbles: evt.bubbles,
+                cancelable: evt.cancelable,
+                timeStamp: evt.timeStamp,
+                composed: evt.composed,
+                target: {
+                    url: evt.target.url,
+                    readyState: evt.target.readyState,
+                    bufferedAmount: evt.target.bufferedAmount,
+                    binaryType: evt.target.binaryType,
+                    protocol: evt.target.protocol,
+                    extensions: evt.target.extensions
+                }
+            });
+            console.log('WebSocket readyState:', ws.readyState);
+            // WebSocket readyState values:
+            // 0 - Connecting
+            // 1 - Open
+            // 2 - Closing
+            // 3 - Closed
+            
+            let errorMessage = 'Connection failed';
+            switch (ws.readyState) {
+                case 0:
+                    errorMessage += ': Still trying to connect';
+                    break;
+                case 1:
+                    errorMessage += ': Error occurred while connected';
+                    break;
+                case 2:
+                    errorMessage += ': Connection is closing';
+                    break;
+                case 3:
+                    errorMessage += ': Connection closed due to error';
+                    break;
+            }
+            
+            updateStatus(errorMessage, true);
+        });
 
-      <div class="test-section">
-        <h3> 2. Connect to websocket server</h3>
-      </div>
+        ws.addEventListener("close", function(evt) {
+            console.log('WebSocket close event:', evt);
+            console.log('WebSocket closed with details:', {
+                code: evt.code,
+                reason: evt.reason,
+                wasClean: evt.wasClean,
+                type: evt.type,
+                timeStamp: evt.timeStamp
+            });
+            
+            let closeMessage = 'Connection closed';
+            // Common WebSocket close codes:
+            switch (evt.code) {
+                case 1000:
+                    closeMessage += ' (Normal closure)';
+                    break;
+                case 1001:
+                    closeMessage += ' (Endpoint going away)';
+                    break;
+                case 1002:
+                    closeMessage += ' (Protocol error)';
+                    break;
+                case 1003:
+                    closeMessage += ' (Unsupported data)';
+                    break;
+                case 1005:
+                    closeMessage += ' (No status received)';
+                    break;
+                case 1006:
+                    closeMessage += ' (Abnormal closure - No handshake response received)';
+                    break;
+                case 1007:
+                    closeMessage += ' (Invalid frame payload data)';
+                    break;
+                case 1008:
+                    closeMessage += ' (Policy violation)';
+                    break;
+                case 1009:
+                    closeMessage += ' (Message too big)';
+                    break;
+                case 1010:
+                    closeMessage += ' (Mandatory extension)';
+                    break;
+                case 1011:
+                    closeMessage += ' (Internal server error)';
+                    break;
+                case 1015:
+                    closeMessage += ' (TLS handshake failure)';
+                    break;
+                default:
+                    closeMessage += ` (Code: ${evt.code})`;
+            }
+            
+            if (evt.reason) {
+                closeMessage += `: ${evt.reason}`;
+            }
+            
+            updateStatus(closeMessage, true);
+            if (requestAccessBtn) requestAccessBtn.disabled = true;
+            if (connectBtn) connectBtn.textContent = 'Connect';
+            ws = null;
+        });
+        
+    } catch (error) {
+        console.error('Failed to create WebSocket:', error);
+        console.error('Error stack:', error.stack);
+        updateStatus('Failed to create WebSocket: ' + error.message, true);
+        ws = null;
+    }
+}
 
-      <div class="test-section">
-        <h3> 3. Listen for events</h3>
-      </div>
+function handleConnect() {
+    console.log('Handle connect called');
+    const ip = document.getElementById('serverIP').value || "192.168.31.66";
+    const port = document.getElementById('serverPort').value || "30010";
+    
+    console.log('Connection parameters:', { ip, port });
+    
+    if (ws) {
+        console.log('Closing existing connection...');
+        ws.close();
+        ws = null;
+        return;
+    }
+    
+    try {
+        setupWebSocket(ip, port);
+    } catch (error) {
+        console.error('Connection setup error:', error);
+        updateStatus('Connection error: ' + error.message, true);
+        ws = null;
+    }
+}
 
-      <div class="test-section">
-        <h3> 4. Request access</h3>
-      </div>
+function handleRequestAccess() {
+    console.log('Handle request access called');
+    console.log('WebSocket state:', ws ? ws.readyState : 'null');
+    
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+        console.log('Cannot request access: WebSocket not connected');
+        updateStatus('Please connect to the server first', true);
+        return;
+    }
 
-      <div class="test-section">
-        <h3> 5. Confirm connection</h3>
-      </div>
+    const appName = document.getElementById('appName').value || "deltatest";
+    console.log('Requesting access for app:', appName);
+    
+    const message = {
+        type: "access",
+        data: {
+            appName: appName
+        }
+    };
 
-      <div class="test-section">
-        <h3> 6. Maintain the connection</h3>
-      </div>
+    try {
+        console.log('Sending access request:', message);
+        ws.send(JSON.stringify(message));
+        logMessage('sent', message);
+    } catch (error) {
+        console.error('Failed to send access request:', error);
+        updateStatus('Failed to send message: ' + error.message, true);
+        if (ws) {
+            console.log('Closing WebSocket due to send error');
+            ws.close();
+            ws = null;
+        }
+    }
+}
 
-      <div class="test-section">
-        <h3> 7. Events</h3>
-      </div>
+function test(){
+    var ws = new WebSocket('ws://localhost:8080');
+  ws.onopen = function(e){
+    console.log("连接服务器成功");
+    // 向服务器发送消息
+    ws.send("what`s your name?");
+  }
+  ws.onclose = function(e){
+    console.log("服务器关闭");
+  }
+  ws.onerror = function(){
+    console.log("连接出错");
+  }
+  // 接收服务器的消息
+  ws.onmessage = function(e){
+    let message = "message:"+e.data+"";
+    console.log(message);
+  }
+}
+</script> --}}
 
-      <div class="test-section">
-        <h3> 8. Supported Toy Events</h3>
-      </div>
-
-    </div>
-</div> 
-
+<script>
+    const base_url = "wss://192.168.31.66:20010/v1";//WS服务器地址，域名部分；
+    const aurl='http://192.168.0.14:8000/monitor-eye/appHealth/hb';
+    var heart_interval = 3 * 1000;//单位毫秒，心跳
+    var refresh_interval = 1 * 60 * 1000;//单位毫秒，html 定时刷新时间间隔； 15分钟；
+    window.ws = null;
+    window.receive_count = 0;//收到消息的次数计数；
+    window.disconn_count = 0;//断联的次数
+    var uid = "rosuntest_"+Math.round(Math.random()*10000);
+    window.ws_url = base_url +"?uid="+uid+"&from=rosuntest&wtoken=dADTbTKJ-yhN5mqO2SUe6g8vqyl-wk62VSAuM0zMfkgVqvWfquRIfImADR9uL8b8EGPj8bWEB-wx1citfu_QZC8ZXWU8aCV-6Oi3-uQ_a-OpvKaYlu3sDbORw8AnGFOYizFvU7kjQ9xDvmXT5CSfDw";
+    window.lastFailTimeStr="";//最后一次断开时间...
+    window.lastSuccTimeStr="";//最后一次连接时间...
+    
+	window.initialize = function (){
+		window.ws = new WebSocket(window.ws_url);
+		window.ws.onmessage=function(msg){
+			window.receive_count = window.receive_count + 1;
+			if(window.receive_count % 4000 == 0){
+				document.getElementById("res").value = "window.receive_count="+window.receive_count +"\r\n";
+			}else if (!msg.data.includes("pong")) {
+				document.getElementById("res").value = document.getElementById("res").value+msg.data+"\r\n";
+			}
+			document.getElementById("res").scrollTo(0,99999);
+			if(window.receive_count > ((refresh_interval / heart_interval ) + 20)){
+				console.log("收发消息的次数达到了要上报的时限内的心跳次数,需要上报并刷新页面...");
+				//如果收收发消息的次数达到了要上报的时限内的心跳次数，加20 是为了应对手动发送的场合....
+				//report();//上报
+				//window.location.reload();//刷新....
+			}
+		 };
+		    
+		 window.ws.onerror = function(){
+			 console.log(">>>websocket on error");
+			 window.ws.close();
+			 window.ws = null;
+		 }
+		 
+		 window.ws.onclose=function(){
+		    	var date = new Date();
+		    	window.lastFailTimeStr = date.toString();
+		    	document.getElementById("disconn").value = document.getElementById("disconn").value + "disconnected : " + window.lastFailTimeStr +"\r\n";
+		    	sleep(1);
+		    	window.disconn_count = window.disconn_count + 1;//断联次数加1
+		    	doclose();
+		    	window.ws = null;
+		    	window.initialize();
+		 };
+		    
+		 window.ws.onopen=function(){
+		    	var date = new Date();
+		    	window.lastSuccTimeStr = date.toString();
+		    	var open_tip = "onconnected:" + window.lastSuccTimeStr +"\r\n";
+		    	console.log(open_tip);
+		    	document.getElementById("disconn").value = document.getElementById("disconn").value + open_tip;
+		};
+		//每隔10s 定时发送....
+		window.setInterval(function(){ window.ws.send("{\"type\":\"ping\"}");; }, heart_interval);
+	}
+    
+	window.initialize();
+	
+	//自动定时刷新页面....
+	window.setInterval(function(){
+		//report();//上报
+		//window.location.reload();//刷新....
+	},refresh_interval);
+	
+	
+	/***
+	 ** 手动发送，
+	***/
+    function dosend(){
+    	//debugger;
+    	window.ws.send(document.getElementById("msg").value);
+    	//report();
+    }
+	/***
+	 ** 上报一旬的探测结果状态...
+	 ***/
+	function report(){
+		var okNow = false;
+		if(window.ws != null){
+			okNow = (window.ws.readyState == 1);
+		}
+		var p = "?detectOn="+base_url+"&env=test&type=wss&faildTimes="
+				   + window.disconn_count+"&okNow="+okNow
+				   +"&lastFailTimeStr="+window.lastFailTimeStr +"&lastSuccTimeStr="+window.lastSuccTimeStr
+				   +"&succsTimes="+window.receive_count+"&t="+Math.random();
+    	console.log("p ->>  " + p);
+    	console.log("aurl ->>  " + aurl);
+		Ajax.get(aurl + p, function(ret) {
+		    console.log(ret);
+		});
+		sleep(5);
+	}
+    /***
+	 ** 手动关闭websocket，
+	***/
+    function doclose(){
+    	try{
+    		console.log("doclose.... sleep(1)");
+        	sleep(1);
+        	if(window.ws.readyState ==1){
+        		window.ws.close();
+        	}
+    	}catch(e){
+    		console.log("error when doclose :" + e);
+    	}
+    }
+    
+   
+    /** sleep : 单位秒***/
+    function sleep(d){
+        for(var t = Date.now();Date.now() - t <= (d*1000););
+    }
+    
+ 
+    /*****定义一个原生的ajax方法... ********/
+     var Ajax = {
+                get: function(url, fn) {
+                    //创建XMLHttpRequest对象
+                    var xhr = new XMLHttpRequest();
+                    //true表示异步
+                    xhr.open('GET', url, true);
+                    xhr.onreadystatechange = function() {
+                        // readyState == 4说明请求已完成
+                        if(xhr.readyState == 4 && xhr.status == 200 || xhr.status == 304) {
+                            //responseText：从服务器获得数据
+                            fn.call(this, xhr.responseText);
+                        }
+                    };
+                    xhr.send();
+                },
+                post: function(url, data, fn,reqContentType) { //datat应为'a=a1&b=b1'这种字符串格式
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", url, true);
+                    // 添加http头，发送信息至服务器时内容编码类型
+                    if(typeof(reqContentType) == 'undefined' ){
+                    	//reqContentType = 'application/json;charset=utf-8';
+                    	reqContentType = 'application/x-www-form-urlencoded';
+                    }
+                    xhr.setRequestHeader("Content-Type", reqContentType);
+                    xhr.onreadystatechange = function() {
+                        if(xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 304)) {
+                            fn.call(this, xhr.responseText);
+                        }
+                    };
+                    xhr.send(data);
+                }
+            }
+</script>
 <style>
 .api-documentation {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-
-h1 {
-  color: #2c3e50;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #eee;
-}
-
-/* API Reference styling */
-.api-reference {
-    background: #f8f9fa;
-    border-left: 4px solid #3498db;
-    padding: 1rem;
-    margin-bottom: 2rem;
-    border-radius: 0 4px 4px 0;
-}
-
-.api-reference p {
-    margin: 0;
-    font-size: 0.95rem;
-    color: #2c3e50;
-}
-
-.api-reference a {
-    color: #3498db;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.api-reference a:hover {
-    text-decoration: underline;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .test-section {
-  background: #fff;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-h3 {
-  color: #34495e;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
+.connection-form {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.status {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.message-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.message-section h4 {
+    margin: 0 0 0.5rem 0;
+}
+
+.message-log, .event-log {
+    height: 200px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.connection-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 1rem;
+}
+
+.connection-row .form-group {
+    margin-bottom: 0;
+    flex: 1;
+}
+
+button:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
 }
 </style>
