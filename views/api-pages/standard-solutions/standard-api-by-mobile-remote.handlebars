@@ -503,9 +503,7 @@ async function getQRCode() {
             qrcodeDiv.appendChild(img);
             
             const callbackUrlText = document.getElementById('callbackUrl');
-            if (callbackUrlText) {
-                callbackUrlText.textContent = document.createTextNode(`${API_BASE}/lovense/callback/latest`).textContent;
-            }
+            callbackUrlText.textContent = document.createTextNode(`${API_BASE}/lovense/callback/latest`).textContent;
         } else {
             qrcodeDiv.innerHTML = 'Error: ' + (response.data.message || 'Failed to generate QR code');
         }
@@ -625,24 +623,52 @@ function initCallbackListener() {
         callbackUrlText.textContent = callbackUrl;
     }
 
-    setInterval(async () => {
+    // Add initial status message
+    const callbackData = document.getElementById('callbackData');
+    callbackData.innerHTML = `
+        <div class="timestamp">Status: Waiting for connection...</div>
+        <div class="hint">After scanning QR code, connection data will appear here.</div>
+    `;
+
+    // Set up polling interval
+    const pollInterval = setInterval(async () => {
         try {
+            console.log('Polling for callback data...'); // Debug log
             const response = await axios.get(`${API_BASE}/lovense/callback/latest`);
+            
             if (response.data) {
+                console.log('Received callback data:', response.data); // Debug log
                 const timestamp = getChineseTimestamp();
                 const formattedData = JSON.stringify(response.data, null, 2);
-                document.getElementById('callbackData').innerHTML = 
-                    `<div class="timestamp">Last Updated: ${timestamp}</div>` +
-                    `<pre>${formattedData}</pre>`;
+                
+                callbackData.innerHTML = `
+                    <div class="timestamp">Last Updated: ${timestamp}</div>
+                    <div class="connection-status">Status: Connected</div>
+                    <pre>${formattedData}</pre>
+                `;
+            } else {
+                console.log('No callback data received'); // Debug log
+                callbackData.innerHTML = `
+                    <div class="timestamp">Last Updated: ${getChineseTimestamp()}</div>
+                    <div class="connection-status">Status: Waiting for connection...</div>
+                    <div class="hint">Make sure QR code is properly scanned in Lovense Remote app</div>
+                `;
             }
         } catch (error) {
-            console.error('Failed to fetch callback data:', error);
+            console.error('Callback polling error:', error); // Debug log
             const timestamp = getChineseTimestamp();
-            document.getElementById('callbackData').innerHTML = 
-                `<div class="timestamp">Last Updated: ${timestamp}</div>` +
-                `<div class="error-text">Error fetching callback data: ${error.message}</div>`;
+            callbackData.innerHTML = `
+                <div class="timestamp">Last Updated: ${timestamp}</div>
+                <div class="connection-status error">Error: ${error.message}</div>
+                <div class="hint">Check server connectivity and try scanning QR code again</div>
+            `;
         }
-    }, 20000);
+    }, 15000); // Poll every 10 seconds
+
+    // Clean up interval on page unload
+    window.addEventListener('unload', () => {
+        clearInterval(pollInterval);
+    });
 }
 
 function selectMethod(method) {
