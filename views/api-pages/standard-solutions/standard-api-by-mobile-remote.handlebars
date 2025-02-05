@@ -75,7 +75,7 @@
         <div class="api-test-results">
             <div class="request-box">
                 <h4>Request:</h4>
-                <div class="request-url" id="requestUrl">URL: </div>
+                <div id="getToyRequestUrl" class="request-url">URL: </div>
                 <div class="timestamp" id="getToyRequestTime">Timestamp: -</div>
                 <div id="getToyRequest">Request will appear here...</div>
             </div>
@@ -97,6 +97,7 @@
                     <input type="text" id="toyId" class="form-control" placeholder="e.g., ff922f7fd345">
                 </div>
                 <button onclick="testFunction()" class="btn btn-primary">Test Function</button>
+                <button onclick="stopFunction()" class="btn btn-danger">Stop</button>
                 <button onclick="resetAllActions()" class="btn btn-secondary">Reset All</button>
             </div>
             
@@ -165,6 +166,13 @@
                         <input type="number" class="form-control strength-number" data-slider="all" min="0" max="20" value="0">
                     </div>
                 </div>
+                <div class="action-group">
+                    <label>Oscillate (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="oscillate" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="oscillate" min="0" max="20" value="0">
+                    </div>
+                </div>
             </div>
 
             <div class="time-inputs">
@@ -185,7 +193,7 @@
             <div class="api-test-results">
                 <div class="request-box">
                     <h4>Request:</h4>
-                    <div id="requestUrl" class="request-url">URL: </div>
+                    <div id="commandRequestUrl" class="request-url">URL: </div>
                     <div class="timestamp" id="commandRequestTime">Timestamp: -</div>
                     <div id="commandRequest">Request will appear here...</div>
                 </div>
@@ -216,7 +224,7 @@
             <div class="api-test-results">
                 <div class="request-box">
                     <h4>Request:</h4>
-                    <div class="request-url" id="requestUrl">URL: </div>
+                    <div id="positionRequestUrl" class="request-url">URL: </div>
                     <div class="timestamp" id="positionRequestTime">Timestamp: -</div>
                     <div id="positionRequest">Request will appear here...</div>
                 </div>
@@ -263,6 +271,7 @@
                             <label><input type="checkbox" value="f"> Finger</label>
                             <label><input type="checkbox" value="s"> Suction</label>
                             <label><input type="checkbox" value="d"> Depth</label>
+                            <label><input type="checkbox" value="o"> Oscillate</label>
                         </div>
                     </div>
 
@@ -540,6 +549,7 @@ async function getToys() {
 
     try {
         const apiUrl = getCurrentApiUrl();
+        document.getElementById('getToyRequestUrl').innerHTML = `URL: ${apiUrl}`;
         
         const requestData = {
             command: "GetToys"
@@ -789,16 +799,17 @@ async function testFunction() {
     
     try {
         const apiUrl = getCurrentApiUrl();
-        document.getElementById('requestUrl').innerHTML = `URL: ${apiUrl}`;
+        document.getElementById('commandRequestUrl').innerHTML = `URL: ${apiUrl}`;
 
         // Collect all non-zero actions
         const actions = [];
-        const actionTypes = ['vibrate', 'rotate', 'pump', 'thrusting', 'fingering', 'suction', 'depth', 'stroke', 'all'];
+        const actionTypes = ['vibrate', 'rotate', 'pump', 'thrusting', 'fingering', 'suction', 'depth', 'stroke', 'all', 'oscillate'];
         
         actionTypes.forEach(type => {
             const value = document.getElementById(type).value;
             if (value > 0) {
-                const actionName = type.charAt(0).toUpperCase() + type.slice(1);
+                // Special handling for Oscillate command
+                const actionName = type === 'oscillate' ? 'Oscillate' : type.charAt(0).toUpperCase() + type.slice(1);
                 actions.push(`${actionName}:${value}`);
             }
         });
@@ -848,7 +859,7 @@ async function testPosition() {
     
     try {
         const apiUrl = getCurrentApiUrl();
-        document.getElementById('requestUrl').innerHTML = `URL: ${apiUrl}`;
+        document.getElementById('positionRequestUrl').innerHTML = `URL: ${apiUrl}`;
 
         const requestData = {
             command: "Position",
@@ -1109,7 +1120,7 @@ async function testPatternV2(type) {
 
         // Get the current API URL
         const apiUrl = getCurrentApiUrl();
-        document.querySelector('.request-url').innerHTML = `URL: ${apiUrl}`;
+        document.getElementById('patternv2RequestUrl').innerHTML = `URL: ${apiUrl}`;
 
         // Update request display
         patternv2RequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
@@ -1192,6 +1203,50 @@ function switchPatternV2Tab(tabName) {
 document.addEventListener('DOMContentLoaded', () => {
     switchPatternV2Tab('setup');
 });
+
+async function stopFunction() {
+    const commandRequest = document.getElementById('commandRequest');
+    const commandResponse = document.getElementById('commandResponse');
+    const commandRequestTime = document.getElementById('commandRequestTime');
+    const commandResponseTime = document.getElementById('commandResponseTime');
+    const toyId = document.getElementById('toyId').value;
+    
+    try {
+        const apiUrl = getCurrentApiUrl();
+        document.getElementById('commandRequestUrl').innerHTML = `URL: ${apiUrl}`;
+
+        const requestData = {
+            command: "Function",
+            action: "Stop",
+            timeSec: 0,
+            apiVer: 1
+        };
+
+        if (toyId) {
+            requestData.toy = toyId;
+        }
+        
+        // Update request timestamp and display
+        commandRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        commandRequest.innerHTML = JSON.stringify(requestData, null, 2);
+
+        const response = await axios.post(apiUrl, requestData, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        // Update response timestamp and display
+        commandResponseTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        commandResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        commandResponse.style.color = '#28a745';
+    } catch (error) {
+        // Update response timestamp and error display
+        commandResponseTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        commandResponse.innerHTML = `Error: ${error.message}`;
+        commandResponse.style.color = '#dc3545';
+    }
+}
 
 </script>
 
