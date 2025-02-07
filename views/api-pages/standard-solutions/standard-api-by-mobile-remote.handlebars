@@ -93,7 +93,7 @@
         <div class="function-test-container">
             <div class="button-container">
                 <div class="toy-id-group">
-                    <label>Toy ID:</label>
+                    <label>Toy ID (not required) :</label>
                     <input type="text" id="toyId" class="form-control" placeholder="e.g., ff922f7fd345">
                 </div>
                 <button onclick="testFunction()" class="btn btn-primary">Test Function</button>
@@ -103,6 +103,13 @@
             
             <!-- Action sliders -->
             <div class="action-sliders">
+                <div class="action-group">
+                    <label>All (0-20):</label>
+                    <div class="strength-control">
+                        <input type="range" id="all" class="strength-slider" min="0" max="20" value="0">
+                        <input type="number" class="form-control strength-number" data-slider="all" min="0" max="20" value="0">
+                    </div>
+                </div>
                 <div class="action-group">
                     <label>Vibrate (0-20):</label>
                     <div class="strength-control">
@@ -160,13 +167,6 @@
                     </div>
                 </div>
                 <div class="action-group">
-                    <label>All (0-20):</label>
-                    <div class="strength-control">
-                        <input type="range" id="all" class="strength-slider" min="0" max="20" value="0">
-                        <input type="number" class="form-control strength-number" data-slider="all" min="0" max="20" value="0">
-                    </div>
-                </div>
-                <div class="action-group">
                     <label>Oscillate (0-20):</label>
                     <div class="strength-control">
                         <input type="range" id="oscillate" class="strength-slider" min="0" max="20" value="0">
@@ -206,10 +206,175 @@
         </div>
     </div>
 
+    <!-- Pattern Testing -->
+    <div class="test-section">
+        <h3>4. Test `Pattern` Commands</h3>
+
+        <!-- Header with Toy ID -->
+        <div class="pattern-header">
+            <div class="toy-id-group">
+                <label>Toy ID (not required) :</label>
+                <input type="text" id="patternToyId" class="form-control" placeholder="e.g., ff922f7fd345">
+            </div>
+            <div class="pattern-controls">
+                <button onclick="testPattern()" class="btn btn-primary">Test Pattern</button>
+                <button onclick="stopFunction()" class="btn btn-danger">Stop</button>
+            </div>
+        </div>
+
+        <!-- Pattern Input Tabs -->
+        <div class="pattern-tabs">
+            <button class="pattern-tab active" onclick="switchPatternTab('form')">
+                <i class="tab-icon">📝</i>Form
+            </button>
+            <button class="pattern-tab" onclick="switchPatternTab('json')">
+                <i class="tab-icon">{ }</i>JSON
+            </button>
+        </div>
+
+        <div class="pattern-test-container">
+            <!-- Form Input Section -->
+            <div id="formInputTab" class="pattern-tab-content active">
+                <div class="pattern-inputs">
+                    <div class="feature-group">
+                        <div class="feature-header">
+                            <label>Features:</label>
+                            <button onclick="toggleAllFeatures()" class="btn btn-sm btn-secondary" id="toggleFeaturesBtn">Check All</button>
+                        </div>
+                        <div class="feature-checkboxes">
+                            <label><input type="checkbox" value="v" checked> Vibrate</label>
+                            <label><input type="checkbox" value="r"> Rotate</label>
+                            <label><input type="checkbox" value="p"> Pump</label>
+                            <label><input type="checkbox" value="t"> Thrust</label>
+                            <label><input type="checkbox" value="f"> Finger</label>
+                            <label><input type="checkbox" value="s"> Suction</label>
+                            <label><input type="checkbox" value="d"> Depth</label>
+                            <label><input type="checkbox" value="o"> Oscillate</label>
+                        </div>
+                    </div>
+
+                    <div class="pattern-group">
+                        <label>Pattern Strength (semicolon-separated numbers 0-20):</label>
+                        <input type="text" id="patternStrength" class="form-control" 
+                               placeholder="e.g., 20;20;5;20;10" value="20;20;5;20;10">
+                    </div>
+
+                    <div class="pattern-timing">
+                        <div class="interval-group">
+                            <label>Interval (milliseconds, min 100):</label>
+                            <input type="number" id="patternInterval" class="form-control" 
+                                   min="100" value="1000">
+                        </div>
+
+                        <div class="time-group">
+                            <label>Total Time (seconds):</label>
+                            <input type="number" id="patternTime" class="form-control" 
+                                   min="1" value="9">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON Input Section -->
+            <div id="jsonInputTab" class="pattern-tab-content">
+                <div class="json-input-group">
+                    <div class="json-header">
+                        <label>Pattern Request JSON (click to modify):</label>
+                        <button onclick="formatJsonInput()" class="btn btn-sm btn-secondary">Format JSON</button>
+                    </div>
+                    <div class="json-editor">
+                        <textarea id="patternJson" class="form-control json-textarea" rows="8" 
+                            placeholder='{
+    "command": "Pattern",
+    "rule": "V:1;F:v,r,p,t,f,s,d,o;S:1000#",
+    "strength": "20;20;5;20;10",
+    "timeSec": 9,
+    "apiVer": 2
+}'></textarea>
+                        <div class="json-hint">
+                            <i class="hint-icon">ℹ️</i>
+                            <span>Enter a valid JSON object with the pattern command parameters</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Request:</h4>
+                    <div id="patternRequestUrl" class="request-url">URL: </div>
+                    <div class="timestamp" id="patternRequestTime">Timestamp: -</div>
+                    <div id="patternRequest">Request will appear here...</div>
+                </div>
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div class="timestamp" id="patternResponseTime">Timestamp: -</div>
+                    <div id="patternResponse">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this after the Pattern Testing section -->
+    <div class="test-section">
+        <h3>5. Test `Preset` Pattern Commands</h3>
+        
+        <div class="pattern-header">
+            <div class="toy-id-group">
+                <label>Toy ID (not required):</label>
+                <input type="text" id="presetToyId" class="form-control" placeholder="e.g., ff922f7fd345">
+            </div>
+            <div class="pattern-controls">
+                <button onclick="testPresetPattern()" class="btn btn-primary">Test Preset</button>
+                <button onclick="stopFunction()" class="btn btn-danger">Stop</button>
+            </div>
+        </div>
+
+        <div class="preset-inputs">
+            <div class="input-group compact">
+                <label>Preset Pattern:</label>
+                <div class="preset-options">
+                    <label class="preset-option">
+                        <input type="radio" name="presetPattern" value="pulse" checked> Pulse
+                    </label>
+                    <label class="preset-option">
+                        <input type="radio" name="presetPattern" value="wave"> Wave
+                    </label>
+                    <label class="preset-option">
+                        <input type="radio" name="presetPattern" value="fireworks"> Fireworks
+                    </label>
+                    <label class="preset-option">
+                        <input type="radio" name="presetPattern" value="earthquake"> Earthquake
+                    </label>
+                </div>
+            </div>
+            
+            <div class="input-group compact">
+                <label>Total Time (seconds):</label>
+                <input type="number" id="presetTime" class="form-control" 
+                       min="0" value="9" placeholder="0 = indefinite length">
+            </div>
+        </div>
+
+        <div class="api-test-results">
+            <div class="request-box">
+                <h4>Request:</h4>
+                <div id="presetRequestUrl" class="request-url">URL: </div>
+                <div class="timestamp" id="presetRequestTime">Timestamp: -</div>
+                <div id="presetRequest">Request will appear here...</div>
+            </div>
+            <div class="response-box">
+                <h4>Response:</h4>
+                <div class="timestamp" id="presetResponseTime">Timestamp: -</div>
+                <div id="presetResponse">Response will appear here...</div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Update the Solace Pro Commands section -->
     <div class="test-section">
-        <h3>4. Test `Position` Commands</h3>
-        <p class="test-description">Special Position request for Solace Pro. Note: Solace Pro also responds to Vibrate and Thrust commands in section 3.</p>
+        <h3>6. Test `Position` Commands</h3>
+        <p class="test-description">Special command for Solace Pro, and only Solace Pro will respond to.</p>
         
         <div class="function-test-container">
             <div class="action-group">
@@ -237,126 +402,56 @@
         </div>
     </div>
 
-    <!-- Pattern Testing -->
+    <!-- Update the PatternV2 Commands section -->
     <div class="test-section">
-        <h3>5. Test `Pattern` Commands</h3>
-
-        <!-- Header with Toy ID and Input Method Toggle -->
+        <h3>7. Test `PatternV2` Commands</h3>
+        <p class="test-description">Send advanced pattern commands to Solace Pro. Each action consists of a timestamp (ms) and position value.</p>
+        
         <div class="pattern-header">
             <div class="toy-id-group">
-                <label>Toy ID:</label>
-                <input type="text" id="patternToyId" class="form-control" placeholder="e.g., ff922f7fd345">
-                <button onclick="testPattern()" class="btn btn-primary">Test Pattern</button>
+                <label>Toy ID (not required):</label>
+                <input type="text" id="patternv2ToyId" class="form-control" placeholder="e.g., ff922f7fd345">
             </div>
-            <div class="input-method-toggle">
-                <button onclick="togglePatternInput('form')" class="btn btn-method" id="formMethod">Form Input</button>
-                <button onclick="togglePatternInput('json')" class="btn btn-method" id="jsonMethod">JSON Input</button>
+            <div class="pattern-controls">
+                <button onclick="testPatternV2()" class="btn btn-primary">Send Request</button>
+                <button onclick="stopFunction()" class="btn btn-danger">Stop</button>
             </div>
+        </div>
+
+        <!-- Pattern Input Tabs -->
+        <div class="pattern-v2-tabs">
+            <button class="pattern-v2-tab active" onclick="switchPatternV2Tab('setup')">
+                <i class="tab-icon">⚙️</i>Setup
+            </button>
+            <button class="pattern-v2-tab" onclick="switchPatternV2Tab('play')">
+                <i class="tab-icon">▶️</i>Play
+            </button>
+            <button class="pattern-v2-tab" onclick="switchPatternV2Tab('sync')">
+                <i class="tab-icon">🔄</i>Sync
+            </button>
         </div>
 
         <div class="pattern-test-container">
-            <!-- Form Input Section -->
-            <div id="formInputSection" class="pattern-inputs">
-                <div class="pattern-inputs">
-                    <div class="feature-group">
-                        <div class="feature-header">
-                            <label>Features:</label>
-                            <button onclick="toggleAllFeatures()" class="btn btn-sm btn-secondary" id="toggleFeaturesBtn">Check All</button>
-                        </div>
-                        <div class="feature-checkboxes">
-                            <label><input type="checkbox" value="v" checked> Vibrate</label>
-                            <label><input type="checkbox" value="r"> Rotate</label>
-                            <label><input type="checkbox" value="p"> Pump</label>
-                            <label><input type="checkbox" value="t"> Thrust</label>
-                            <label><input type="checkbox" value="f"> Finger</label>
-                            <label><input type="checkbox" value="s"> Suction</label>
-                            <label><input type="checkbox" value="d"> Depth</label>
-                            <label><input type="checkbox" value="o"> Oscillate</label>
-                        </div>
-                    </div>
-
-                    <div class="pattern-group">
-                        <label>Pattern Strength (semicolon-separated numbers 0-20):</label>
-                        <input type="text" id="patternStrength" class="form-control" 
-                               placeholder="e.g., 20;20;5;20;10" value="20;20;5;20;10">
-                    </div>
-
-                    <div class="interval-group">
-                        <label>Interval (milliseconds, min 100):</label>
-                        <input type="number" id="patternInterval" class="form-control" 
-                               min="100" value="1000">
-                    </div>
-
-                    <div class="time-group">
-                        <label>Total Time (seconds):</label>
-                        <input type="number" id="patternTime" class="form-control" 
-                               min="1" value="9">
-                    </div>
-                </div>
-            </div>
-
-            <!-- JSON Input Section -->
-            <div id="jsonInputSection" class="pattern-inputs" style="display: none;">
-                <div class="json-input-group">
-                    <label>Pattern Request JSON:</label>
-                    <textarea id="patternJson" class="form-control json-textarea" rows="8" 
-                        placeholder='Example:
-{
-    "command": "Pattern",
-    "rule": "V:1;F:v;S:1000#",
-    "strength": "20;20;5;20;10",
-    "timeSec": 9,
-    "toy": "ff922f7fd345",
-    "apiVer": 2
-}'></textarea>
-                </div>
-            </div>
-
-            <button onclick="testPattern()" class="btn btn-primary">Test Pattern</button>
-
-            <div class="api-test-results">
-                <div class="request-box">
-                    <h4>Request:</h4>
-                    <div id="patternRequestUrl" class="request-url">URL: </div>
-                    <div class="timestamp" id="patternRequestTime">Timestamp: -</div>
-                    <div id="patternRequest">Request will appear here...</div>
-                </div>
-                <div class="response-box">
-                    <h4>Response:</h4>
-                    <div class="timestamp" id="patternResponseTime">Timestamp: -</div>
-                    <div id="patternResponse">Response will appear here...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Update the PatternV2 Commands section -->
-    <div class="test-section">
-        <h3>6. Test `PatternV2` Commands</h3>
-        <p class="test-description">Send advanced pattern commands to Solace Pro. Each action consists of a timestamp (ms) and position value.</p>
-        
-        <div class="patternv2-container">
-            <!-- Add common toy ID input at the top -->
-            <div class="toy-id-container">
-                <div class="toy-id-group">
-                    <label>Toy ID:</label>
-                    <input type="text" id="patternv2ToyId" class="form-control" placeholder="e.g., ff922f7fd345">
-                </div>
-            </div>
-
-            <!-- Tab navigation -->
-            <div class="patternv2-tabs">
-                <button class="tab-btn active" onclick="switchPatternV2Tab('setup')">Setup</button>
-                <button class="tab-btn" onclick="switchPatternV2Tab('play')">Play</button>
-                <button class="tab-btn" onclick="switchPatternV2Tab('stop')">Stop</button>
-                <button class="tab-btn" onclick="switchPatternV2Tab('sync')">Sync Time</button>
-            </div>
-
             <!-- Setup Tab -->
-            <div id="setup-tab" class="tab-content active">
+            <div id="setup-tab" class="pattern-tab-content active">
                 <div class="command-container">
-                    <div class="form-section">
-                        <h4>Form Input</h4>
+                    <div class="input-method-toggle">
+                        <label class="input-method-option">
+                            <input type="radio" name="setupInputMethod" value="form" checked> Form Input
+                        </label>
+                        <label class="input-method-option">
+                            <input type="radio" name="setupInputMethod" value="json"> JSON Input
+                        </label>
+                    </div>
+
+                    <div class="form-section" id="setupFormSection">
+                        <div class="section-header">
+                            <h4>Form Input</h4>
+                            <div class="section-controls">
+                                <button onclick="copyPatternV2FormToJson()" class="btn btn-sm btn-info">Copy as JSON</button>
+                                <button onclick="clearPatternActions()" class="btn btn-sm btn-secondary">Clear All</button>
+                            </div>
+                        </div>
                         <div class="patternv2-inputs">
                             <div class="pattern-actions" id="patternActions">
                                 <div class="action-row">
@@ -368,56 +463,50 @@
                                         <label>Position (0-100):</label>
                                         <input type="number" class="form-control pos-input" min="0" max="100" value="10">
                                     </div>
-                                    <button onclick="removePatternAction(this)" class="btn btn-danger remove-action">×</button>
+                                    <div class="action-buttons">
+                                        <button onclick="removePatternAction(this)" class="btn btn-icon btn-danger">×</button>
+                                        <button onclick="addPatternAction()" class="btn btn-icon btn-secondary">+</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="action-buttons">
-                                <button onclick="addPatternAction()" class="btn btn-secondary">Add Action</button>
-                                <button onclick="clearPatternActions()" class="btn btn-secondary">Clear All</button>
                             </div>
                         </div>
                     </div>
-                    <div class="json-section">
-                        <h4>Direct JSON Input</h4>
+
+                    <div class="json-section" id="setupJsonSection" style="display: none;">
+                        <div class="json-header">
+                            <h4>Direct JSON Input</h4>
+                            <button onclick="formatPatternV2Json()" class="btn btn-sm btn-secondary">Format JSON</button>
+                        </div>
                         <div class="json-input-container">
-                            <textarea id="setupJsonInput" class="json-textarea" placeholder='[{"ts":0,"pos":10},{"ts":100,"pos":50}]'></textarea>
+                            <textarea id="setupJsonInput" class="json-textarea compact" placeholder='[{"ts":0,"pos":10},{"ts":100,"pos":50}]'></textarea>
                             <div class="hint">Input actions array only. Other parameters will use default values.</div>
                         </div>
                     </div>
-                    <button onclick="testPatternV2('Setup')" class="btn btn-primary">Test Setup</button>
                 </div>
             </div>
 
             <!-- Play Tab -->
-            <div id="play-tab" class="tab-content">
+            <div id="play-tab" class="pattern-tab-content">
                 <div class="command-container">
                     <div class="play-inputs">
-                        <div class="input-group">
+                        <div class="input-group compact">
                             <label>Start Time (ms):</label>
                             <input type="number" id="playStartTime" class="form-control" value="0">
                         </div>
-                        <div class="input-group">
+                        <div class="input-group compact">
                             <label>Offset Time (ms):</label>
                             <input type="number" id="playOffsetTime" class="form-control" value="0">
                         </div>
-                        <div class="input-group">
+                        <div class="input-group compact">
                             <label>Total Running Time (ms):</label>
                             <input type="number" id="playTimeMS" class="form-control" value="10000">
                         </div>
                     </div>
-                    <button onclick="testPatternV2('Play')" class="btn btn-primary">Test Play</button>
-                </div>
-            </div>
-
-            <!-- Stop Tab -->
-            <div id="stop-tab" class="tab-content">
-                <div class="command-container">
-                    <button onclick="testPatternV2('Stop')" class="btn btn-primary">Test Stop</button>
                 </div>
             </div>
 
             <!-- Sync Time Tab -->
-            <div id="sync-tab" class="tab-content">
+            <div id="sync-tab" class="pattern-tab-content">
                 <div class="command-container">
                     <div class="sync-info">
                         <p>This function helps calculate the offset time from the server:</p>
@@ -432,7 +521,6 @@
                             <div>Calculated Offset: <span id="syncOffset">-</span></div>
                         </div>
                     </div>
-                    <button onclick="testPatternV2('SyncTime')" class="btn btn-primary">Test Sync Time</button>
                 </div>
             </div>
 
@@ -452,6 +540,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -889,22 +978,6 @@ async function testPosition() {
     }
 }
 
-function togglePatternInput(method) {
-    // Update button styles
-    document.querySelectorAll('.input-method-toggle .btn-method').forEach(btn => {
-        btn.classList.remove('btn-primary');
-        btn.classList.add('btn-secondary');
-    });
-    
-    const selectedBtn = document.getElementById(`${method}Method`);
-    selectedBtn.classList.add('btn-primary');
-    selectedBtn.classList.remove('btn-secondary');
-
-    // Show/hide appropriate sections
-    document.getElementById('formInputSection').style.display = method === 'form' ? 'flex' : 'none';
-    document.getElementById('jsonInputSection').style.display = method === 'json' ? 'flex' : 'none';
-}
-
 async function testPattern() {
     const patternRequest = document.getElementById('patternRequest');
     const patternResponse = document.getElementById('patternResponse');
@@ -913,7 +986,8 @@ async function testPattern() {
     
     try {
         let requestData;
-        const isJsonMode = document.getElementById('jsonInputSection').style.display !== 'none';
+        // Check which tab is active instead of checking display style
+        const isJsonMode = document.getElementById('jsonInputTab').classList.contains('active');
         
         if (isJsonMode) {
             // Parse JSON input
@@ -934,7 +1008,6 @@ async function testPattern() {
             const timeSec = document.getElementById('patternTime').value;
 
             // Validate inputs
-            if (!toyId) throw new Error('Please enter a Toy ID');
             if (!selectedFeatures) throw new Error('Please select at least one feature');
             if (interval < 100) throw new Error('Interval must be at least 100ms');
             if (!strength.match(/^\d+(?:;\d+)*$/)) {
@@ -947,9 +1020,13 @@ async function testPattern() {
                 rule: `V:1;F:${selectedFeatures};S:${interval}#`,
                 strength: strength,
                 timeSec: parseInt(timeSec),
-                toy: toyId,
                 apiVer: 2
             };
+
+            // Only add toy ID if it's provided
+            if (toyId) {
+                requestData.toy = toyId;
+            }
         }
 
         const apiUrl = getCurrentApiUrl();
@@ -1051,7 +1128,24 @@ function getCurrentApiUrl() {
     }
 }
 
-async function testPatternV2(type) {
+function switchPatternV2Tab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.pattern-v2-tabs .pattern-v2-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`.pattern-v2-tab[onclick*="${tabName}"]`).classList.add('active');
+
+    // Update tab content
+    document.querySelectorAll('#setup-tab, #play-tab, #sync-tab').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+}
+
+async function testPatternV2() {
+    const activeTab = document.querySelector('.pattern-v2-tabs .pattern-v2-tab.active');
+    const type = activeTab.getAttribute('onclick').match(/switchPatternV2Tab\('(.+?)'\)/)[1];
+    
     const patternv2Request = document.getElementById('patternv2Request');
     const patternv2Response = document.getElementById('patternv2Response');
     const patternv2RequestTime = document.getElementById('patternv2RequestTime');
@@ -1061,7 +1155,7 @@ async function testPatternV2(type) {
     try {
         let requestData = {
             command: "PatternV2",
-            type: type,
+            type: type.charAt(0).toUpperCase() + type.slice(1),
             apiVer: 1
         };
 
@@ -1071,66 +1165,52 @@ async function testPatternV2(type) {
 
         // Add type-specific properties
         switch(type) {
-            case 'Setup':
-                const jsonInput = document.getElementById('setupJsonInput').value.trim();
-                if (jsonInput) {
-                    // Parse actions array from JSON input
-                    const actions = JSON.parse(jsonInput);
-                    requestData.actions = actions;
+            case 'setup':
+                const isJsonMode = document.querySelector('input[name="setupInputMethod"]:checked').value === 'json';
+                if (isJsonMode) {
+                    const jsonInput = document.getElementById('setupJsonInput').value.trim();
+                    if (jsonInput) {
+                        requestData.actions = JSON.parse(jsonInput);
+                    } else {
+                        throw new Error('Please enter JSON data');
+                    }
                 } else {
-                    // Get actions from form inputs
                     const actionRows = document.querySelectorAll('.action-row');
+                    if (actionRows.length === 0) {
+                        throw new Error('Please add at least one action');
+                    }
                     requestData.actions = Array.from(actionRows).map(row => ({
                         ts: parseInt(row.querySelector('.ts-input').value),
                         pos: parseInt(row.querySelector('.pos-input').value)
                     }));
                 }
                 break;
-
-            case 'Play':
-                requestData.startTime = parseInt(document.getElementById('playStartTime')?.value || 0);
-                requestData.offsetTime = parseInt(document.getElementById('playOffsetTime')?.value || 0);
-                requestData.timeMs = parseInt(document.getElementById('playTimeMS')?.value || 10000);
+            case 'play':
+                requestData.startTime = parseInt(document.getElementById('playStartTime').value || 0);
+                requestData.offsetTime = parseInt(document.getElementById('playOffsetTime').value || 0);
+                requestData.timeMs = parseInt(document.getElementById('playTimeMS').value || 10000);
                 break;
-
-            case 'Stop':
-                // No additional properties needed
+            case 'sync':
+                // Store t1 in requestData for sync
+                requestData.t1 = Date.now();
+                document.getElementById('syncT1').textContent = new Date(requestData.t1).toISOString();
                 break;
-
-            case 'SyncTime':
-                const t1 = Date.now();
-                document.getElementById('syncT1').textContent = new Date(t1).toISOString();
-                
-                // Get the current API URL
-                const apiUrl = getCurrentApiUrl();
-                
-                // Send request and get response
-                const response = await axios.post(apiUrl, requestData);
-                
-                const t2 = Date.now();
-                document.getElementById('syncT2').textContent = new Date(t2).toISOString();
-                
-                const offset = t2 - t1;
-                document.getElementById('syncOffset').textContent = `${offset}ms`;
-                
-                // Update display
-                updateRequestResponse(requestData, response.data);
-                return; // Exit early as we've handled the response
         }
 
-        // Get the current API URL
         const apiUrl = getCurrentApiUrl();
         document.getElementById('patternv2RequestUrl').innerHTML = `URL: ${apiUrl}`;
-
+        
         // Update request display
         patternv2RequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
         patternv2Request.innerHTML = JSON.stringify(requestData, null, 2);
 
-        const response = await axios.post(apiUrl, requestData, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await axios.post(apiUrl, requestData);
+        
+        if (type === 'sync') {
+            const t2 = Date.now();
+            document.getElementById('syncT2').textContent = new Date(t2).toISOString();
+            document.getElementById('syncOffset').textContent = `${t2 - requestData.t1}ms`;
+        }
         
         // Update response display
         patternv2ResponseTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
@@ -1143,40 +1223,175 @@ async function testPatternV2(type) {
     }
 }
 
-function updateRequestResponse(request, response) {
-    const patternv2Request = document.getElementById('patternv2Request');
-    const patternv2Response = document.getElementById('patternv2Response');
-    const patternv2RequestTime = document.getElementById('patternv2RequestTime');
-    const patternv2ResponseTime = document.getElementById('patternv2ResponseTime');
+async function stopFunction() {
+    try {
+        // Find the active section that contains the clicked stop button
+        const activeSection = document.querySelector('.test-section:has(.btn-danger:focus)') || 
+                            document.querySelector('.test-section:has(.api-test-results)');
+                            
+        // Get the elements from the active section
+        const requestElement = activeSection.querySelector('[id$="Request"]');
+        const responseElement = activeSection.querySelector('[id$="Response"]');
+        const requestTimeElement = activeSection.querySelector('[id$="RequestTime"]');
+        const responseTimeElement = activeSection.querySelector('[id$="ResponseTime"]');
+        const requestUrlElement = activeSection.querySelector('[id$="RequestUrl"]');
 
-    patternv2RequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
-    patternv2Request.innerHTML = JSON.stringify(request, null, 2);
-    
-    patternv2ResponseTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
-    patternv2Response.innerHTML = JSON.stringify(response, null, 2);
-    patternv2Response.style.color = '#28a745';
+        const requestData = {
+            command: "Function",
+            action: "Stop",
+            apiVer: 1
+        };
+        
+        // Get toy ID from the active section if it exists
+        const toyIdInput = activeSection.querySelector('input[id$="ToyId"]');
+        if (toyIdInput && toyIdInput.value) {
+            requestData.toy = toyIdInput.value;
+        }
+
+        const apiUrl = getCurrentApiUrl();
+        if (requestUrlElement) {
+            requestUrlElement.innerHTML = `URL: ${apiUrl}`;
+        }
+        
+        // Update request display
+        if (requestTimeElement) {
+            requestTimeElement.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        }
+        if (requestElement) {
+            requestElement.innerHTML = JSON.stringify(requestData, null, 2);
+        }
+
+        const response = await axios.post(apiUrl, requestData);
+        
+        // Update response display
+        if (responseTimeElement) {
+            responseTimeElement.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        }
+        if (responseElement) {
+            responseElement.innerHTML = JSON.stringify(response.data, null, 2);
+            responseElement.style.color = '#28a745';
+        }
+    } catch (error) {
+        const activeSection = document.querySelector('.test-section:has(.btn-danger:focus)') ||
+                            document.querySelector('.test-section:has(.api-test-results)');
+        const responseElement = activeSection.querySelector('[id$="Response"]');
+        const responseTimeElement = activeSection.querySelector('[id$="ResponseTime"]');
+        
+        if (responseTimeElement) {
+            responseTimeElement.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        }
+        if (responseElement) {
+            responseElement.innerHTML = `Error: ${error.message}`;
+            responseElement.style.color = '#dc3545';
+        }
+        console.error('Stop function error:', error);
+    }
 }
 
+function formatJsonInput() {
+    const textarea = document.getElementById('patternJson');
+    try {
+        const jsonObj = JSON.parse(textarea.value.trim() || textarea.placeholder);
+        textarea.value = JSON.stringify(jsonObj, null, 4);
+        
+        // Adjust textarea height to fit content
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    } catch (e) {
+        alert('Invalid JSON: ' + e.message);
+    }
+}
+
+// Replace copyToJson with copyFormToJson
+function copyPatternV2FormToJson() {
+    const actionsContainer = document.getElementById('patternActions');
+    const rows = actionsContainer.querySelectorAll('.action-row');
+    
+    // Convert form inputs to JSON format
+    const actions = Array.from(rows).map(row => {
+        const timestamp = parseInt(row.querySelector('.ts-input').value) || 0;
+        const position = parseInt(row.querySelector('.pos-input').value) || 0;
+        return {
+            ts: timestamp,
+            pos: position
+        };
+    });
+
+    // Format JSON with proper indentation
+    const formattedJson = JSON.stringify(actions, null, 4);
+
+    // Create a temporary textarea to handle the copy
+    const tempTextArea = document.createElement('textarea');
+    tempTextArea.value = formattedJson;
+    document.body.appendChild(tempTextArea);
+    
+    // Select and copy the text
+    tempTextArea.select();
+    document.execCommand('copy');
+    
+    // Remove the temporary textarea
+    document.body.removeChild(tempTextArea);
+
+    // Show feedback to user
+    const copyButton = document.querySelector('button[onclick="copyPatternV2FormToJson()"]');
+    const originalText = copyButton.textContent;
+    copyButton.textContent = 'Copied!';
+    setTimeout(() => {
+        copyButton.textContent = originalText;
+    }, 2000);
+
+    // Also update the JSON input if it exists
+    const jsonInput = document.getElementById('setupJsonInput');
+    if (jsonInput) {
+        jsonInput.value = formattedJson;
+    }
+}
+
+// Update addPatternAction to only have + and × buttons
 function addPatternAction() {
     const actionsContainer = document.getElementById('patternActions');
+    const rows = actionsContainer.querySelectorAll('.action-row');
+    const lastRow = rows[rows.length - 1];
+    
+    let lastTs = 0;
+    let lastPos = 50;
+    if (lastRow) {
+        lastTs = parseInt(lastRow.querySelector('.ts-input').value) || 0;
+        lastPos = parseInt(lastRow.querySelector('.pos-input').value) || 50;
+    }
+    
+    // Calculate new position with minimum 20 difference
+    let newPos;
+    do {
+        newPos = Math.floor(Math.random() * 101); // 0-100
+    } while (Math.abs(newPos - lastPos) < 20);
+    
     const newRow = document.createElement('div');
     newRow.className = 'action-row';
     newRow.innerHTML = `
         <div class="input-group">
             <label>Timestamp (ms):</label>
-            <input type="number" class="form-control ts-input" min="0" max="7200000" value="0">
+            <input type="number" class="form-control ts-input" min="0" max="7200000" value="${lastTs + 100}">
         </div>
         <div class="input-group">
             <label>Position (0-100):</label>
-            <input type="number" class="form-control pos-input" min="0" max="100" value="10">
+            <input type="number" class="form-control pos-input" min="0" max="100" value="${newPos}">
         </div>
-        <button onclick="removePatternAction(this)" class="btn btn-danger remove-action">×</button>
+        <div class="action-buttons">
+            <button onclick="removePatternAction(this)" class="btn btn-icon btn-danger">×</button>
+            <button onclick="addPatternAction()" class="btn btn-icon btn-secondary">+</button>
+        </div>
     `;
     actionsContainer.appendChild(newRow);
 }
 
 function removePatternAction(button) {
-    button.closest('.action-row').remove();
+    const actionRows = document.querySelectorAll('.action-row');
+    if (actionRows.length > 1) {
+        button.closest('.action-row').remove();
+    } else {
+        alert('Cannot remove the last action row');
+    }
 }
 
 function clearPatternActions() {
@@ -1185,156 +1400,237 @@ function clearPatternActions() {
     addPatternAction(); // Add one empty row
 }
 
-function switchPatternV2Tab(tabName) {
-    // Remove active class from all tabs and content
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-    });
-    
-    // Add active class to selected tab and content
-    document.querySelector(`.tab-btn[onclick*="${tabName}"]`).classList.add('active');
-    document.getElementById(`${tabName}-tab`).classList.add('active');
+// Add this to format JSON for both Pattern and PatternV2
+function formatPatternV2Json() {
+    const textarea = document.getElementById('setupJsonInput');
+    try {
+        const jsonObj = JSON.parse(textarea.value.trim() || textarea.placeholder);
+        textarea.value = JSON.stringify(jsonObj, null, 4);
+        
+        // Adjust textarea height to fit content
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    } catch (e) {
+        alert('Invalid JSON: ' + e.message);
+    }
 }
 
-// Initialize first tab on page load
+// Update the DOMContentLoaded event listener
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Pattern tabs
+    switchPatternTab('form');
+    
+    // Initialize PatternV2 tabs
     switchPatternV2Tab('setup');
+    
+    // Setup JSON textarea auto-resize for Pattern
+    const jsonTextarea = document.getElementById('patternJson');
+    if (jsonTextarea) {
+        jsonTextarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+        
+        jsonTextarea.addEventListener('focus', function() {
+            if (!this.value) {
+                this.value = JSON.stringify(JSON.parse(this.placeholder), null, 4);
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            }
+        });
+    }
+    
+    // Setup JSON textarea auto-resize for PatternV2
+    const setupJsonInput = document.getElementById('setupJsonInput');
+    if (setupJsonInput) {
+        setupJsonInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+        
+        setupJsonInput.addEventListener('focus', function() {
+            if (!this.value) {
+                this.value = JSON.stringify(JSON.parse(this.placeholder), null, 4);
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            }
+        });
+    }
 });
 
-async function stopFunction() {
-    const commandRequest = document.getElementById('commandRequest');
-    const commandResponse = document.getElementById('commandResponse');
-    const commandRequestTime = document.getElementById('commandRequestTime');
-    const commandResponseTime = document.getElementById('commandResponseTime');
-    const toyId = document.getElementById('toyId').value;
+function switchPatternTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.pattern-tabs .pattern-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`.pattern-tab[onclick*="${tabName}"]`).classList.add('active');
+
+    // Update tab content
+    document.querySelectorAll('#formInputTab, #jsonInputTab').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(`${tabName}InputTab`).classList.add('active');
+}
+
+function resetAllActions() {
+    // Reset all sliders and number inputs
+    const sliders = document.querySelectorAll('.strength-slider');
+    const numbers = document.querySelectorAll('.strength-number');
+    
+    sliders.forEach(slider => {
+        slider.value = 0;
+    });
+    
+    numbers.forEach(number => {
+        number.value = 0;
+    });
+}
+
+async function testPresetPattern() {
+    const presetRequest = document.getElementById('presetRequest');
+    const presetResponse = document.getElementById('presetResponse');
+    const presetRequestTime = document.getElementById('presetRequestTime');
+    const presetResponseTime = document.getElementById('presetResponseTime');
     
     try {
-        const apiUrl = getCurrentApiUrl();
-        document.getElementById('commandRequestUrl').innerHTML = `URL: ${apiUrl}`;
+        const toyId = document.getElementById('presetToyId').value;
+        const name = document.querySelector('input[name="presetPattern"]:checked').value;
+        const timeSec = parseFloat(document.getElementById('presetTime').value) || 0;
 
         const requestData = {
-            command: "Function",
-            action: "Stop",
-            timeSec: 0,
+            command: "Preset",
+            name: name,
+            timeSec: timeSec,
             apiVer: 1
         };
 
         if (toyId) {
             requestData.toy = toyId;
         }
-        
-        // Update request timestamp and display
-        commandRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
-        commandRequest.innerHTML = JSON.stringify(requestData, null, 2);
 
-        const response = await axios.post(apiUrl, requestData, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const apiUrl = getCurrentApiUrl();
+        document.getElementById('presetRequestUrl').innerHTML = `URL: ${apiUrl}`;
         
-        // Update response timestamp and display
-        commandResponseTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
-        commandResponse.innerHTML = JSON.stringify(response.data, null, 2);
-        commandResponse.style.color = '#28a745';
+        // Update request display
+        presetRequestTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        presetRequest.innerHTML = JSON.stringify(requestData, null, 2);
+
+        const response = await axios.post(apiUrl, requestData);
+        
+        // Update response display
+        presetResponseTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        presetResponse.innerHTML = JSON.stringify(response.data, null, 2);
+        presetResponse.style.color = '#28a745';
     } catch (error) {
-        // Update response timestamp and error display
-        commandResponseTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
-        commandResponse.innerHTML = `Error: ${error.message}`;
-        commandResponse.style.color = '#dc3545';
+        presetResponseTime.innerHTML = `Timestamp: ${getChineseTimestamp()}`;
+        presetResponse.innerHTML = `Error: ${error.message}`;
+        presetResponse.style.color = '#dc3545';
     }
 }
 
+function setupInputMethodChange() {
+    const isJsonMode = document.querySelector('input[name="setupInputMethod"]:checked').value === 'json';
+    document.getElementById('setupFormSection').style.display = isJsonMode ? 'none' : 'block';
+    document.getElementById('setupJsonSection').style.display = isJsonMode ? 'block' : 'none';
+}
+
+// Add event listener
+document.addEventListener('DOMContentLoaded', () => {
+    // ... existing code ...
+    
+    // Add change event listener for setup input method
+    const setupInputMethodRadios = document.querySelectorAll('input[name="setupInputMethod"]');
+    setupInputMethodRadios.forEach(radio => {
+        radio.addEventListener('change', setupInputMethodChange);
+    });
+});
 </script>
 
 <style>
 .api-documentation {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
 h1 {
-  color: #2c3e50;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #eee;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
 }
 
 .test-section {
-  background: #fff;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 h3 {
-  color: #34495e;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
+    color: #34495e;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
 }
 
 .form-control {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  font-size: 1rem;
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
 }
 
 .btn {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.2s;
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .btn-primary {
-  background: #3498db;
-  color: white;
+    background: #3498db;
+    color: white;
 }
 
 .btn-primary:hover {
-  background: #2980b9;
+    background: #2980b9;
 }
 
 .btn-secondary {
-  background: #95a5a6;
-  color: white;
+    background: #95a5a6;
+    color: white;
 }
 
 .btn-danger {
-  background: #e74c3c;
-  color: white;
+    background: #e74c3c;
+    color: white;
 }
 
 .data-box {
-  background: #f8f9fa;
-  border: 1px solid #eee;
-  border-radius: 4px;
-  padding: 1rem;
-  margin-top: 1rem;
-  font-family: monospace;
-  white-space: pre-wrap;
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-family: monospace;
+    white-space: pre-wrap;
 }
 
 .qr-container {
-  display: flex;
-  justify-content: center;
-  padding: 1rem;
-  background: #fff;
-  border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 4px;
 }
 
 .connection-methods {
@@ -1713,116 +2009,141 @@ h3 {
 }
 
 .json-textarea {
-    font-family: monospace;
-    min-height: 200px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    padding: 1rem;
+    min-height: auto;
+    height: auto;
+    resize: none;
     white-space: pre;
-    resize: vertical;
+    tab-size: 2;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+}
+
+.json-textarea:focus {
+    background: #fff;
 }
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
+    .pattern-tabs {
+        border-bottom-color: #404040;
+    }
+
     .json-textarea {
-        background: #1a1a1a;
-        color: #fff;
+        background: #2d2d2d;
         border-color: #404040;
+        color: #e0e0e0;
+    }
+
+    .json-textarea:focus {
+        background: #1a1a1a;
     }
 }
 
 .pattern-header {
     display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 1rem;
-    gap: 1rem;
-}
-
-.pattern-header .toy-id-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.pattern-header .toy-id-group label {
-    white-space: nowrap;
-    min-width: 60px;
-}
-
-.pattern-header .toy-id-group .form-control {
-    max-width: 200px;
-    margin: 0;
-}
-
-.pattern-header .toy-id-group .btn {
-    margin: 0;
-    white-space: nowrap;
-}
-
-.input-method-toggle {
-    margin-bottom: 1rem;
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-}
-
-.feature-header {
-    display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
 }
 
-.feature-header .btn-sm {
-    padding: 0.25rem 0.75rem;
-    font-size: 0.8rem;
+.pattern-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
 }
 
-.https-checkbox {
+.pattern-tab {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f8f9fa;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    white-space: nowrap;
-    color: #666;
-    cursor: pointer;
 }
 
-.https-checkbox input[type="checkbox"] {
-    margin: 0;
-    cursor: pointer;
+.pattern-tab.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.pattern-tab-content {
+    display: none;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.pattern-tab-content.active {
+    display: block;
+}
+
+.pattern-timing {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.interval-group,
+.time-group {
+    flex: 1;
+}
+
+.json-editor {
+    position: relative;
+}
+
+.json-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.hint-icon {
+    font-style: normal;
 }
 
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
-    .https-checkbox {
+    .pattern-header {
+        border-bottom-color: #404040;
+    }
+
+    .pattern-tab {
+        background: #2d2d2d;
+        border-color: #404040;
+        color: #fff;
+    }
+
+    .pattern-tab.active {
+        background: #3498db;
+        border-color: #3498db;
+    }
+
+    .pattern-tab-content {
+        border-color: #404040;
+        background: #1a1a1a;
+    }
+
+    .json-hint {
         color: #aaa;
     }
-}
-
-.game-mode-controls {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.game-mode-controls label {
-    min-width: 60px;
-    font-size: 0.9em;
-    color: #666;
-    font-weight: 500;
-}
-
-.userid-controls .form-control {
-    max-width: 400px;
-    margin: 0;
-}
-
-.game-mode-controls .form-control {
-    max-width: 300px;
-    margin: 0;
-}
-
-.game-mode-controls .btn {
-    margin: 0;
-    white-space: nowrap;
 }
 
 /* PatternV2 Styles */
@@ -1998,4 +2319,297 @@ h3 {
     }
 }
 
+.pattern-tabs,
+.pattern-v2-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+}
+
+.pattern-tab,
+.pattern-v2-tab {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f8f9fa;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pattern-tab.active,
+.pattern-v2-tab.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.pattern-tab-content {
+    display: none;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.pattern-tab-content.active {
+    display: block;
+}
+
+.pattern-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.pattern-header .toy-id-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+.pattern-header .toy-id-group .form-control {
+    width: 200px;
+    margin: 0;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.section-header h4 {
+    margin: 0;
+}
+
+.action-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+    margin-bottom: 8px;
+}
+
+.action-row .input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.action-row .input-group label {
+    min-width: 120px;
+    font-size: 0.9em;
+    color: #666;
+    white-space: nowrap;
+}
+
+.action-row .input-group .form-control {
+    width: 120px;
+    margin: 0;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.btn-icon {
+    padding: 4px 8px;
+    min-width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.json-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.json-textarea {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    padding: 1rem;
+    min-height: auto;
+    height: auto;
+    resize: none;
+    white-space: pre;
+    tab-size: 2;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+}
+
+.json-textarea.compact {
+    height: 80px;
+    max-width: 600px;
+}
+
+.json-textarea:focus {
+    background: #fff;
+}
+
+.input-group.compact {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.input-group.compact label {
+    min-width: 160px;
+    white-space: nowrap;
+}
+
+.input-group.compact .form-control {
+    width: 160px;
+    margin: 0;
+}
+
+.sync-info {
+    margin-bottom: 20px;
+}
+
+.sync-results {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 4px;
+    margin-top: 12px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .pattern-tabs,
+    .pattern-v2-tabs {
+        border-bottom-color: #404040;
+    }
+    
+    .pattern-tab,
+    .pattern-v2-tab {
+        background: #2d2d2d;
+        border-color: #404040;
+        color: #fff;
+    }
+    
+    .pattern-tab.active,
+    .pattern-v2-tab.active {
+        background: #3498db;
+        border-color: #3498db;
+    }
+    
+    .action-row {
+        background: #2d2d2d;
+        border-color: #404040;
+    }
+    
+    .action-row .input-group label {
+        color: #aaa;
+    }
+    
+    .json-textarea {
+        background: #2d2d2d;
+        border-color: #404040;
+        color: #e0e0e0;
+    }
+    
+    .json-textarea:focus {
+        background: #1a1a1a;
+    }
+    
+    .sync-results {
+        background: #2d2d2d;
+    }
+}
+
+.preset-inputs {
+    margin-bottom: 1.5rem;
+    max-width: 600px;
+}
+
+.preset-inputs select.form-control {
+    width: 160px;
+    margin: 0;
+}
+
+.preset-options {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.preset-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.preset-option input[type="radio"] {
+    margin: 0;
+}
+
+.section-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+.input-method-toggle {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.input-method-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.input-method-option input[type="radio"] {
+    margin: 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .input-method-toggle {
+        border-bottom-color: #404040;
+    }
+}
 </style> 
