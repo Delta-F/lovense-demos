@@ -1,9 +1,36 @@
 <div class="api-documentation">
-    <h1>Toy Events API</h1>
+    <h1>Lovense Toy Events Monitor</h1>
 
-    <!-- API Reference -->
-    <div class="api-reference">
-        <p>This implementation is based on the <a href="https://developer.lovense.com/docs/standard-solutions/toy-events-api.html" target="_blank">Official Lovense Standard API Documentation</a>.</p>
+    <div class="control-panel">
+        <div class="connection-details">
+            <div class="input-group">
+                <label for="httpUrl">GameMode IP:</label>
+                <input type="text" id="httpUrl" value="192.168.31.66" placeholder="Enter IP (e.g., 192.168.31.66)">
+            </div>
+            <div class="input-group">
+                <label for="port">GameMode Port:</label>
+                <input type="text" id="port" value="30010" placeholder="Enter port (e.g., 30010)">
+            </div>
+            <div class="button-group">
+                <button id="connectBtn" class="btn primary">Connect</button>
+                <button id="sendBtn" class="btn primary" disabled>Request Access</button>
+                <button id="disconnectBtn" class="btn danger" disabled>Disconnect</button>
+            </div>
+        </div>
+
+        <div class="data-panels">
+            <div class="panel-section">
+                <h2>Connected Toys</h2>
+                <div id="toyList" class="toy-list"></div>
+            </div>
+            <div class="panel-section">
+                <h2>Event Log</h2>
+                <div class="log-container">
+                    <textarea id="eventLog" class="toy-list"></textarea>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -12,38 +39,445 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-h1 {
+h1, h2 {
     color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.control-panel {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 2rem;
     margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #eee;
 }
 
-/* API Reference styling */
-.api-reference {
-    background: #f8f9fa;
-    border-left: 4px solid #3498db;
-    padding: 1rem;
+.connection-details {
     margin-bottom: 2rem;
-    border-radius: 0 4px 4px 0;
 }
 
-.api-reference p {
-    margin: 0;
-    font-size: 0.95rem;
-    color: #2c3e50;
+.input-group {
+    margin-bottom: 1rem;
 }
 
-.api-reference a {
-    color: #3498db;
-    text-decoration: none;
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #666;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.button-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
     font-weight: 500;
+    transition: background-color 0.2s;
 }
 
-.api-reference a:hover {
-    text-decoration: underline;
+.btn.primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn.primary:hover {
+    background: #2980b9;
+}
+
+.btn.danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn.danger:hover {
+    background: #c0392b;
+}
+
+.data-panels {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: auto;
+}
+
+.panel-section {
+    width: 100%;
+}
+
+.toy-list {
+    height: 300px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.log-container {
+    height: 400px;
+}
+
+textarea#eventLog {
+    width: 100%;
+    height: 100%;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.toy-item {
+    background: white;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.toy-item h3 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+}
+
+.toy-status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.status-connected {
+    background: #27ae60;
+    color: white;
+}
+
+.status-disconnected {
+    background: #e74c3c;
+    color: white;
 }
 </style>
+
+<script>
+class LovenseClient {
+    constructor() {
+        this.ws = null;
+        this.isConnected = false;
+        this.pingInterval = null;
+        this.toys = new Map();
+        this.eventLog = document.getElementById('eventLog');
+        this.toyList = document.getElementById('toyList');
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 3;
+        this.reconnectTimeout = null;
+    }
+
+    constructWsUrl(ip, port) {
+        // Always use wss:// for secure connections
+        return `wss://${ip}:${port}/v1`;
+    }
+
+    connect(serverUrl) {
+        try {
+            if (this.ws) {
+                this.ws.close();
+                this.ws = null;
+            }
+
+            this.logEvent('Connection', `Attempting to connect to ${serverUrl}`);
+            
+            this.ws = new WebSocket(serverUrl);
+            
+            // Increased timeout to 10 seconds
+            const connectTimeout = setTimeout(() => {
+                if (this.ws && this.ws.readyState !== WebSocket.OPEN) {
+                    const error = 'Connection timeout. Possible causes:\n' +
+                        '1. Lovense Connect app is not running\n' +
+                        '2. Game Mode is not enabled in Lovense Connect\n' +
+                        '3. IP/Port are incorrect\n' +
+                        '4. Firewall is blocking the connection';
+                    this.logEvent('Error', error);
+                    this.ws.close();
+                    this.tryReconnect();
+                }
+            }, 10000);
+
+            this.ws.addEventListener('open', () => {
+                clearTimeout(connectTimeout);
+                this.reconnectAttempts = 0;
+                this.isConnected = true;
+                this.updateConnectionStatus();
+                this.logEvent('Connection', 'WebSocket connected successfully');
+                this.requestAccess();
+            });
+
+            this.setupEventListeners();
+        } catch (error) {
+            this.logDetailedError('Connection failed', error);
+        }
+    }
+
+    setupEventListeners() {
+        this.ws.addEventListener('message', (event) => {
+            try {
+                const message = JSON.parse(event.data);
+                if (!message.type.includes('pong')) {
+                    this.logEvent('Received', message);
+                }
+                this.handleMessage(message);
+            } catch (error) {
+                this.logDetailedError('Message parsing failed', error);
+            }
+        });
+
+        this.ws.addEventListener('close', (event) => {
+            this.isConnected = false;
+            this.updateConnectionStatus();
+            this.stopPing();
+            
+            const reason = this.getCloseReason(event.code);
+            this.logEvent('Connection', `WebSocket closed (${event.code}): ${reason}`);
+            
+            if (this.reconnectAttempts < this.maxReconnectAttempts) {
+                this.tryReconnect();
+            }
+        });
+
+        this.ws.addEventListener('error', (error) => {
+            this.logDetailedError('WebSocket error', error);
+        });
+    }
+
+    handleMessage(message) {
+        const { type, data } = message;
+        
+        switch (type) {
+            case 'access-granted':
+                this.accessGranted = true;
+                this.logEvent('Access', 'Access granted to Lovense device');
+                this.startPing();
+                break;
+
+            case 'toy-list':
+                this.updateToyList(data);
+                break;
+
+            case 'toy-status':
+                this.updateToyStatus(data);
+                break;
+
+            case 'button-pressed':
+            case 'function-strength-changed':
+            case 'motion-changed':
+            case 'battery-changed':
+                this.handleToyEvent(type, data);
+                break;
+        }
+    }
+
+    requestAccess() {
+        const accessRequest = {
+            type: 'access',
+            data: {
+                appName: 'Lovense Event Monitor'
+            }
+        };
+        this.sendMessage(accessRequest);
+        
+        // Add timeout for access request
+        setTimeout(() => {
+            if (this.ws && this.ws.readyState === WebSocket.OPEN && !this.accessGranted) {
+                this.logEvent('Error', 'Access request timeout - No response from Lovense Connect');
+            }
+        }, 5000);
+    }
+
+    updateToyList(toys) {
+        this.toyList.innerHTML = toys.map(toy => `
+            <div class="toy-item" id="toy-${toy.id}">
+                <h3>${toy.nickname || toy.name}</h3>
+                <div>Type: ${toy.type}</div>
+                <div>Battery: ${toy.battery}%</div>
+                <div class="toy-status ${toy.connected ? 'status-connected' : 'status-disconnected'}">
+                    ${toy.connected ? 'Connected' : 'Disconnected'}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    updateToyStatus(status) {
+        const toyElement = document.getElementById(`toy-${status.id}`);
+        if (toyElement) {
+            // Update relevant toy status information
+            const statusDiv = toyElement.querySelector('.toy-status');
+            if (statusDiv) {
+                statusDiv.className = `toy-status ${status.connected ? 'status-connected' : 'status-disconnected'}`;
+                statusDiv.textContent = status.connected ? 'Connected' : 'Disconnected';
+            }
+        }
+    }
+
+    handleToyEvent(type, data) {
+        // Handle specific toy events
+        this.logEvent('Toy Event', `${type}: ${JSON.stringify(data)}`);
+    }
+
+    startPing() {
+        this.stopPing();
+        this.pingInterval = setInterval(() => {
+            this.sendMessage({ type: 'ping' });
+        }, 5000);
+    }
+
+    stopPing() {
+        if (this.pingInterval) {
+            clearInterval(this.pingInterval);
+            this.pingInterval = null;
+        }
+    }
+
+    sendMessage(message) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.send(JSON.stringify(message));
+            if (message.type !== 'ping') {
+                this.logEvent('Sent', message);
+            }
+        }
+    }
+
+    disconnect() {
+        if (this.ws) {
+            this.ws.close();
+            this.ws = null;
+        }
+        this.stopPing();
+    }
+
+    logEvent(type, data) {
+        const timestamp = new Date().toISOString();
+        const logMessage = `[${timestamp}] ${type}: ${JSON.stringify(data)}\n`;
+        this.eventLog.value += logMessage;
+        this.eventLog.scrollTop = this.eventLog.scrollHeight;
+    }
+
+    updateConnectionStatus() {
+        connectBtn.disabled = this.isConnected;
+        sendBtn.disabled = !this.isConnected;
+        disconnectBtn.disabled = !this.isConnected;
+        connectBtn.textContent = this.isConnected ? 'Connected' : 'Connect';
+    }
+
+    tryReconnect() {
+        if (this.reconnectTimeout) {
+            clearTimeout(this.reconnectTimeout);
+        }
+
+        this.reconnectAttempts++;
+        const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts - 1), 10000);
+        
+        this.logEvent('Connection', `Reconnect attempt ${this.reconnectAttempts} of ${this.maxReconnectAttempts} in ${delay/1000} seconds...`);
+        
+        this.reconnectTimeout = setTimeout(() => {
+            const ip = document.getElementById('httpUrl').value.trim();
+            const port = document.getElementById('port').value.trim();
+            const serverUrl = this.constructWsUrl(ip, port);
+            this.connect(serverUrl);
+        }, delay);
+    }
+
+    getCloseReason(code) {
+        const closeReasons = {
+            1000: 'Normal closure',
+            1001: 'Going away',
+            1002: 'Protocol error',
+            1003: 'Unsupported data',
+            1004: 'Reserved',
+            1005: 'No status received',
+            1006: 'Abnormal closure',
+            1007: 'Invalid frame payload data',
+            1008: 'Policy violation',
+            1009: 'Message too big',
+            1010: 'Mandatory extension',
+            1011: 'Internal server error',
+            1015: 'TLS handshake'
+        };
+        return closeReasons[code] || 'Unknown reason';
+    }
+
+    logDetailedError(context, error) {
+        const errorDetails = {
+            context,
+            message: error.message || 'No error message',
+            timestamp: new Date().toISOString(),
+            readyState: this.ws ? this.ws.readyState : 'No WebSocket',
+            browserInfo: navigator.userAgent
+        };
+
+        this.logEvent('Detailed Error', errorDetails);
+        console.error('Detailed WebSocket Error:', errorDetails);
+        
+        this.isConnected = false;
+        this.updateConnectionStatus();
+    }
+}
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    const client = new LovenseClient();
+    
+    // Get input references
+    const connectBtn = document.getElementById('connectBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const ipInput = document.getElementById('httpUrl');
+    const portInput = document.getElementById('port');
+    
+    // Add event listeners
+    connectBtn.addEventListener('click', () => {
+        const ip = ipInput.value.trim();
+        const port = portInput.value.trim();
+        
+        if (!ip || !port) {
+            alert('Please enter both IP and Port');
+            return;
+        }
+
+        try {
+            const serverUrl = client.constructWsUrl(ip, port);
+            client.connect(serverUrl);
+        } catch (error) {
+            alert(`Invalid connection parameters: ${error.message}`);
+        }
+    });
+
+    sendBtn.addEventListener('click', () => {
+        client.requestAccess();
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+        client.disconnect();
+    });
+});
+</script>
