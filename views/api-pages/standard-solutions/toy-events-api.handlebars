@@ -9,7 +9,7 @@
             </div>
             <div class="input-group">
                 <label for="port">GameMode Port:</label>
-                <input type="text" id="port" value="30010" placeholder="Enter port (e.g., 30010)">
+                <input type="text" id="port" value="20010" placeholder="Enter port (e.g., 30010)">
             </div>
             <div class="button-group">
                 <button id="connectBtn" class="btn primary">Connect</button>
@@ -20,16 +20,19 @@
 
         <div class="data-panels">
             <div class="panel-section">
-                <h2>Connected Toys</h2>
-                <div id="toyList" class="toy-list"></div>
-            </div>
-            <div class="panel-section">
                 <h2>Event Log</h2>
                 <div class="log-container">
                     <textarea id="eventLog" class="toy-list"></textarea>
                 </div>
             </div>
         </div>
+
+        <div class="test-box-container">
+            <h2>Test Box</h2>
+            <div id="testBox" class="test-box"></div>
+        </div>  
+
+        <div class="game-container" id="gameContainer"></div>
 
     </div>
 </div>
@@ -122,16 +125,19 @@ h1, h2 {
 }
 
 .toy-list {
-    height: 300px;
+    height: 500px;
     overflow-y: auto;
     background: #f8f9fa;
     padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 4px;
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 .log-container {
-    height: 400px;
+    height: 600px;
 }
 
 textarea#eventLog {
@@ -178,6 +184,171 @@ textarea#eventLog {
     background: #e74c3c;
     color: white;
 }
+
+.game-container {
+    width: 100%;
+    height: 400px;
+    background: #0a0a2a;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto 2rem;
+    max-width: 1200px;
+}
+
+.spaceship {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+}
+
+.spaceship img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.battery-indicator {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 5px;
+    background: #333;
+    border-radius: 3px;
+}
+
+.battery-level {
+    height: 100%;
+    background: #2ecc71;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.status-indicator {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.status-connected {
+    background: #2ecc71;
+}
+
+.status-disconnected {
+    background: #e74c3c;
+}
+
+.vibration-effect {
+    animation: vibrate 0.1s infinite;
+}
+
+@keyframes vibrate {
+    0% { transform: translate(0); }
+    25% { transform: translate(2px, 2px); }
+    50% { transform: translate(-2px, -2px); }
+    75% { transform: translate(-2px, 2px); }
+    100% { transform: translate(2px, -2px); }
+}
+
+.toy-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.toy-icon {
+    font-size: 40px;
+    text-align: center;
+    z-index: 1;
+}
+
+.feature-indicators {
+    display: flex;
+    gap: 3px;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2px 4px;
+    border-radius: 10px;
+}
+
+.feature-indicator {
+    cursor: help;
+    transition: transform 0.2s;
+}
+
+.feature-indicator:hover {
+    transform: scale(1.2);
+}
+
+.button-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.button-highlight {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.button-0 { top: 0; left: 50%; transform: translateX(-50%); }
+.button-1 { right: 0; top: 50%; transform: translateY(-50%); }
+.button-2 { bottom: 0; left: 50%; transform: translateX(-50%); }
+.button-3 { left: 0; top: 50%; transform: translateY(-50%); }
+
+.button-active {
+    opacity: 1;
+}
+
+.test-box-container {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.test-box {
+    height: 200px;
+    padding: 1rem;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 14px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
 </style>
 
 <script>
@@ -192,11 +363,61 @@ class LovenseClient {
         this.reconnectAttempts = 0;
         this.maxReconnectAttempts = 3;
         this.reconnectTimeout = null;
+        this.gameContainer = document.getElementById('gameContainer');
+        this.spaceships = new Map();
+        this.toyIcons = {
+            nora: '🌸',
+            max: '🚀',
+            solace: '💫',
+            'solace-pro': '⭐',
+            mission2: '🎯',
+            default: '🎮'
+        };
+
+        this.toyFeatures = {
+            nora: {
+                buttons: [0, 1],
+                functions: ['vibration', 'rotation'],
+                hasShake: true,
+                hasShakeFreq: true,
+                hasBattery: true
+            },
+            max: {
+                buttons: [0, 1],
+                functions: ['vibration', 'inflation'],
+                hasShake: true,
+                hasShakeFreq: true,
+                hasBattery: true
+            },
+            solace: {
+                buttons: [0, 1, 2, 3],
+                functions: [],
+                hasDepth: true,
+                hasBattery: true
+            },
+            'solace-pro': {
+                buttons: [0, 1, 2, 3],
+                functions: [],
+                hasBattery: true,
+                hasMotion: true
+            },
+            mission2: {
+                buttons: [0, 1],
+                functions: [],
+                hasBattery: true,
+                hasMotion: true
+            }
+        };
+
+        this.testBox = document.getElementById('testBox');
     }
 
     constructWsUrl(ip, port) {
-        // Always use wss:// for secure connections
-        return `wss://${ip}:${port}/v1`;
+        // Check if we're on a secure connection (https)
+        const isSecure = window.location.protocol === 'https:';
+        // Use wss:// for secure connections, ws:// for non-secure
+        const protocol = isSecure ? 'wss://' : 'ws://';
+        return `${protocol}${ip}:${port}/v1`;
     }
 
     connect(serverUrl) {
@@ -206,7 +427,7 @@ class LovenseClient {
                 this.ws = null;
             }
 
-            this.logEvent('Connection', `Attempting to connect to ${serverUrl}`);
+            this.updateTestBox(`Connecting to ${serverUrl}...`);
             
             this.ws = new WebSocket(serverUrl);
             
@@ -271,7 +492,7 @@ class LovenseClient {
     }
 
     handleMessage(message) {
-        const { type, data } = message;
+        const { type } = message;
         
         switch (type) {
             case 'access-granted':
@@ -281,18 +502,52 @@ class LovenseClient {
                 break;
 
             case 'toy-list':
-                this.updateToyList(data);
+                if (message.toyList && Array.isArray(message.toyList)) {
+                    this.updateToyList(message.toyList);
+                    message.toyList.forEach(toy => {
+                        this.updateTestBox(`Connected: ${toy.type} (${toy.id})`);
+                    });
+                }
                 break;
 
             case 'toy-status':
-                this.updateToyStatus(data);
+                this.updateToyStatus(message.toyId, message.data.connected);
+                this.updateTestBox(`Status changed: ${message.toyId} - ${message.data.connected ? 'Connected' : 'Disconnected'}`);
+                break;
+
+            case 'button-down':
+                this.handleButtonPress(message.toyId, message.index, true);
+                this.updateTestBox(`Button down: ${message.toyId} - Button ${message.index}`);
+                break;
+
+            case 'button-up':
+                this.handleButtonPress(message.toyId, message.index, false);
+                this.updateTestBox(`Button up: ${message.toyId} - Button ${message.index}`);
                 break;
 
             case 'button-pressed':
+                this.animateSpaceship(message.toyId, 'pulse-effect');
+                this.updateTestBox(`Button pressed: ${message.toyId} - Button ${message.index}`);
+                break;
+
+            case 'depth-changed':
+                this.handleDepthChange(message.toyId, message.value);
+                this.updateTestBox(`Depth changed: ${message.toyId} - Value: ${message.value}`);
+                break;
+
             case 'function-strength-changed':
-            case 'motion-changed':
+                this.handleStrengthChange(message.toyId, message.data);
+                this.updateTestBox(`Strength changed: ${message.toyId} - ${message.data.function}: ${message.data.value}`);
+                break;
+
             case 'battery-changed':
-                this.handleToyEvent(type, data);
+                this.updateBattery(message.toyId, message.data.value);
+                this.updateTestBox(`Battery changed: ${message.toyId} - ${message.data.value}%`);
+                break;
+
+            case 'motion-changed':
+                this.handleMotion(message.toyId, message.data.motionData);
+                this.updateTestBox(`Motion changed: ${message.toyId} - ${message.data.motionData.length} data points`);
                 break;
         }
     }
@@ -301,7 +556,7 @@ class LovenseClient {
         const accessRequest = {
             type: 'access',
             data: {
-                appName: 'Lovense Event Monitor'
+                appName: 'deltatest'
             }
         };
         this.sendMessage(accessRequest);
@@ -315,33 +570,131 @@ class LovenseClient {
     }
 
     updateToyList(toys) {
-        this.toyList.innerHTML = toys.map(toy => `
-            <div class="toy-item" id="toy-${toy.id}">
-                <h3>${toy.nickname || toy.name}</h3>
-                <div>Type: ${toy.type}</div>
-                <div>Battery: ${toy.battery}%</div>
-                <div class="toy-status ${toy.connected ? 'status-connected' : 'status-disconnected'}">
-                    ${toy.connected ? 'Connected' : 'Disconnected'}
-                </div>
-            </div>
-        `).join('');
+        if (!Array.isArray(toys)) {
+            this.logEvent('Error', 'Received invalid toy list data');
+            return;
+        }
+
+        // Clear existing spaceships
+        this.gameContainer.innerHTML = '';
+        this.spaceships.clear();
+
+        // Create spaceships for each toy
+        toys.forEach((toy, index) => {
+            const spaceship = document.createElement('div');
+            spaceship.className = 'spaceship';
+            spaceship.id = `spaceship-${toy.id}`;
+            
+            // Position calculation
+            const angle = (index / Math.max(1, toys.length)) * 2 * Math.PI;
+            const radius = Math.min(this.gameContainer.clientWidth, this.gameContainer.clientHeight) * 0.3;
+            const centerX = this.gameContainer.clientWidth / 2;
+            const centerY = this.gameContainer.clientHeight / 2;
+            const x = centerX + radius * Math.cos(angle) - 40;
+            const y = centerY + radius * Math.sin(angle) - 40;
+            
+            spaceship.style.left = `${x}px`;
+            spaceship.style.top = `${y}px`;
+
+            // Create container for toy icon and features
+            const container = document.createElement('div');
+            container.className = 'toy-container';
+
+            // Add toy icon
+            const icon = document.createElement('div');
+            icon.textContent = this.toyIcons[toy.type] || this.toyIcons.default;
+            icon.className = 'toy-icon';
+            container.appendChild(icon);
+
+            // Add button indicators for Solace
+            if (toy.type === 'solace' || toy.type === 'solace-pro') {
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'button-container';
+                
+                // Create indicators for all 4 buttons
+                for (let i = 0; i < 4; i++) {
+                    const buttonIndicator = document.createElement('div');
+                    buttonIndicator.className = `button-highlight button-${i}`;
+                    buttonContainer.appendChild(buttonIndicator);
+                }
+                
+                container.appendChild(buttonContainer);
+            }
+
+            spaceship.appendChild(container);
+
+            // Add battery indicator
+            const batteryIndicator = document.createElement('div');
+            batteryIndicator.className = 'battery-indicator';
+            const batteryLevel = document.createElement('div');
+            batteryLevel.className = 'battery-level';
+            batteryLevel.style.width = `${toy.battery}%`;
+            batteryIndicator.appendChild(batteryLevel);
+            spaceship.appendChild(batteryIndicator);
+
+            // Add status indicator
+            const statusIndicator = document.createElement('div');
+            statusIndicator.className = `status-indicator ${toy.connected ? 'status-connected' : 'status-disconnected'}`;
+            spaceship.appendChild(statusIndicator);
+
+            this.gameContainer.appendChild(spaceship);
+            this.spaceships.set(toy.id, spaceship);
+            
+            // Log for debugging
+            console.log(`Created spaceship for toy ${toy.id} (${toy.type}) at position (${x}, ${y})`);
+            this.updateTestBox(`Created spaceship for ${toy.type} (${toy.id})`);
+        });
     }
 
-    updateToyStatus(status) {
-        const toyElement = document.getElementById(`toy-${status.id}`);
-        if (toyElement) {
-            // Update relevant toy status information
-            const statusDiv = toyElement.querySelector('.toy-status');
-            if (statusDiv) {
-                statusDiv.className = `toy-status ${status.connected ? 'status-connected' : 'status-disconnected'}`;
-                statusDiv.textContent = status.connected ? 'Connected' : 'Disconnected';
-            }
+    updateToyStatus(toyId, connected) {
+        const spaceship = this.spaceships.get(toyId);
+        if (!spaceship) return;
+
+        const statusIndicator = spaceship.querySelector('.status-indicator');
+        if (statusIndicator) {
+            statusIndicator.className = `status-indicator ${connected ? 'status-connected' : 'status-disconnected'}`;
         }
     }
 
-    handleToyEvent(type, data) {
-        // Handle specific toy events
-        this.logEvent('Toy Event', `${type}: ${JSON.stringify(data)}`);
+    animateSpaceship(toyId, effectClass) {
+        const spaceship = this.spaceships.get(toyId);
+        if (!spaceship) return;
+
+        spaceship.classList.add(effectClass);
+        setTimeout(() => {
+            spaceship.classList.remove(effectClass);
+        }, 300);
+    }
+
+    handleStrengthChange(toyId, data) {
+        const spaceship = this.spaceships.get(toyId);
+        if (!spaceship) return;
+
+        // Add vibration effect based on strength
+        spaceship.style.animation = data.value > 0 ? 
+            `vibrate ${0.1 + (1 - data.value/20) * 0.4}s infinite` : 'none';
+    }
+
+    updateBattery(toyId, value) {
+        const spaceship = this.spaceships.get(toyId);
+        if (!spaceship) return;
+
+        const batteryLevel = spaceship.querySelector('.battery-level');
+        if (batteryLevel) {
+            batteryLevel.style.width = `${value}%`;
+        }
+    }
+
+    handleMotion(toyId, motionData) {
+        const spaceship = this.spaceships.get(toyId);
+        if (!spaceship) return;
+
+        // Calculate average position and speed
+        const avgPosition = motionData.reduce((sum, data) => sum + data.position, 0) / motionData.length;
+        const avgSpeed = motionData.length > 0 ? motionData[motionData.length - 1].speed : 0;
+
+        // Move spaceship based on motion data
+        spaceship.style.transform = `translateY(${avgPosition - 50}px) rotate(${avgSpeed}deg)`;
     }
 
     startPing() {
@@ -373,10 +726,25 @@ class LovenseClient {
             this.ws = null;
         }
         this.stopPing();
+        this.updateTestBox('Disconnected from server');
+    }
+
+    getChineseTimestamp() {
+        const options = {
+            timeZone: 'Asia/Shanghai',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        return new Date().toLocaleString('zh-CN', options);
     }
 
     logEvent(type, data) {
-        const timestamp = new Date().toISOString();
+        const timestamp = this.getChineseTimestamp();
         const logMessage = `[${timestamp}] ${type}: ${JSON.stringify(data)}\n`;
         this.eventLog.value += logMessage;
         this.eventLog.scrollTop = this.eventLog.scrollHeight;
@@ -430,7 +798,7 @@ class LovenseClient {
         const errorDetails = {
             context,
             message: error.message || 'No error message',
-            timestamp: new Date().toISOString(),
+            timestamp: this.getChineseTimestamp(),
             readyState: this.ws ? this.ws.readyState : 'No WebSocket',
             browserInfo: navigator.userAgent
         };
@@ -440,6 +808,32 @@ class LovenseClient {
         
         this.isConnected = false;
         this.updateConnectionStatus();
+    }
+
+    handleButtonPress(toyId, buttonIndex, isDown) {
+        const spaceship = this.spaceships.get(toyId);
+        if (!spaceship) return;
+
+        const buttonIndicator = spaceship.querySelector(`.button-${buttonIndex}`);
+        if (buttonIndicator) {
+            buttonIndicator.classList.toggle('button-active', isDown);
+        }
+    }
+
+    handleDepthChange(toyId, value) {
+        const spaceship = this.spaceships.get(toyId);
+        if (!spaceship) return;
+
+        // Convert depth value (0-20) to pixels (-50 to 50)
+        const movement = ((value / 20) * 100) - 50;
+        spaceship.style.setProperty('--depth-movement', `${movement}px`);
+        spaceship.classList.add('depth-movement');
+    }
+
+    updateTestBox(message) {
+        const timestamp = new Date().toLocaleTimeString();
+        this.testBox.innerHTML += `[${timestamp}] ${message}\n`;
+        this.testBox.scrollTop = this.testBox.scrollHeight;
     }
 }
 
