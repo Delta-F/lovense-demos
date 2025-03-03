@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+router.get('/hide-pages/imooc', (req, res) => {
+    res.render('api-pages/hide-pages/imooc');
+});
+
 router.get('/general/api-introduction', (req, res) => {
     res.render('api-pages/general/api-introduction');
 });

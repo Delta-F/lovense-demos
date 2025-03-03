@@ -10,15 +10,15 @@
             <div class="input-group-row">
                 <div class="input-group">
                     <label for="httpUrl">GameMode IP:</label>
-                    <input type="text" id="httpUrl" placeholder="192.168.31.66">
+                    <input type="text" id="httpUrl" placeholder="Enter IP address e.g. 192.168.31.66">
                 </div>
                 <div class="input-group">
                     <label for="port">GameMode Port:</label>
-                    <input type="text" id="port" placeholder="20010">
+                    <input type="text" id="port" placeholder="Enter Port 30010 for HTTPS">
                 </div>
                 <div class="input-group">
                     <label for="appName">App Name:</label>
-                    <input type="text" id="appName" placeholder="deltatest">
+                    <input type="text" id="appName" placeholder="Enter AppName e.g. deltatest">
                 </div>
             </div>
             <div class="button-group">
@@ -846,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     connectBtn.addEventListener('click', () => {
         const ip = ipInput.value.trim() || '192.168.31.66';
-        const port = portInput.value.trim() || '20010';
+        const port = portInput.value.trim() || '30010';
         
         try {
             const serverUrl = client.constructWsUrl(ip, port);

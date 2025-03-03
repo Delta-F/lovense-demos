@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --background-light: #f5f7fa;
+            --background-dark: #e4e8eb;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        body {
+            background-color: #f0f2f5;
+        }
+
+        .course-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        .course-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+
+        .course-title {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .course-phase {
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .course-phase-header {
+            padding: 1.5rem;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        .course-phase-header:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .course-phase-title {
+            font-size: 1.8rem;
+            color: #1565c0;
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .course-phase-title::after {
+            content: "▼";
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .course-phase-title.collapsed::after {
+            transform: rotate(-90deg);
+        }
+
+        .course-phase-content {
+            padding: 0 1.5rem;
+            max-height: none;
+            transition: max-height 0.5s ease-in-out;
+            overflow: hidden;
+            background: white;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .course-phase-content.collapsed {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .course-section {
+            margin: 1.5rem 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--secondary-color);
+            padding: 1rem 1.5rem;
+            margin: 0;
+            background: #f8f9fa;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary-color);
+            transition: background-color 0.3s ease;
+        }
+
+        .section-title:hover {
+            background: #e9ecef;
+        }
+
+        .section-title::after {
+            content: "▼";
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .section-title.collapsed::after {
+            transform: rotate(-90deg);
+        }
+
+        .topic-list {
+            list-style: none;
+            padding: 1.5rem;
+            margin: 0;
+            max-height: none;
+            transition: max-height 0.5s ease-out;
+            overflow: hidden;
+        }
+
+        .topic-list.collapsed {
+            max-height: 0;
+            padding: 0 1.5rem;
+            overflow: hidden;
+        }
+
+        .topic-item {
+            padding: 0.8rem 0;
+            color: #34495e;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .topic-item::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        .topic-item:last-child {
+            border-bottom: none;
+        }
+
+        .week-container {
+            margin: 1rem 0;
+            background: #f8f9fa;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .week-title {
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+            padding: 1rem;
+            margin: 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e9ecef;
+            transition: background-color 0.3s ease;
+        }
+
+        .week-title:hover {
+            background: #dee2e6;
+        }
+
+        .week-title::after {
+            content: "▼";
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .week-title.collapsed::after {
+            transform: rotate(-90deg);
+        }
+
+        .week-content {
+            padding: 1rem;
+            max-height: 500px;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .week-content.collapsed {
+            max-height: 0;
+            padding: 0 1rem;
+            overflow: hidden;
+        }
+
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-button {
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            transition: transform 0.2s ease;
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .course-summary {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--background-light);
+            border-radius: 8px;
+        }
+
+        .summary-number {
+            font-size: 2rem;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-label {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .course-container {
+                padding: 1rem;
+            }
+            
+            .course-title {
+                font-size: 1.8rem;
+            }
+            
+            .course-phase-title {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .controls {
+                bottom: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="course-container">
+        <div class="course-header">
+            <h1 class="course-title">慕课：AI + Python理财与金融量化 + AI Agent</h1>
+        </div>
+
+        <div class="course-phase">
+            <h2 class="course-phase-title">初阶：财务管理，与AI Agent应用实践</h2>
+
+        <div class="course-section">
+            <h2 class="section-title">AI必知必会</h2>
+            <ul class="topic-list">
+                <li class="topic-item">AI的发展简史</li>
+                <li class="topic-item">AI的常见应用领域</li>
+                <li class="topic-item">通向AGI之路，两个阶段总览</li>
+                <li class="topic-item">最近10年深度学习模型主要迭代</li>
+                <li class="topic-item">大语言模型（LLM）的基础与发展</li>
+                <li class="topic-item">实践作业</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">AI Agent对比试验</h2>
+            <ul class="topic-list">
+                <li class="topic-item">什么是OpenAI和ChatGPT</li>
+                <li class="topic-item">什么是幻方量化和Deepseek</li>
+                <li class="topic-item">AI Agent 的技术架构与原理</li>
+                <li class="topic-item">实践作业</li>
+                <li class="topic-item">ChatGPT与Deepseek对比试验：自然语言</li>
+                <li class="topic-item">ChatGPT与Deepseek对比试验：数理分析</li>
+                <li class="topic-item">ChatGPT与Deepseek对比试验：代码实践</li>
+                <li class="topic-item">ChatGPT与Deepseek对比试验：视觉生成</li>
+                <li class="topic-item">实践作业</li>
+                <li class="topic-item">大模型语言（LLM）的强大之处</li>
+                <li class="topic-item">大模型语言（LLM）仍存在的问题</li>
+                <li class="topic-item">其他知名的AI Agent的应用体验</li>
+                <li class="topic-item">实践作业</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">Python开发环境，快速部署</h2>
+            <ul class="topic-list">
+                <li class="topic-item">部署Python开发环境</li>
+                <li class="topic-item">使用Jupyter创建初始知识库</li>
+                <li class="topic-item">数据科学库Pandas快速入门</li>
+                <li class="topic-item">可视化图库Seaborn快速入门</li>
+                <li class="topic-item">实践作业</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">基础理财：财务管理与保障需求</h2>
+            <ul class="topic-list">
+                <li class="topic-item">人一生的财富曲线</li>
+                <li class="topic-item">个人财务管理入门</li>
+                <li class="topic-item">三张表：资产负债表</li>
+                <li class="topic-item">三张表：利润表</li>
+                <li class="topic-item">三张表：收入支出表</li>
+                <li class="topic-item">实践作业：计算三张表，评估自身财务状况</li>
+                <li class="topic-item">薪酬的定义与构成</li>
+                <li class="topic-item">薪酬结构设计</li>
+                <li class="topic-item">目标岗位薪酬与谈判技巧</li>
+                <li class="topic-item">实践作业：计算你的薪酬结构与社保支出</li>
+                <li class="topic-item">养老金的定义与构成</li>
+                <li class="topic-item">养老金制度：三根支柱</li>
+                <li class="topic-item">养老金投资与管理</li>
+                <li class="topic-item">实践作业：预测退休后的养老金情况</li>
+                <li class="topic-item">关于财富自由和被动收入</li>
+                <li class="topic-item">再度标识你的人生财富曲线</li>
+                <li class="topic-item">实践作业：制定你的财务管理计划与目标</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">项目实践：创建基于GPT的AI财务顾问</h2>
+            <ul class="topic-list">
+                <li class="topic-item">注册并获取 ChatGPT API 信息</li>
+                <li class="topic-item">GTP模型的关键基础概念</li>
+                <li class="topic-item">GTP模型的Token，及其使用成本</li>
+                <li class="topic-item">实践作业</li>
+                <li class="topic-item">项目技术选型与架构图梳理</li>
+                <li class="topic-item">AI财务顾问的需求梳理</li>
+                <li class="topic-item">实现GPT基础对话功能</li>
+                <li class="topic-item">流式与非流式响应</li>
+                <li class="topic-item">Memory工具，实现多轮会话能力</li>
+                <li class="topic-item">实践作业</li>
+                <li class="topic-item">Streamlit 开源网页应用快速入门</li>
+                <li class="topic-item">使用Streamlit创建前端页面</li>
+                <li class="topic-item">使用Streamlit部署AI财务顾问</li>
+                <li class="topic-item">Streamlit 测试与发布</li>
+                <li class="topic-item">实践作业</li>
+            </ul>
+        </div>
+        </div>
+
+        <div class="course-phase">
+            <h2 class="course-phase-title">进阶：财富规划，并创建AI Agent知识库</h2>
+
+        <div class="course-section">
+            <h2 class="section-title">Prompt的设计与优化</h2>
+            <ul class="topic-list">
+                <li class="topic-item">什么是Prompt</li>
+                <li class="topic-item">Prompt的典型构成</li>
+                <li class="topic-item">常见的Prompt设计策略</li>
+                <li class="topic-item">Prompt进阶技巧</li>
+                <li class="topic-item">Prompt参数调优</li>
+                <li class="topic-item">实践作业</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">刚需决策与资产配置：房产</h2>
+            <ul class="topic-list">
+                <li class="topic-item">全球房地产简述</li>
+                <li class="topic-item">量化指标：房价与租金回报率</li>
+                <li class="topic-item">量化指标：资本增值与收益率</li>
+                <li class="topic-item">拓展内容：房产税的计算与规避</li>
+                <li class="topic-item">实践作业：计算你当前房产的量化指标</li>
+                <li class="topic-item">如何获取房地产数据</li>
+                <li class="topic-item">时间序列分析：预测未来房价走势</li>
+                <li class="topic-item">线性回归模型：量化房价影响因素</li>
+                <li class="topic-item">聚类分析：识别高潜力房产市场</li>
+                <li class="topic-item">实践作业：使用蒙特卡洛模拟计算房价</li>
+                <li class="topic-item">普通人如何进行购房决策？</li>
+                <li class="topic-item">决策矩阵：创建购房决策模型</li>
+                <li class="topic-item">设置你的购房决策参数</li>
+                <li class="topic-item">买房 vs 租房的经济价值对比</li>
+                <li class="topic-item">实践作业：如何使用购房决策矩阵，进行购房决策</li>
+                <li class="topic-item">如何挑选合适的房产进行投资？</li>
+                <li class="topic-item">主流房地产市场评估：投资收益 vs 持有成本</li>
+                <li class="topic-item">AI驱动的房产估值模型对比（XGBoost vs 神经网络）</li>
+                <li class="topic-item">实践作业：你是否有关注的房地产投资机会？</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">刚需决策与资产配置：保险</h2>
+            <ul class="topic-list">
+                <li class="topic-item">全球社会保障福利简述</li>
+                <li class="topic-item">社会保险：五险一金（税收）</li>
+                <li class="topic-item">量化分析：社保回报率</li>
+                <li class="topic-item">量化分析：社保支付负担预测</li>
+                <li class="topic-item">实践作业：Python预测人口红利对社保的影响</li>
+                <li class="topic-item">全球商业保险简述</li>
+                <li class="topic-item">商业保险：人身保险（寿险、重疾等）</li>
+                <li class="topic-item">商业保险：财产保险</li>
+                <li class="topic-item">量化分析：保费定价模型</li>
+                <li class="topic-item">量化分析：保单红利与回报分析</li>
+                <li class="topic-item">实践作业：简述持有的保险，并使用Python计算回报收益</li>
+                <li class="topic-item">需求导向法：财务评估、保障需求</li>
+                <li class="topic-item">风险管理法：重疾、收入、意外</li>
+                <li class="topic-item">生命周期法：早期、中期、晚期</li>
+                <li class="topic-item">实践作业：创建你的保险配置方案</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">AI大模型开发框架：LangChain</h2>
+            <ul class="topic-list">
+                <li class="topic-item">什么是LangChain</li>
+                <li class="topic-item">LangChain的技术架构与开发能力</li>
+                <li class="topic-item">LangChain开发环境搭建</li>
+                <li class="topic-item">快速接入GPT</li>
+                <li class="topic-item">快速接入Deepseek</li>
+                <li class="topic-item">实践作业</li>
+                <li class="topic-item">实现对话能力</li>
+                <li class="topic-item">Chains设计模型与Memory管理机制</li>
+                <li class="topic-item">如何使用Langchain-chatchat实现前端交互</li>
+                <li class="topic-item">Langchain-chatchat本地部署</li>
+                <li class="topic-item">实践作业</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">项目实践：创建 AI Agent 财富管理知识库</h2>
+            <ul class="topic-list">
+                <li class="topic-item">通过Output Parser获得结构化JSON</li>
+                <li class="topic-item">使用LangChain实现多轮对话能力</li>
+                <li class="topic-item">使用LangChain实现文件上传与解析</li>
+                <li class="topic-item">使用LangChain实现数据库查询</li>
+                <li class="topic-item">实践作业</li>
+                <li class="topic-item">通过loader快速实现文本解析和网页爬虫能力</li>
+                <li class="topic-item">对加载的数据进行二次清洗和分割</li>
+                <li class="topic-item">使用LangChain对文本进行向量转换</li>
+                <li class="topic-item">使用丰富的集成进行向量存储</li>
+                <li class="topic-item">实践作业</li>
+                <li class="topic-item">使用memory实现向量检索</li>
+                <li class="topic-item">使用supabase实现向量存储与查询</li>
+                <li class="topic-item">LangChain：重构AI财务顾问</li>
+                <li class="topic-item">实践作业</li>
+            </ul>
+        </div>
+        </div>
+
+        <div class="course-phase">
+            <h2 class="course-phase-title">高阶：金融量化策略，引入AI核心技术</h2>
+
+        <div class="course-section">
+            <h2 class="section-title">Python网络请求与爬虫库</h2>
+            <ul class="topic-list">
+                <li class="topic-item">网页爬虫：Requests</li>
+                <li class="topic-item">网页爬虫：BeautifulSoup</li>
+                <li class="topic-item">动态爬虫：Scrapy</li>
+                <li class="topic-item">实践作业：爬取任意网站内容页面</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">金融量化入门</h2>
+            <ul class="topic-list">
+                <li class="topic-item">全球金融资产简介</li>
+                <li class="topic-item">什么是大放水？美元与标普500</li>
+                <li class="topic-item">债券：利率、通胀、货币政策</li>
+                <li class="topic-item">股票：企业、市场、投机行为</li>
+                <li class="topic-item">基金：资产投资组合</li>
+                <li class="topic-item">实践作业：根据风险偏好，配置金融资产</li>
+                <li class="topic-item">常见的金融数据来源：政府</li>
+                <li class="topic-item">常见的金融数据来源：机构</li>
+                <li class="topic-item">如何获取数据来源：API（虚拟交易所）</li>
+                <li class="topic-item">如何获取数据来源：爬虫（东方财富）</li>
+                <li class="topic-item">实践作业：爬取000001基金历年数据</li>
+                <li class="topic-item">建立基金数据库：多线程爬虫</li>
+                <li class="topic-item">管理基金数据库：增删改查</li>
+                <li class="topic-item">管理基金数据库：csv数据存储与迭代函数</li>
+                <li class="topic-item">实践作业：创建你的金融数据库</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">Python机器学习与深度学习入门</h2>
+            <ul class="topic-list">
+                <li class="topic-item">机器学习库：scikit-learn</li>
+                <li class="topic-item">常用的机器学习方法有哪些</li>
+                <li class="topic-item">实践作业：创建一个随机森林模型</li>
+                <li class="topic-item">常用的深度学习方法有哪些</li>
+                <li class="topic-item">深度学习库：Tensorflow与Transformer模型</li>
+                <li class="topic-item">深度学习库：PyTorch与Bert模型</li>
+                <li class="topic-item">实践作业：创建一个Transformer模型</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">量化分析与策略交易：股票、债券</h2>
+            <ul class="topic-list">
+                <li class="topic-item">股票类型简述</li>
+                <li class="topic-item">常用的基本面分析</li>
+                <li class="topic-item">基本面指标：PE、PB</li>
+                <li class="topic-item">常用的交易技术分析</li>
+                <li class="topic-item">量化策略：MA（移动均线）</li>
+                <li class="topic-item">实践作业：Python计算对比10支股票MA数据</li>
+                <li class="topic-item">债券类型简述</li>
+                <li class="topic-item">常用的债券评估指标</li>
+                <li class="topic-item">计算到期收益率</li>
+                <li class="topic-item">债券套利入门</li>
+                <li class="topic-item">创建利率套利模型</li>
+                <li class="topic-item">实践作业：Python筛选表现最佳的债券类型</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">量化分析与策略交易：基金</h2>
+            <ul class="topic-list">
+                <li class="topic-item">基金类型简述</li>
+                <li class="topic-item">基金，普通人最适合的投资工具</li>
+                <li class="topic-item">如何快速筛选优质基金（东方财富网）</li>
+                <li class="topic-item">基于GPT-4的基金季报自动摘要</li>
+                <li class="topic-item">基金数据爬取与管理</li>
+                <li class="topic-item">实践作业：Python批量爬取基金数据</li>
+                <li class="topic-item">量化分析指标：夏普</li>
+                <li class="topic-item">量化分析指标：收益率</li>
+                <li class="topic-item">量化分析指标：波动率（方差）</li>
+                <li class="topic-item">实践作业：计算100+基金量化指标</li>
+                <li class="topic-item">基金定投策略</li>
+                <li class="topic-item">创建定投量化模型</li>
+                <li class="topic-item">基金定投波动策略</li>
+                <li class="topic-item">创建波动量化模型</li>
+                <li class="topic-item">实践作业：回测100+基金定投、波动量化结果</li>  
+                <li class="topic-item">什么是交易信号</li>
+                <li class="topic-item">如何创建量化交易信号</li>
+                <li class="topic-item">定投量化模型优化</li>
+                <li class="topic-item">定投波动模型优化</li>
+                <li class="topic-item">实践作业：增加波动参数，创建定投定投、波动交易信号</li>
+                <li class="topic-item">投资组合概述</li>
+                <li class="topic-item">保守型：均值-方差优化组合</li>
+                <li class="topic-item">稳健型：风险评价策略</li>
+                <li class="topic-item">实践作业：选择3支不同类型的基金开始定投</li>
+            </ul>
+        </div>
+        </div>
+
+        <div class="course-phase">
+            <h2 class="course-phase-title">从0到1部署AI Agent金融智能体</h2>
+        <div class="course-section">
+            <h2 class="section-title">Embeddings和向量数据库的应用</h2>
+            <ul class="topic-list">
+                <li class="topic-item">认识词向量</li>
+                <li class="topic-item">文本向量化实现方式</li>
+                <li class="topic-item">什么是嵌入（Embeddings）表示</li>
+                <li class="topic-item">如何将数据（如文本、图像、音频）转化为向量</li>
+                <li class="topic-item">实践作业：使用Python实现文本向量化</li>
+                <li class="topic-item">嵌入原理：如何通过神经网络生成低维向量表示</li>
+                <li class="topic-item">嵌入结构：如何通过向量之间的距离表示相似性</li>
+                <li class="topic-item">向量数据库的基本概念</li>
+                <li class="topic-item">如何存储和检索嵌入向量</li>
+                <li class="topic-item">实践作业：使用Python实现向量存储</li>
+                <li class="topic-item">常见的向量数据库：FAISS、Milvus、Pincecone</li>
+                <li class="topic-item">对比向量数据库与传统数据</li>
+                <li class="topic-item">示例：使用Milvus进行大规模文本检索</li>
+                <li class="topic-item">实践作业：使用Milvus进行大规模文本检索</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">使用RAG增强大模型的生成能力</h2>
+            <ul class="topic-list">
+                <li class="topic-item">什么是RAG（检索增强生成）</li>
+                <li class="topic-item">RAG的核心原理与流程</li>
+                <li class="topic-item">如何使用RAG提升对话系统的表现</li>
+                <li class="topic-item">实践作业：使用RAG提升对话系统的表现</li>
+                <li class="topic-item">RAG在实际应用中的问题和解决方案</li>
+                <li class="topic-item">如何优化RAG系统的准确性</li>
+                <li class="topic-item">数据质量与知识库管理</li>
+                <li class="topic-item">实践作业：使用RAG提升对话系统的表现</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">项目实践：创建 AI Agent 金融量化 BOT</h2>
+            <ul class="topic-list">
+                <li class="topic-item">交易API对接：基金数据库</li>
+                <li class="topic-item">量化BOT逻辑架构设计</li>
+                <li class="topic-item">交易信号处理</li>
+                <li class="topic-item">自动下单与交易执行（模拟）</li>
+                <li class="topic-item">实践作业</li>
+                <li class="topic-item">使用Python运行Bot</li>
+                <li class="topic-item">结合Docker部署AI交易Bot</li>
+                <li class="topic-item">云端部署交易Bot</li>
+                <li class="topic-item">实践作业</li>
+                <li class="topic-item">使用 FastAPI 搭建交易 Bot API</li>
+                <li class="topic-item">实现 Web 端交易 Bot 监控</li>
+                <li class="topic-item">自动化交易与定时任务</li>
+                <li class="topic-item">实践作业</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">AI Agent 的部署与管理</h2>
+            <ul class="topic-list">
+                <li class="topic-item">系统部署：如何将系统部署到生产环境</li>
+                <li class="topic-item">系统监控：监控检索与生成性能</li>
+                <li class="topic-item">数据更新与优化</li>
+                <li class="topic-item">模型更新与优化</li>
+                <li class="topic-item">实践作业</li>
+                <li class="topic-item">如何实现零成本服务集成</li>
+                <li class="topic-item">飞书机器人集成</li>
+                <li class="topic-item">钉钉机器人集成</li>
+                <li class="topic-item">微信公众号机器人集成</li>
+                <li class="topic-item">实践作业</li>
+            </ul>
+        </div>
+
+        <div class="course-section">
+            <h2 class="section-title">体系课作业与拓展</h2>
+            <ul class="topic-list">
+                <li class="topic-item">实现你自己的AI Agent（可分享链接）</li>
+                <li class="topic-item">通过Git参与AI Agent的优化与再开发</li>
+                <li class="topic-item">分享AI Agent实践过程中的心得与发现</li>
+                <li class="topic-item">实践作业</li>
+            </ul>
+        </div>
+        </div>
+
+
+        <div class="course-summary">
+            <h2>课程概览</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-number">4</div>
+                    <div class="summary-label">课程阶段</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number">16</div>
+                    <div class="summary-label">课程章节</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number">180+</div>
+                    <div class="summary-label">课程内容</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-number">60-80h</div>
+                    <div class="summary-label">预计学习时长</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="control-button" id="expandAll">展开全部</button>
+        <button class="control-button" id="collapseAll">收起全部</button>
+    </div>
+
+    <script>
+        let globalWeekCounter = 1;
+        let sectionCounter = 1;
+
+        // Initialize all collapsible elements
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize phases
+            document.querySelectorAll('.course-phase').forEach(phase => {
+                const header = phase.querySelector('.course-phase-header') || document.createElement('div');
+                const title = phase.querySelector('.course-phase-title');
+                const content = phase.querySelector('.course-phase-content') || document.createElement('div');
+                
+                if (!header.className.includes('course-phase-header')) {
+                    header.className = 'course-phase-header';
+                    content.className = 'course-phase-content collapsed';
+                    
+                    // Move all content except the title into content div
+                    const children = Array.from(phase.children);
+                    children.forEach(child => {
+                        if (child !== title && child !== header && child !== content) {
+                            content.appendChild(child);
+                        }
+                    });
+                    
+                    if (title && !header.contains(title)) {
+                        header.appendChild(title);
+                    }
+                    
+                    // Clear the phase and rebuild it
+                    phase.innerHTML = '';
+                    phase.appendChild(header);
+                    phase.appendChild(content);
+                }
+                
+                // Ensure click handler is attached
+                header.addEventListener('click', (e) => {
+                    // Prevent the click from propagating to nested elements
+                    e.stopPropagation();
+                    if (title) title.classList.toggle('collapsed');
+                    content.classList.toggle('collapsed');
+                });
+            });
+
+            // Initialize sections
+            document.querySelectorAll('.section-title').forEach(title => {
+                title.classList.add('collapsed');
+                title.addEventListener('click', (e) => {
+                    // Prevent the click from propagating to parent elements
+                    e.stopPropagation();
+                    e.preventDefault();
+                    
+                    title.classList.toggle('collapsed');
+                    const section = title.closest('.course-section');
+                    const weekContainers = section.querySelectorAll('.week-container');
+                    
+                    weekContainers.forEach(container => {
+                        const weekContent = container.querySelector('.week-content');
+                        const weekTitle = container.querySelector('.week-title');
+                        if (title.classList.contains('collapsed')) {
+                            weekContent.classList.add('collapsed');
+                            weekTitle.classList.add('collapsed');
+                        } else {
+                            weekContent.classList.remove('collapsed');
+                            weekTitle.classList.remove('collapsed');
+                        }
+                    });
+                });
+            });
+
+            // Initialize topic lists as collapsed
+            document.querySelectorAll('.topic-list').forEach(list => {
+                list.classList.add('collapsed');
+            });
+        });
+
+        // Function to organize topics into weeks based on practice assignments
+        function organizeIntoWeeks(topicList) {
+            const topics = Array.from(topicList.children);
+            const weekContainer = document.createElement('div');
+            weekContainer.className = 'weeks-wrapper';
+            let currentWeekTopics = [];
+            let weekGroups = [];
+            
+            // Group topics into weeks based on practice assignments
+            topics.forEach((topic) => {
+                currentWeekTopics.push(topic);
+                if (topic.textContent.includes('实践作业')) {
+                    weekGroups.push([...currentWeekTopics]);
+                    currentWeekTopics = [];
+                }
+            });
+            
+            // If there are remaining topics without a practice assignment, add them as the last week
+            if (currentWeekTopics.length > 0) {
+                weekGroups.push(currentWeekTopics);
+            }
+            
+            // Create week containers
+            weekGroups.forEach((weekTopics) => {
+                const weekDiv = document.createElement('div');
+                weekDiv.className = 'week-container';
+                
+                const weekTitle = document.createElement('div');
+                weekTitle.className = 'week-title collapsed';
+                weekTitle.textContent = `第${globalWeekCounter}.${sectionCounter}周`;
+                
+                sectionCounter++;
+                if (sectionCounter > 2) {
+                    sectionCounter = 1;
+                    globalWeekCounter++;
+                }
+                
+                const weekContent = document.createElement('div');
+                weekContent.className = 'week-content collapsed';
+                
+                weekTopics.forEach(topic => weekContent.appendChild(topic.cloneNode(true)));
+                
+                weekDiv.appendChild(weekTitle);
+                weekDiv.appendChild(weekContent);
+                weekContainer.appendChild(weekDiv);
+
+                weekTitle.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent event from bubbling up
+                    e.preventDefault();
+                    weekTitle.classList.toggle('collapsed');
+                    weekContent.classList.toggle('collapsed');
+                });
+            });
+            
+            topicList.replaceWith(weekContainer);
+        }
+
+        function initializeWeeks() {
+            globalWeekCounter = 1; // Reset counter before reorganizing
+            sectionCounter = 1;    // Reset section counter
+            document.querySelectorAll('.topic-list').forEach(list => {
+                organizeIntoWeeks(list);
+            });
+        }
+
+        // Control buttons functionality
+        document.getElementById('expandAll').addEventListener('click', () => {
+            document.querySelectorAll('.collapsed').forEach(elem => {
+                elem.classList.remove('collapsed');
+            });
+        });
+
+        document.getElementById('collapseAll').addEventListener('click', () => {
+            document.querySelectorAll('.course-phase-content, .topic-list, .week-content, .section-title, .week-title, .course-phase-title').forEach(elem => {
+                elem.classList.add('collapsed');
+            });
+        });
+
+        // Remove the week size selector since we're now using practice assignments as delimiters
+        const weekSizeSelect = document.getElementById('weekSizeSelect');
+        if (weekSizeSelect) {
+            weekSizeSelect.remove();
+        }
+
+        // Initialize weeks
+        initializeWeeks();
+    </script>
+</body>
+</html>
