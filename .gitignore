@@ -1,2 +1,1 @@
-/hide-pages/*
-/hide-pages/imooc
+views/api-pages/hide-pages/imooc.handlebars
