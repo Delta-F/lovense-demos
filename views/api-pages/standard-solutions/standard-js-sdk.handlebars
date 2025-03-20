@@ -369,6 +369,225 @@
                 </div>
             </div>
         </section>
+
+        <section id="auto-pattern">
+            <h2>6.1 Auto Pattern By Toy Type</h2>
+            <p>This section will automatically send different patterns based on toy type:</p>
+            <ul class="pattern-rules">
+                <li>Ferri: Pattern 1 (Pulse)</li>
+                <li>Lush: Pattern 2 (Wave)</li>
+                <li>Other toys: Pattern 3 (Fireworks)</li>
+            </ul>
+            
+            <div class="auto-pattern-container">
+                <div class="toys-and-preview">
+                    <div class="online-toys-section">
+                        <div class="section-header">
+                            <h4>Online Toys:</h4>
+                            <button type="button" class="refresh-button" onclick="refreshOnlineToys()">
+                                <span class="refresh-icon">🔄</span> Refresh
+                            </button>
+                        </div>
+                        <div id="onlineToysDisplay" class="online-toys-list">
+                            <div class="loading">Click Refresh to load toys</div>
+                        </div>
+                    </div>
+
+                    <div class="pattern-preview-section">
+                        <h4>Pattern Commands Preview:</h4>
+                        <div id="patternPreview" class="pattern-preview">
+                            No toys connected. Please connect toys first.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-section">
+                    <button type="button" class="primary-button" onclick="sendAutoPatterns()">
+                        <span class="send-icon">📤</span> Send Patterns
+                    </button>
+                </div>
+
+                <div class="history-container">
+                    <div class="request-history">
+                        <h4>Request History:</h4>
+                        <div id="autoPatternRequests" class="history-list">
+                            <!-- Request history will be added here -->
+                        </div>
+                    </div>
+                    <div class="response-history">
+                        <h4>Response History:</h4>
+                        <div id="autoPatternResponses" class="history-list">
+                            <!-- Response history will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .pattern-rules {
+                    margin: 15px 0;
+                    padding-left: 20px;
+                }
+                .pattern-rules li {
+                    margin: 5px 0;
+                    color: #666;
+                }
+                .auto-pattern-container {
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-top: 20px;
+                }
+                .toys-and-preview {
+                    display: flex;
+                    gap: 20px;
+                    margin-bottom: 20px;
+                }
+                .online-toys-section {
+                    flex: 1;
+                    background: white;
+                    padding: 15px;
+                    border-radius: 6px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+                .section-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 15px;
+                }
+                .section-header h4 {
+                    margin: 0;
+                }
+                .refresh-button {
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    padding: 5px 10px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    font-size: 0.9em;
+                    transition: all 0.2s;
+                }
+                .refresh-button:hover {
+                    background: #e9ecef;
+                }
+                .online-toys-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                .toy-card {
+                    background: #f8f9fa;
+                    border-radius: 6px;
+                    padding: 12px;
+                    border-left: 3px solid #3498db;
+                }
+                .toy-card .toy-name {
+                    font-weight: 500;
+                    color: #2c3e50;
+                    margin-bottom: 5px;
+                }
+                .toy-card .toy-info {
+                    font-size: 0.9em;
+                    color: #666;
+                }
+                .toy-card .battery {
+                    margin-top: 5px;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                }
+                .battery-level {
+                    height: 4px;
+                    background: #eee;
+                    border-radius: 2px;
+                    width: 50px;
+                    overflow: hidden;
+                }
+                .battery-fill {
+                    height: 100%;
+                    background: #2ecc71;
+                    transition: width 0.3s ease;
+                }
+                .pattern-preview-section {
+                    flex: 1;
+                    background: white;
+                    padding: 15px;
+                    border-radius: 6px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+                .pattern-preview {
+                    font-family: monospace;
+                    white-space: pre-wrap;
+                    background: #f8f9fa;
+                    padding: 10px;
+                    border-radius: 4px;
+                    margin-top: 10px;
+                    height: calc(100% - 50px);
+                    overflow-y: auto;
+                }
+                .action-section {
+                    display: flex;
+                    justify-content: flex-end;
+                    margin-bottom: 20px;
+                }
+                .action-section button {
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                }
+                .send-icon {
+                    font-size: 1.2em;
+                }
+                .loading {
+                    color: #666;
+                    font-style: italic;
+                    text-align: center;
+                    padding: 20px;
+                }
+                .history-container {
+                    display: flex;
+                    gap: 20px;
+                }
+                .request-history, .response-history {
+                    flex: 1;
+                    background: white;
+                    padding: 15px;
+                    border-radius: 6px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+                .history-list {
+                    max-height: 400px;
+                    overflow-y: auto;
+                }
+                .history-item {
+                    margin: 10px 0;
+                    padding: 10px;
+                    background: #f8f9fa;
+                    border-radius: 4px;
+                    font-family: monospace;
+                    font-size: 0.9em;
+                }
+                .history-item .timestamp {
+                    color: #666;
+                    font-size: 0.85em;
+                    margin-bottom: 5px;
+                }
+                .history-item pre {
+                    margin: 5px 0;
+                    white-space: pre-wrap;
+                }
+                .history-item.success {
+                    border-left: 3px solid #28a745;
+                }
+                .history-item.error {
+                    border-left: 3px solid #dc3545;
+                }
+            </style>
+        </section>
     </div>
 </div>
 
@@ -1552,4 +1771,160 @@ h1, h2 {
             connectResponse.style.color = '#dc3545';
         }
     }
+
+    async function refreshOnlineToys() {
+        if (!basicSdkInstance) return alert('Please initialize SDK first');
+
+        const onlineToysDisplay = document.getElementById('onlineToysDisplay');
+        const patternPreview = document.getElementById('patternPreview');
+
+        try {
+            const toys = await basicSdkInstance.getOnlineToys();
+            
+            if (!toys || toys.length === 0) {
+                onlineToysDisplay.innerHTML = '<div class="no-toys">No online toys found</div>';
+                patternPreview.innerHTML = 'No toys connected. Please connect toys first.';
+                return;
+            }
+
+            // Update online toys display
+            onlineToysDisplay.innerHTML = '';
+            toys.forEach(toy => {
+                const toyCard = document.createElement('div');
+                toyCard.className = 'toy-card';
+                toyCard.innerHTML = `
+                    <div class="toy-name">${toy.name} (${toy.nickname || 'No nickname'})</div>
+                    <div class="toy-info">
+                        Type: ${toy.toyType}<br>
+                        Version: ${toy.hVersion}<br>
+                        ID: ${toy.id}
+                    </div>
+                    <div class="battery">
+                        <span>Battery: ${toy.battery}%</span>
+                        <div class="battery-level">
+                            <div class="battery-fill" style="width: ${toy.battery}%"></div>
+                        </div>
+                    </div>
+                `;
+                onlineToysDisplay.appendChild(toyCard);
+            });
+
+            // Update pattern preview
+            updatePatternPreview(toys);
+        } catch (error) {
+            onlineToysDisplay.innerHTML = '<div class="error">Error loading toys: ' + error.message + '</div>';
+            patternPreview.innerHTML = 'Error: Unable to load online toys';
+            console.error('Error loading online toys:', error);
+        }
+    }
+
+    function updatePatternPreview(toys) {
+        const patternPreview = document.getElementById('patternPreview');
+        if (!toys || toys.length === 0) {
+            patternPreview.innerHTML = 'No toys connected. Please connect toys first.';
+            return;
+        }
+
+        const commands = toys.map(toy => {
+            const pattern = getPatternForToyType(toy.toyType);
+            return {
+                toyId: toy.id,
+                name: pattern,
+                time: 60
+            };
+        });
+
+        patternPreview.innerHTML = `Commands to be sent:\n${JSON.stringify(commands, null, 2)}`;
+    }
+
+    function getPatternForToyType(toyType) {
+        toyType = toyType.toLowerCase();
+        switch(toyType) {
+            case 'ferri':
+                return 'pulse';  // Pattern 1
+            case 'lush':
+                return 'wave';   // Pattern 2
+            default:
+                return 'fireworks'; // Pattern 3
+        }
+    }
+
+    async function sendAutoPatterns() {
+        if (!basicSdkInstance) return alert('Please initialize SDK first');
+
+        const autoPatternRequests = document.getElementById('autoPatternRequests');
+        const autoPatternResponses = document.getElementById('autoPatternResponses');
+
+        try {
+            const toys = await basicSdkInstance.getOnlineToys();
+            
+            if (!toys || toys.length === 0) {
+                throw new Error('No online toys found');
+            }
+
+            // Process each toy
+            for (const toy of toys) {
+                const pattern = getPatternForToyType(toy.toyType);
+                const command = {
+                    toyId: toy.id,
+                    name: pattern,
+                    time: 60
+                };
+
+                // Add request to history
+                const requestItem = document.createElement('div');
+                requestItem.className = 'history-item';
+                requestItem.innerHTML = `
+                    <div class="timestamp">${getFormattedTimestamp()}</div>
+                    <div>URL: basicSdkInstance.sendPresetCommand()</div>
+                    <div>Toy: ${toy.name} (${toy.toyType})</div>
+                    <pre>${JSON.stringify(command, null, 2)}</pre>
+                `;
+                autoPatternRequests.insertBefore(requestItem, autoPatternRequests.firstChild);
+
+                try {
+                    const response = await basicSdkInstance.sendPresetCommand(command);
+                    
+                    // Add success response to history
+                    const responseItem = document.createElement('div');
+                    responseItem.className = 'history-item success';
+                    responseItem.innerHTML = `
+                        <div class="timestamp">${getFormattedTimestamp()}</div>
+                        <div>Toy: ${toy.name} (${toy.toyType})</div>
+                        <pre>${JSON.stringify(response, null, 2)}</pre>
+                    `;
+                    autoPatternResponses.insertBefore(responseItem, autoPatternResponses.firstChild);
+                } catch (error) {
+                    // Add error response to history
+                    const responseItem = document.createElement('div');
+                    responseItem.className = 'history-item error';
+                    responseItem.innerHTML = `
+                        <div class="timestamp">${getFormattedTimestamp()}</div>
+                        <div>Toy: ${toy.name} (${toy.toyType})</div>
+                        <pre>Error: ${error.message}</pre>
+                    `;
+                    autoPatternResponses.insertBefore(responseItem, autoPatternResponses.firstChild);
+                }
+            }
+        } catch (error) {
+            // Add error to history
+            const responseItem = document.createElement('div');
+            responseItem.className = 'history-item error';
+            responseItem.innerHTML = `
+                <div class="timestamp">${getFormattedTimestamp()}</div>
+                <pre>Error: ${error.message}</pre>
+            `;
+            autoPatternResponses.insertBefore(responseItem, autoPatternResponses.firstChild);
+        }
+    }
+
+    // Auto refresh online toys when the section is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        const autoPatternSection = document.getElementById('auto-pattern');
+        if (autoPatternSection) {
+            refreshOnlineToys();
+        }
+    });
+</script>
+</script>
 </script>
