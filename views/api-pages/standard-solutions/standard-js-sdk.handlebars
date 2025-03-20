@@ -117,6 +117,28 @@
             
         </section>
 
+        <section id="connect-app">
+            <h2>3.1 Connect Lovense APP</h2>
+            <p>This method can directly launch the app on a mobile web page and automatically complete the code scanning.</p>
+            <div class="button-container">
+                <button type="button" class="primary-button" onclick="connectLovenseApp()">Connect Lovense APP</button>
+            </div>
+
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Request:</h4>
+                    <div class="request-url">URL: basicSdkInstance.connectLovenseAPP()</div>
+                    <div class="timestamp" id="connectRequestTime">Timestamp: -</div>
+                    <div id="connectRequest">Request will appear here...</div>
+                </div>
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div class="timestamp" id="connectResponseTime">Timestamp: -</div>
+                    <div id="connectResponse">Response will appear here...</div>
+                </div>
+            </div>
+        </section>
+
         <section id="toy-info">
             <h2>4. Search For Toys</h2>
             <div class="button-group">
@@ -1500,6 +1522,34 @@ h1, h2 {
             patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
             patternResponse.innerHTML = JSON.stringify({ code: 400, message: error.message }, null, 2);
             patternResponse.style.color = '#dc3545';
+        }
+    }
+
+    async function connectLovenseApp() {
+        if (!basicSdkInstance) return alert('Please initialize SDK first');
+
+        const connectRequest = document.getElementById('connectRequest');
+        const connectResponse = document.getElementById('connectResponse');
+        const connectRequestTime = document.getElementById('connectRequestTime');
+        const connectResponseTime = document.getElementById('connectResponseTime');
+
+        // Update request timestamp and display
+        connectRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+        connectRequest.innerHTML = JSON.stringify({ action: 'connect Lovense APP' }, null, 2);
+
+        try {
+            const startTime = Date.now();
+            const response = await basicSdkInstance.connectLovenseAPP();
+            
+            // Update response timestamp and display
+            connectResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            connectResponse.innerHTML = JSON.stringify(response, null, 2);
+            connectResponse.style.color = '#28a745';
+        } catch (error) {
+            // Update response timestamp and error display
+            connectResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            connectResponse.innerHTML = `Error: ${error.message}`;
+            connectResponse.style.color = '#dc3545';
         }
     }
 </script>

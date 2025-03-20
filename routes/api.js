@@ -41,6 +41,10 @@ router.get('/standard-solutions/toy-events-api', (req, res) => {
     res.render('api-pages/standard-solutions/toy-events-api');
 });
 
+router.get('/standard-solutions/pattern-editor-api', (req, res) => {
+    res.render('api-pages/standard-solutions/pattern-editor-api');
+});
+
 // Camera Solutions routes
 router.get('/cam-solutions/cam-extension', (req, res) => {
     res.render('api-pages/cam-solutions/cam-extension');

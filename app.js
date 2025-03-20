@@ -77,6 +77,10 @@ app.get('/toy-events-api', (req, res) => {
     res.redirect('/standard-solutions/toy-events-api');
 });
 
+app.get('/pattern-editor-api', (req, res) => {
+    res.redirect('/standard-solutions/pattern-editor-api');
+});
+
 app.get('/cam-extension', (req, res) => {
     res.redirect('/cam-solutions/cam-extension');
 });
