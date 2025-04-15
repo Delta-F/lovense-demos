@@ -38,7 +38,9 @@
             <h2>2. Initialize the SDK</h2>
             <form id="init-form" class="test-form">
                 <div class="input-group">
-                    <input type="text" id="auth-token" class="form-control" placeholder="Enter AuthToken From Last Step">
+                    <div class="auth-token-container">
+                        <input type="text" id="auth-token" class="form-control" placeholder="Enter AuthToken From Last Step">
+                    </div>
                     <input type="text" id="platform" class="form-control" placeholder="Enter Platform Name">
                     <button type="button" class="primary-button" onclick="initializeSDK()">Initialize SDK</button>
                     <button type="button" class="secondary-button" onclick="stopSDK()">Stop SDK</button>
@@ -89,10 +91,6 @@
                 </div>
                 <div class="qr-section">
                     <div class="qr-title">Scan QR Code</div>
-                    <label class="qr-default">
-                        <input type="checkbox" id="use-default-qr">
-                        <span>Use default QR code for test</span>
-                    </label>
                     <div id="qr-display" class="qr-container">
                         <div class="qr-placeholder">
                             <span>QR Code will appear here</span>
@@ -778,22 +776,6 @@ h1, h2 {
     color: #333;
     padding: 10px;
 }
-
-.qr-default {
-    font-size: 0.9em;
-    color: #666;
-    padding-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-}
-
-.qr-default input[type="checkbox"] {
-    margin: 0;
-    cursor: pointer;
-}
-
 .qr-container {
     margin: 10px 0;
     text-align: center;
@@ -1128,6 +1110,39 @@ h1, h2 {
 .pattern-container {
     transition: all 0.3s ease;
 }
+
+.auth-token-container {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.copy-button {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.copy-button:hover {
+    transform: scale(1.1);
+}
+
+.copy-icon {
+    font-size: 16px;
+}
+
+.copy-button.copied .copy-icon {
+    content: "✓";
+    color: #28a745;
+}
 </style> 
 
 <script src="https://api.lovense-api.com/basic-sdk/core.min.js"></script>
@@ -1180,8 +1195,8 @@ h1, h2 {
             searchResponse.style.color = '#28a745';
 
             // If successful, update the auth token input
-            if (data.token) {
-                document.getElementById('auth-token').value = data.token;
+            if (data.data && data.data.authToken) {
+                document.getElementById('auth-token').value = data.data.authToken;
             }
         } catch (error) {
             // Update response timestamp and error display
@@ -1198,7 +1213,7 @@ h1, h2 {
         const initRequestTime = document.getElementById('initRequestTime');
         const initResponseTime = document.getElementById('initResponseTime');
 
-        const authToken = document.getElementById('auth-token').value.trim() || 'VkCNidfMTJFJB0lz7l98keLwTmXJcf+gTFBPc+biH8q3YrV5OoA0osXIaDfQe9CP';
+        const authToken = document.getElementById('auth-token').value.trim();
         const platform = document.getElementById('platform').value.trim() || 'deltatest';
         const uid = document.getElementById('user-id').value.trim() || '8888';
 
@@ -1290,34 +1305,21 @@ h1, h2 {
 
     // QR Code Handler
     async function generateQRCode() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const qrResponse = document.getElementById('qrResponse');
+            const qrResponseTime = document.getElementById('qrResponseTime');
+            qrResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            qrResponse.innerHTML = JSON.stringify({ code: 400, message: 'Please initialize SDK first' }, null, 2);
+            qrResponse.style.color = '#dc3545';
+            return;
+        }
         
         const qrRequest = document.getElementById('qrRequest');
         const qrResponse = document.getElementById('qrResponse');
         const qrRequestTime = document.getElementById('qrRequestTime');
         const qrResponseTime = document.getElementById('qrResponseTime');
         const qrDisplay = document.getElementById('qr-display');
-        
-        // Check if using default QR code
-        const useDefaultQr = document.getElementById('use-default-qr').checked;
-        if (useDefaultQr) {
-            const defaultQrCode = {
-                token: "2Td5iU0YoWSpsE4fx5WSMfLIobOBGWFxwN0qwRuHojRmKJzZuPGvimCeHh203rfcJTNCFBX+rE16MczWZvs1xQ==",
-                qrcodeUrl: "https://apps.lovense.com/UploadFiles/qr/20241203/bce5e8934fb342b1bff234070a6e6b18.jpg"
-            };
-            
-            qrRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            qrRequest.innerHTML = JSON.stringify({ action: 'get default QR code' }, null, 2);
-            
-            qrResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            qrResponse.innerHTML = JSON.stringify(defaultQrCode, null, 2);
-            qrResponse.style.color = '#28a745';
-            
-            qrDisplay.innerHTML = `<img src="${defaultQrCode.qrcodeUrl}" alt="QR Code">`;
-            return;
-        }
 
-        // For non-default QR code
         // Update request timestamp and display
         qrRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
         document.querySelector('#qr-code .request-url').innerHTML = 'URL: basicSdkInstance.getQrcode()';
@@ -1356,7 +1358,14 @@ h1, h2 {
 
     // Update Toy Info Handlers
     async function getAppStatus() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const toyResponse = document.getElementById('toyResponse');
+            const toyResponseTime = document.getElementById('toyResponseTime');
+            toyResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            toyResponse.innerHTML = JSON.stringify({ code: 400, message: 'Please initialize SDK first' }, null, 2);
+            toyResponse.style.color = '#dc3545';
+            return;
+        }
         
         const toyRequest = document.getElementById('toyRequest');
         const toyResponse = document.getElementById('toyResponse');
@@ -1385,7 +1394,14 @@ h1, h2 {
     }
 
     async function getToys() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const toyResponse = document.getElementById('toyResponse');
+            const toyResponseTime = document.getElementById('toyResponseTime');
+            toyResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            toyResponse.innerHTML = JSON.stringify({ code: 400, message: 'Please initialize SDK first' }, null, 2);
+            toyResponse.style.color = '#dc3545';
+            return;
+        }
         
         const toyRequest = document.getElementById('toyRequest');
         const toyResponse = document.getElementById('toyResponse');
@@ -1413,7 +1429,14 @@ h1, h2 {
     }
 
     async function getOnlineToys() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const toyResponse = document.getElementById('toyResponse');
+            const toyResponseTime = document.getElementById('toyResponseTime');
+            toyResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            toyResponse.innerHTML = JSON.stringify({ code: 400, message: 'Please initialize SDK first' }, null, 2);
+            toyResponse.style.color = '#dc3545';
+            return;
+        }
         
         const toyRequest = document.getElementById('toyRequest');
         const toyResponse = document.getElementById('toyResponse');
@@ -1440,7 +1463,14 @@ h1, h2 {
     }
 
     async function checkToyOnline() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const toyResponse = document.getElementById('toyResponse');
+            const toyResponseTime = document.getElementById('toyResponseTime');
+            toyResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            toyResponse.innerHTML = JSON.stringify({ code: 400, message: 'Please initialize SDK first' }, null, 2);
+            toyResponse.style.color = '#dc3545';
+            return;
+        }
         
         const toyRequest = document.getElementById('toyRequest');
         const toyResponse = document.getElementById('toyResponse');
@@ -1467,7 +1497,14 @@ h1, h2 {
     }
 
     async function getDeviceInfo() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const toyResponse = document.getElementById('toyResponse');
+            const toyResponseTime = document.getElementById('toyResponseTime');
+            toyResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            toyResponse.innerHTML = JSON.stringify({ code: 400, message: 'Please initialize SDK first' }, null, 2);
+            toyResponse.style.color = '#dc3545';
+            return;
+        }
         
         const toyRequest = document.getElementById('toyRequest');
         const toyResponse = document.getElementById('toyResponse');
@@ -1528,7 +1565,14 @@ h1, h2 {
 
     // Test Function Handler
     async function testFunction() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const cmdResponse = document.getElementById('cmdResponse');
+            const cmdResponseTime = document.getElementById('cmdResponseTime');
+            cmdResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            cmdResponse.innerHTML = JSON.stringify({ code: 400, message: 'Please initialize SDK first' }, null, 2);
+            cmdResponse.style.color = '#dc3545';
+            return;
+        }
 
         const cmdRequest = document.getElementById('cmdRequest');
         const cmdResponse = document.getElementById('cmdResponse');
@@ -1569,7 +1613,7 @@ h1, h2 {
             
             // Update response timestamp and display
             cmdResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            cmdResponse.innerHTML = JSON.stringify(response, null, 2);
+            cmdResponse.innerHTML = JSON.stringify(response || { code: 200, message: 'Command sent successfully' }, null, 2);
             cmdResponse.style.color = '#28a745';
         } catch (error) {
             cmdResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
@@ -1587,7 +1631,14 @@ h1, h2 {
     }
 
     async function testPattern() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const patternResponse = document.getElementById('patternResponse');
+            const patternResponseTime = document.getElementById('patternResponseTime');
+            patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            patternResponse.innerHTML = JSON.stringify({ code: 400, message: 'Please initialize SDK first' }, null, 2);
+            patternResponse.style.color = '#dc3545';
+            return;
+        }
 
         const patternRequest = document.getElementById('patternRequest');
         const patternResponse = document.getElementById('patternResponse');
@@ -1626,7 +1677,7 @@ h1, h2 {
             
             // Update response timestamp and display
             patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            patternResponse.innerHTML = JSON.stringify(response, null, 2);
+            patternResponse.innerHTML = JSON.stringify(response || { code: 200, message: 'Pattern command sent successfully' }, null, 2);
             patternResponse.style.color = '#28a745';
         } catch (error) {
             patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
@@ -1668,7 +1719,14 @@ h1, h2 {
     }
 
     async function testPresetPattern(presetName) {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const patternResponse = document.getElementById('patternResponse');
+            const patternResponseTime = document.getElementById('patternResponseTime');
+            patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            patternResponse.innerHTML = JSON.stringify({ code: 400, message: 'Please initialize SDK first' }, null, 2);
+            patternResponse.style.color = '#dc3545';
+            return;
+        }
 
         const patternRequest = document.getElementById('patternRequest');
         const patternResponse = document.getElementById('patternResponse');
@@ -1698,7 +1756,7 @@ h1, h2 {
             
             // Update response timestamp and display
             patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            patternResponse.innerHTML = JSON.stringify(response, null, 2);
+            patternResponse.innerHTML = JSON.stringify(response || { code: 200, message: 'Preset pattern command sent successfully' }, null, 2);
             patternResponse.style.color = '#28a745';
         } catch (error) {
             patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
@@ -1708,7 +1766,14 @@ h1, h2 {
     }
 
     async function stopToyAction() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const patternResponse = document.getElementById('patternResponse');
+            const patternResponseTime = document.getElementById('patternResponseTime');
+            patternResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            patternResponse.innerHTML = JSON.stringify({ code: 400, message: 'Please initialize SDK first' }, null, 2);
+            patternResponse.style.color = '#dc3545';
+            return;
+        }
 
         const patternRequest = document.getElementById('patternRequest');
         const patternResponse = document.getElementById('patternResponse');
@@ -1745,16 +1810,36 @@ h1, h2 {
     }
 
     async function connectLovenseApp() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const connectResponse = document.getElementById('connectResponse');
+            const connectResponseTime = document.getElementById('connectResponseTime');
+            connectResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            connectResponse.innerHTML = JSON.stringify({ code: 400, message: 'Please initialize SDK first' }, null, 2);
+            connectResponse.style.color = '#dc3545';
+            return;
+        }
 
         const connectRequest = document.getElementById('connectRequest');
         const connectResponse = document.getElementById('connectResponse');
         const connectRequestTime = document.getElementById('connectRequestTime');
         const connectResponseTime = document.getElementById('connectResponseTime');
 
+        // Check if user is on mobile
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
         // Update request timestamp and display
         connectRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
         connectRequest.innerHTML = JSON.stringify({ action: 'connect Lovense APP' }, null, 2);
+
+        if (!isMobile) {
+            connectResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
+            connectResponse.innerHTML = JSON.stringify({ 
+                code: 400, 
+                message: 'Please use mobile to connect Lovense APP' 
+            }, null, 2);
+            connectResponse.style.color = '#dc3545';
+            return;
+        }
 
         try {
             const startTime = Date.now();
@@ -1767,13 +1852,19 @@ h1, h2 {
         } catch (error) {
             // Update response timestamp and error display
             connectResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            connectResponse.innerHTML = `Error: ${error.message}`;
+            connectResponse.innerHTML = JSON.stringify({ code: 400, message: error.message }, null, 2);
             connectResponse.style.color = '#dc3545';
         }
     }
 
     async function refreshOnlineToys() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const onlineToysDisplay = document.getElementById('onlineToysDisplay');
+            const patternPreview = document.getElementById('patternPreview');
+            onlineToysDisplay.innerHTML = '<div class="error">Please initialize SDK first</div>';
+            patternPreview.innerHTML = 'Please initialize SDK first';
+            return;
+        }
 
         const onlineToysDisplay = document.getElementById('onlineToysDisplay');
         const patternPreview = document.getElementById('patternPreview');
@@ -1850,7 +1941,17 @@ h1, h2 {
     }
 
     async function sendAutoPatterns() {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
+        if (!basicSdkInstance) {
+            const autoPatternResponses = document.getElementById('autoPatternResponses');
+            const responseItem = document.createElement('div');
+            responseItem.className = 'history-item error';
+            responseItem.innerHTML = `
+                <div class="timestamp">${getFormattedTimestamp()}</div>
+                <pre>Error: Please initialize SDK first</pre>
+            `;
+            autoPatternResponses.insertBefore(responseItem, autoPatternResponses.firstChild);
+            return;
+        }
 
         const autoPatternRequests = document.getElementById('autoPatternRequests');
         const autoPatternResponses = document.getElementById('autoPatternResponses');

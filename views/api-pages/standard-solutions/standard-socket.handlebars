@@ -820,8 +820,8 @@ h1, h2 {
             searchResponse.style.color = '#28a745';
 
             // If successful, update the auth token input
-            if (data.token) {
-                document.getElementById('auth-token').value = data.token;
+            if (data.data && data.data.authToken) {
+                document.getElementById('auth-token').value = data.data.authToken;
             }
         } catch (error) {
             // Update response timestamp and error display
@@ -838,8 +838,9 @@ h1, h2 {
         const initRequestTime = document.getElementById('initRequestTime');
         const initResponseTime = document.getElementById('initResponseTime');
 
-        const authToken = document.getElementById('auth-token').value.trim() || 'VkCNidfMTJFJB0lz7l98kVFM7TFKqZ8N51/J2lUvXyoH/OrCiIqYaSb/1CJIJtD/';
+        const authToken = document.getElementById('auth-token').value.trim();
         const platform = document.getElementById('platform').value.trim() || 'deltatest';
+        const uid = document.getElementById('user-id').value.trim() || '8888';
 
         const requestData = { 
             platform: platform,

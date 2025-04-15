@@ -81,6 +81,10 @@ app.get('/pattern-editor-api', (req, res) => {
     res.redirect('/standard-solutions/pattern-editor-api');
 });
 
+app.get('/discord-bot-example', (req, res) => {
+    res.redirect('/standard-solutions/discord-bot-example');
+});
+
 app.get('/cam-extension', (req, res) => {
     res.redirect('/cam-solutions/cam-extension');
 });

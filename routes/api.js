@@ -13,6 +13,7 @@ router.get('/general/toy-supported-functions', (req, res) => {
     res.render('api-pages/general/toy-supported-functions');
 });
 
+// Standard Solutions
 router.get('/standard-solutions/standard-api', (req, res) => {
     res.render('api-pages/standard-solutions/standard-api');
 });
@@ -43,6 +44,10 @@ router.get('/standard-solutions/toy-events-api', (req, res) => {
 
 router.get('/standard-solutions/pattern-editor-api', (req, res) => {
     res.render('api-pages/standard-solutions/pattern-editor-api');
+});
+
+router.get('/standard-solutions/discord-bot-example', (req, res) => {
+    res.render('api-pages/standard-solutions/discord-bot-example');
 });
 
 // Camera Solutions routes
