@@ -205,9 +205,9 @@
         </div>
         <div class="input-group">
             <label>
-                <input type="checkbox" id="useHttp" checked> Use HTTP (http port:20010, https port:30010)
+                <input type="checkbox" id="useHttp"> Use HTTP (http port:20010, https port:30010)
             </label>
-            <a href="#" id="downloadDemo" class="download-btn">Download Demo (Port 30010 not supported yet, please test locally)</a>
+            <a href="#" id="downloadDemo" class="download-btn">Download Demo (For HTTP port 20010 local test)</a>
         </div>
         <div class="input-group">
             <label>WebSocket URL:</label>
@@ -326,11 +326,22 @@
         // Update WebSocket URL when inputs change
         function updateWsUrl() {
             const ip = document.getElementById('serverIp').value;
-            const port = document.getElementById('useHttp').checked ? '20010' : '30010';
-            const protocol = document.getElementById('useHttp').checked ? 'ws' : 'wss';
-            const wsUrl = `${protocol}://${ip}:${port}/v1`;
+            const useHttp = document.getElementById('useHttp').checked;
+            let wsUrl;
+            
+            if (useHttp) {
+                // HTTP format: ws://192.168.31.65:20010/v1
+                const port = '20010';
+                wsUrl = `ws://${ip}:${port}/v1`;
+            } else {
+                // HTTPS format: wss://192-168-31-65.lovense.club:30010/v1
+                const formattedIp = ip.replace(/\./g, '-');
+                const port = '30010';
+                wsUrl = `wss://${formattedIp}.lovense.club:${port}/v1`;
+            }
+            
             document.getElementById('wsUrl').textContent = wsUrl;
-            document.getElementById('serverPort').value = port;
+            document.getElementById('serverPort').value = useHttp ? '20010' : '30010';
         }
 
         // Event listeners for URL updates
