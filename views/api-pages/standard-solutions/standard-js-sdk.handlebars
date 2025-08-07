@@ -38,12 +38,44 @@
             <h2>2. Initialize the SDK</h2>
             <form id="init-form" class="test-form">
                 <div class="input-group">
-                    <div class="auth-token-container">
-                        <input type="text" id="auth-token" class="form-control" placeholder="Enter AuthToken From Last Step">
-                    </div>
+                    <input type="text" id="auth-token" class="form-control" placeholder="Enter AuthToken From Last Step">
                     <input type="text" id="platform" class="form-control" placeholder="Enter Platform Name">
                     <button type="button" class="primary-button" onclick="initializeSDK()">Initialize SDK</button>
                     <button type="button" class="secondary-button" onclick="stopSDK()">Stop SDK</button>
+                </div>
+                
+                                    <div class="app-type-section">
+                        <div class="app-type-header">
+                            <label>App Type Configuration:</label>
+                            <button type="button" class="expand-button expanded" onclick="toggleAppTypeSection()">
+                                <span class="expand-icon">▼</span>
+                                <span class="expand-text">Hide Options</span>
+                            </button>
+                        </div>
+                        <div class="app-type-content" id="appTypeContent">
+                        <div class="app-type-checkboxes">
+                            <div class="app-type-option">
+                                <input type="radio" name="app-type" value="remote" id="remote-app" checked>
+                                <label for="remote-app" class="app-type-label">
+                                    <div class="app-type-icon">📱</div>
+                                    <div class="app-type-info">
+                                        <div class="app-type-name">Remote App</div>
+                                        <div class="app-type-desc">Default Lovense Remote App</div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="app-type-option">
+                                <input type="radio" name="app-type" value="connect" id="connect-app">
+                                <label for="connect-app" class="app-type-label">
+                                    <div class="app-type-icon">🔗</div>
+                                    <div class="app-type-info">
+                                        <div class="app-type-name">Connect App</div>
+                                        <div class="app-type-desc">Lovense Connect App</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
             <div class="api-test-results">
@@ -116,8 +148,8 @@
         </section>
 
         <section id="connect-app">
-            <h2>3.1 Connect Lovense APP</h2>
-            <p>This method can directly launch the app on a mobile web page and automatically complete the code scanning.</p>
+            <h2>3.1 Connect Lovense APP (Mobile Only)</h2>
+            <p>This method can directly launch the app on a mobile web page and automatically complete the code scanning. <strong>This function only works on mobile devices (iPhone, iPad, Android).</strong></p>
             <div class="button-container">
                 <button type="button" class="primary-button" onclick="connectLovenseApp()">Connect Lovense APP</button>
             </div>
@@ -136,6 +168,8 @@
                 </div>
             </div>
         </section>
+
+
 
         <section id="toy-info">
             <h2>4. Search For Toys</h2>
@@ -1111,11 +1145,135 @@ h1, h2 {
     transition: all 0.3s ease;
 }
 
-.auth-token-container {
-    position: relative;
+.input-group .form-control {
     flex: 1;
+    margin-bottom: 0;
+}
+
+.app-type-section {
+    margin-top: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.app-type-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.app-type-header label {
+    font-size: 0.9em;
+    color: #666;
+    font-weight: 500;
+    margin: 0;
+}
+
+.expand-button {
+    background: none;
+    border: none;
+    cursor: pointer;
     display: flex;
     align-items: center;
+    gap: 8px;
+    color: #007bff;
+    font-size: 0.85em;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.expand-button:hover {
+    background: #e9ecef;
+}
+
+.expand-icon {
+    font-size: 12px;
+    transition: transform 0.2s;
+}
+
+.expand-button.expanded .expand-icon {
+    transform: rotate(180deg);
+}
+
+.app-type-content {
+    padding: 15px;
+    background: white;
+}
+
+.app-type-checkboxes {
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+}
+
+.app-type-option {
+    position: relative;
+}
+
+.app-type-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.app-type-label {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.app-type-label:hover {
+    border-color: #007bff;
+    background: #f8f9fa;
+}
+
+.app-type-option input[type="radio"]:checked + .app-type-label {
+    border-color: #007bff;
+    background: #e3f2fd;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+}
+
+.app-type-icon {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.app-type-option input[type="radio"]:checked + .app-type-label .app-type-icon {
+    background: #007bff;
+    color: white;
+}
+
+.app-type-info {
+    flex: 1;
+}
+
+.app-type-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 1em;
+    margin-bottom: 4px;
+}
+
+.app-type-desc {
+    color: #666;
+    font-size: 0.85em;
 }
 
 .copy-button {
@@ -1216,12 +1374,18 @@ h1, h2 {
         const authToken = document.getElementById('auth-token').value.trim();
         const platform = document.getElementById('platform').value.trim() || 'deltatest';
         const uid = document.getElementById('user-id').value.trim() || '8888';
+        const appType = document.querySelector('input[name="app-type"]:checked').value.trim();
 
         const initData = { 
             platform, 
             authToken,  // Auth token from previous step
             uid 
         };
+
+        // Add appType if selected
+        if (appType) {
+            initData.appType = appType;
+        }
         
         // Update request timestamp and display
         initRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
@@ -1530,23 +1694,7 @@ h1, h2 {
         }
     }
 
-    // Preset Pattern Handler
-    async function sendPreset(type) {
-        if (!basicSdkInstance) return alert('Please initialize SDK first');
 
-        document.getElementById('pattern-request').textContent = 
-            `[${new Date().toISOString()}] Sending preset pattern: ${type}`;
-
-        try {
-            const startTime = Date.now();
-            const response = await basicSdkInstance.presetPattern(type);
-            document.getElementById('pattern-response').textContent = 
-                `[${new Date().toISOString()}] (${Date.now() - startTime}ms) ${JSON.stringify(response)}`;
-        } catch (error) {
-            document.getElementById('pattern-response').textContent = 
-                `[${new Date().toISOString()}] Error: ${error.message}`;
-        }
-    }
 
     // Sync slider and number input values
     document.querySelectorAll('.strength-slider').forEach(slider => {
@@ -1823,19 +1971,27 @@ h1, h2 {
         const connectResponse = document.getElementById('connectResponse');
         const connectRequestTime = document.getElementById('connectRequestTime');
         const connectResponseTime = document.getElementById('connectResponseTime');
-
-        // Check if user is on mobile
+        
+        // Check if user is on mobile device
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const deviceType = isMobile ? 'Mobile Device' : 'Desktop/PC';
         
         // Update request timestamp and display
         connectRequestTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-        connectRequest.innerHTML = JSON.stringify({ action: 'connect Lovense APP' }, null, 2);
+        connectRequest.innerHTML = JSON.stringify({ 
+            action: 'connect Lovense APP',
+            deviceType: deviceType,
+            userAgent: navigator.userAgent
+        }, null, 2);
 
         if (!isMobile) {
             connectResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
             connectResponse.innerHTML = JSON.stringify({ 
                 code: 400, 
-                message: 'Please use mobile to connect Lovense APP' 
+                message: 'Connect Lovense APP requires mobile device',
+                deviceType: deviceType,
+                note: 'This function only works on mobile devices (iPhone, iPad, Android)',
+                suggestion: 'Please use a mobile device to test this feature'
             }, null, 2);
             connectResponse.style.color = '#dc3545';
             return;
@@ -1847,15 +2003,46 @@ h1, h2 {
             
             // Update response timestamp and display
             connectResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            connectResponse.innerHTML = JSON.stringify(response, null, 2);
-            connectResponse.style.color = '#28a745';
+            
+            // Handle different response scenarios
+            if (response === undefined || response === null) {
+                connectResponse.innerHTML = JSON.stringify({ 
+                    code: 200, 
+                    message: 'Connect Lovense APP called successfully (no response data)',
+                    deviceType: deviceType,
+                    note: 'This is normal behavior - the function may not return data but launches the app'
+                }, null, 2);
+                connectResponse.style.color = '#28a745';
+            } else if (typeof response === 'object') {
+                connectResponse.innerHTML = JSON.stringify({
+                    ...response,
+                    deviceType: deviceType
+                }, null, 2);
+                connectResponse.style.color = '#28a745';
+            } else {
+                connectResponse.innerHTML = JSON.stringify({ 
+                    code: 200, 
+                    message: 'Connect Lovense APP called successfully',
+                    response: response,
+                    deviceType: deviceType
+                }, null, 2);
+                connectResponse.style.color = '#28a745';
+            }
         } catch (error) {
             // Update response timestamp and error display
             connectResponseTime.innerHTML = `Timestamp: ${getFormattedTimestamp()}`;
-            connectResponse.innerHTML = JSON.stringify({ code: 400, message: error.message }, null, 2);
+            connectResponse.innerHTML = JSON.stringify({ 
+                code: 400, 
+                message: 'Error calling Connect Lovense APP',
+                deviceType: deviceType,
+                error: error.message,
+                details: 'This function may not be available or may require specific conditions'
+            }, null, 2);
             connectResponse.style.color = '#dc3545';
         }
     }
+
+
 
     async function refreshOnlineToys() {
         if (!basicSdkInstance) {
@@ -2016,6 +2203,24 @@ h1, h2 {
                 <pre>Error: ${error.message}</pre>
             `;
             autoPatternResponses.insertBefore(responseItem, autoPatternResponses.firstChild);
+        }
+    }
+
+    // Toggle App Type Section
+    function toggleAppTypeSection() {
+        const content = document.getElementById('appTypeContent');
+        const button = document.querySelector('.expand-button');
+        const icon = button.querySelector('.expand-icon');
+        const text = button.querySelector('.expand-text');
+        
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            button.classList.add('expanded');
+            text.textContent = 'Hide Options';
+        } else {
+            content.style.display = 'none';
+            button.classList.remove('expanded');
+            text.textContent = 'Show Options';
         }
     }
 

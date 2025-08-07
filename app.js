@@ -78,7 +78,7 @@ app.get('/toy-events-api', (req, res) => {
 });
 
 app.get('/pattern-editor-api', (req, res) => {
-    res.redirect('/standard-solutions/pattern-editor-api');
+    res.redirect('/pattern-editor-sdk/pattern-editor-api');
 });
 
 app.get('/discord-bot-example', (req, res) => {

@@ -42,10 +42,6 @@ router.get('/standard-solutions/toy-events-api', (req, res) => {
     res.render('api-pages/standard-solutions/toy-events-api');
 });
 
-router.get('/standard-solutions/pattern-editor-api', (req, res) => {
-    res.render('api-pages/standard-solutions/pattern-editor-api');
-});
-
 router.get('/standard-solutions/discord-bot-example', (req, res) => {
     res.render('api-pages/standard-solutions/discord-bot-example');
 });
@@ -69,6 +65,19 @@ router.get('/cam-solutions/custom-cam-js-sdk', (req, res) => {
 
 router.get('/cam-solutions/custom-cam-socket-api', (req, res) => {
     res.render('api-pages/cam-solutions/custom-cam-socket-api');
+});
+
+// Media Sync routes
+router.get('/media-sync/pattern-editor', (req, res) => {
+    res.render('api-pages/media-sync/pattern-editor');
+});
+
+router.get('/media-sync/pattern-editor-advanced', (req, res) => {
+    res.render('api-pages/media-sync/pattern-editor-advanced');
+});
+
+router.get('/media-sync/patterns-creator', (req, res) => {
+    res.render('api-pages/media-sync/patterns-creator');
 });
 
 // Native SDKs routes

@@ -1,0 +1,723 @@
+<div class="api-documentation">
+    <h1>Media Sync - Pattern Editor</h1>
+
+    <div class="api-reference">
+        <p>This implementation is based on the <a href="https://developer.lovense.com/docs/media-sync.html#sync-with-lovense-toys" target="_blank">Official Lovense Pattern Editor Documentation</a>.</p>
+    </div>
+
+    <!-- Step 1: Get CToken -->
+    <div class="test-section">
+        <h3>Step 1: Get CToken</h3>
+        <div class="ctoken-container">
+            <p class="info-text">Get the ctoken required for pattern editor initialization.</p>
+            <div class="ctoken-controls">
+                <div class="input-row">
+                    <div class="input-group compact">
+                        <label>User ID:</label>
+                        <input type="text" id="userId" placeholder="Enter User ID" class="form-control half-width" style="margin-right:1rem;">
+                        <label>Developer Token:</label>
+                        <input type="text" id="developerToken" placeholder="Enter Developer Token" class="form-control half-width">
+                        <button onclick="getCToken()" class="btn btn-primary" style="margin-left:1rem;">Get CToken</button>
+                    </div>
+                </div>
+            </div>
+            <div class="api-test-results">
+                <div style="display:flex;align-items:center;gap:2rem;">
+                    <div id="ctokenRequestUrl" class="request-url">URL: </div>
+                </div>
+                <div class="response-box">
+                    <div class="timestamp" id="ctokenResponseTime">Timestamp: -</div>
+                    <div id="ctokenResponse" class="data-box">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Initialize JavaScript -->
+    <div class="test-section">
+        <h3>Step 2: Initialize</h3>
+        <div class="js-init-container">
+            <p class="info-text">Include the pattern SDK and initialize the LovensePattern object.</p>
+            <div class="code-row">
+                <div class="code-block">
+                    <code>&lt;script src=&quot;https://cdn.lovense-api.com/peditor-v2/pattern-sdk.js&quot;&gt;&lt;/script&gt;<br>const lovensePattern = new LovensePattern()</code>
+                </div>
+                <button onclick="initializePatternSDK()" class="btn btn-primary" style="margin-left:1rem;">Initialize SDK</button>
+            </div>
+            <div id="jsInitStatus" class="status-indicator" style="margin-top:0.5rem;">Not Initialized</div>
+        </div>
+    </div>
+
+    <!-- Step 3: Media Configuration -->
+    <div class="test-section">
+        <h3>Step 3: Media Configuration & Sync</h3>
+        <div class="media-container">
+            <p class="info-text">Configure media file for sync testing.</p>
+            <div class="media-inputs">
+                <div class="input-row">
+                    <div class="input-group compact">
+                        <label>Media Type:</label>
+                        <div class="media-tabs">
+                            <button id="audioTab" class="media-tab active" onclick="switchMediaTab('audio')">Audio</button>
+                            <button id="videoTab" class="media-tab" onclick="switchMediaTab('video')">Video</button>
+                        </div>
+                    </div>
+                    <div class="input-group compact">
+                        <label>Media ID:</label>
+                        <span id="mediaIdDisplay" style="font-weight:500;">test_media_001</span>
+                    </div>
+                </div>
+            </div>
+            <div id="mediaPreview" class="media-preview">
+                <div id="audioPreview" class="media-example" style="display: block;">
+                    <h5>Audio Example: Sibbydex - Draining the Power of a Saiyan</h5>
+                    <audio id="audioElementUnique" controls style="max-width: 100%;">
+                        <source src="https://assets.shibbydex.com/audio/d4e5bb34-3673-40c4-ad5a-17e4da998d5a.mp3" type="audio/mpeg">
+                        Your browser does not support the audio tag.
+                    </audio>
+                </div>
+                <div id="videoPreview" class="media-example" style="display: none;">
+                    <h5>Video Example: Lovense Random Video</h5>
+                    <video id="videoElementUnique" controls style="max-width: 100%; height: auto;">
+                        <source src="https://cdn.lovense.com/UploadFiles/peditor/video/yukari001-720p.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <!-- Lovense Sync Button rendered here -->
+            <div style="text-align:center; margin: 1.5rem 0 0.5rem 0;">
+                <div id="lovense-sync-btn"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: Pattern & Sync Configuration -->
+    <div class="test-section">
+        <h3>Step 4: Pattern & Sync Configuration</h3>
+        <div class="sync-container">
+            <p class="info-text">Configure pattern data and sync parameters.</p>
+            <div class="sync-inputs">
+                <div class="input-row">
+                    <div class="input-group compact">
+                        <label>Supported App:</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="app1" onclick="selectSupportedApp('app1')"> Lovense Remote
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="app2" onclick="selectSupportedApp('app2')"> VibeMate
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="app3" onclick="selectSupportedApp('app3')" checked> Both
+                            </label>
+                        </div>
+                    </div>
+                    <button onclick="testSync()" class="btn btn-primary">Test Sync</button>
+                    <button onclick="clearSync()" class="btn btn-secondary">Clear</button>
+                </div>
+            </div>
+            <!-- Insert Pattern Url or Pattern Data -->
+            <div class="pattern-inputs">
+                <div class="input-group">
+                    <label>Pattern Link (URL):</label>
+                    <input type="url" id="patternLink" class="form-control half-width" placeholder="https://example.com/pattern.funscript or https://example.com/pattern.json">
+                </div>
+                <div class="input-group" style="align-items: flex-start;">
+                    <label>Pattern Data (JSON):</label>
+                    <textarea id="patternData" class="form-control" rows="6" style="width: 350px; min-width: 120px;" placeholder='//FunScript format:
+[
+  {"pos": 50, "at": 1000},
+  {"pos": 80, "at": 2000},
+  {"pos": 20, "at": 3000}
+]
+//Lovense format:
+[
+  {"v": 10, "t": 1000},
+  {"v": 20, "t": 2000},
+  {"v": 5, "t": 3000}
+]'></textarea>
+                    <button type="button" class="btn btn-secondary" style="margin-left:1rem; margin-top:0.2rem;" onclick="fillFunScriptExample()">Use 60s-funscript example</button>
+                </div>
+            </div>
+            <!-- API Test Results -->
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Sync Request:</h4>
+                    <div class="timestamp" id="syncRequestTime">Timestamp: -</div>
+                    <div id="syncRequest" class="data-box">Request will appear here...</div>
+                </div>
+                <div class="response-box">
+                    <h4>Sync Response:</h4>
+                    <div class="timestamp" id="syncResponseTime">Timestamp: -</div>
+                    <div id="syncResponse" class="data-box">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.lovense-api.com/peditor-v2/pattern-sdk.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
+
+<script>
+let lovensePattern = null;
+let currentCToken = null;
+
+function switchMediaTab(type) {
+    const audioTab = document.getElementById('audioTab');
+    const videoTab = document.getElementById('videoTab');
+    const audioPreview = document.getElementById('audioPreview');
+    const videoPreview = document.getElementById('videoPreview');
+    const audioEl = document.getElementById('audioElementUnique');
+    const videoEl = document.getElementById('videoElementUnique');
+    if (type === 'audio') {
+        audioTab.classList.add('active');
+        videoTab.classList.remove('active');
+        audioPreview.style.display = 'block';
+        videoPreview.style.display = 'none';
+        if (videoEl) videoEl.pause();
+    } else {
+        audioTab.classList.remove('active');
+        videoTab.classList.add('active');
+        audioPreview.style.display = 'none';
+        videoPreview.style.display = 'block';
+        if (audioEl) audioEl.pause();
+    }
+}
+
+// Step 1: Get CToken
+async function getCToken() {
+    const userId = document.getElementById('userId').value;
+    const developerToken = document.getElementById('developerToken').value;
+    
+    if (!userId || !developerToken) {
+        setResponse('ctokenResponse', 'Error: Please enter both User ID and Developer Token');
+        return;
+    }
+
+    try {
+        const url = `https://api.lovense-api.com/api/media/pattern/user/ctoken?userId=${encodeURIComponent(userId)}&developerToken=${encodeURIComponent(developerToken)}`;
+        
+        document.getElementById('ctokenRequestUrl').innerHTML = `URL: ${url}`;
+        const response = await axios.get(url);
+        
+        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('ctokenResponse', JSON.stringify(response.data, null, 2) + ((response.data && response.data.code === 0) ? '\n✅ CToken retrieved successfully!' : '\n❌ Failed to get CToken: ' + (response.data.message || 'Unknown error')));
+        
+        if (response.data && response.data.code === 0) {
+            currentCToken = response.data.data.ctoken;
+        }
+    } catch (error) {
+        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('ctokenResponse', `Error: ${error.message}`);
+    }
+}
+
+// Step 2: Initialize JavaScript
+function initializePatternSDK() {
+    try {
+        if (typeof LovensePattern === 'undefined') {
+            throw new Error('LovensePattern SDK not loaded');
+        }
+        if (!lovensePattern) {
+            lovensePattern = new LovensePattern();
+        }
+        setResponse('jsInitStatus', '✅ SDK Initialized Successfully');
+        document.getElementById('jsInitStatus').className = 'status-indicator success';
+    } catch (error) {
+        setResponse('jsInitStatus', '❌ Initialization Failed: ' + error.message);
+        document.getElementById('jsInitStatus').className = 'status-indicator error';
+    }
+}
+
+async function testSync() {
+    if (!lovensePattern) {
+        setResponse('syncResponse', 'Error: Please initialize the Pattern SDK first');
+        return;
+    }
+    if (!currentCToken) {
+        setResponse('syncResponse', 'Error: Please get a CToken first');
+        return;
+    }
+    try {
+        // Get current media element and duration
+        let mediaEl, duration;
+        if (document.getElementById('videoTab').classList.contains('active')) {
+            mediaEl = document.getElementById('videoElementUnique');
+        } else {
+            mediaEl = document.getElementById('audioElementUnique');
+        }
+        duration = mediaEl && !isNaN(mediaEl.duration) && mediaEl.duration > 0 ? Math.round(mediaEl.duration * 1000) : 60000;
+        // Get patternData from input or use default
+        let patternDataInput = document.getElementById('patternData').value;
+        let patternData;
+        if (patternDataInput) {
+            try {
+                patternData = JSON.parse(patternDataInput);
+            } catch (e) {
+                throw new Error('Invalid JSON in pattern data');
+            }
+        } else {
+            patternData = [
+                { "at": 0, "pos": 20 }, { "at": 3000, "pos": 35 }, { "at": 6000, "pos": 25 },
+                { "at": 9000, "pos": 40 }, { "at": 12000, "pos": 30 }, { "at": 15000, "pos": 50 },
+                { "at": 18000, "pos": 35 }, { "at": 21000, "pos": 55 }, { "at": 24000, "pos": 40 },
+                { "at": 27000, "pos": 30 }, { "at": 30000, "pos": 45 }, { "at": 33000, "pos": 20 },
+                { "at": 36000, "pos": 50 }, { "at": 39000, "pos": 25 }, { "at": 42000, "pos": 55 },
+                { "at": 45000, "pos": 35 }, { "at": 48000, "pos": 40 }, { "at": 51000, "pos": 30 },
+                { "at": 54000, "pos": 60 }, { "at": 57000, "pos": 25 }, { "at": 60000, "pos": 20 }
+            ];
+        }
+        // Supported app
+        let supportedApp = 3;
+        if (document.getElementById('app1').checked) supportedApp = 1;
+        else if (document.getElementById('app2').checked) supportedApp = 2;
+        else if (document.getElementById('app3').checked) supportedApp = 3;
+        // Build syncData
+        const syncData = {
+            ctoken: currentCToken,
+            mediaId: document.getElementById('mediaIdDisplay').textContent,
+            duration: duration,
+            videoEl: mediaEl,
+            patternData: patternData,
+            btnId: 'lovense-sync-btn',
+            supportedApp: supportedApp,
+            syncButtonText: 'Sync with Lovense Toy',
+            syncedButtonText: 'Connected to Lovense Toy'
+        };
+        // Debug log
+        console.log('Lovense sync data:', JSON.stringify(syncData, null, 2));
+        document.getElementById('syncRequestTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('syncRequest', JSON.stringify(syncData, null, 2));
+        // Render SDK sync button in the media section
+        document.getElementById('lovense-sync-btn').innerHTML = '';
+        lovensePattern.sync(syncData);
+        document.getElementById('syncResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('syncResponse', 'Sync button initialized. Please use the button for further actions.');
+    } catch (error) {
+        document.getElementById('syncResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('syncResponse', `Error: ${error.message}`);
+    }
+}
+
+function getTimestamp() {
+    return new Date().toLocaleString('en-US', {
+        timeZone: 'Asia/Shanghai',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+}
+
+// Supported app radio-like logic
+function selectSupportedApp(app) {
+    document.getElementById('app1').checked = false;
+    document.getElementById('app2').checked = false;
+    document.getElementById('app3').checked = false;
+    document.getElementById(app).checked = true;
+}
+
+function clearSync() {
+    setResponse('syncRequest', 'Request will appear here...');
+    setResponse('syncResponse', 'Response will appear here...');
+    document.getElementById('syncRequestTime').innerHTML = 'Timestamp: -';
+    document.getElementById('syncResponseTime').innerHTML = 'Timestamp: -';
+}
+
+function resetToDefaults() {
+    document.getElementById('userId').value = 'deltatest';
+    document.getElementById('developerToken').value = 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
+    document.getElementById('mediaIdDisplay').textContent = 'test_media_001';
+    switchMediaTab('audio');
+    selectSupportedApp('app3');
+    document.getElementById('patternLink').value = '';
+    document.getElementById('patternData').value = '';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    resetToDefaults();
+});
+
+// Patch all response displayers
+function setResponse(id, value) {
+    document.getElementById(id).innerHTML = cleanResponseText(value);
+}
+// Patch CToken response
+async function getCToken() {
+    const userId = document.getElementById('userId').value;
+    const developerToken = document.getElementById('developerToken').value;
+    if (!userId || !developerToken) {
+        setResponse('ctokenResponse', 'Error: Please enter both User ID and Developer Token');
+        return;
+    }
+    try {
+        const url = `https://api.lovense-api.com/api/media/pattern/user/ctoken?userId=${encodeURIComponent(userId)}&developerToken=${encodeURIComponent(developerToken)}`;
+        document.getElementById('ctokenRequestUrl').innerHTML = `URL: ${url}`;
+        const response = await axios.get(url);
+        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('ctokenResponse', JSON.stringify(response.data, null, 2) + ((response.data && response.data.code === 0) ? '\n\n✅ CToken retrieved successfully!' : '\n\n❌ Failed to get CToken: ' + (response.data.message || 'Unknown error')));
+        if (response.data && response.data.code === 0) {
+            currentCToken = response.data.data.ctoken;
+        }
+    } catch (error) {
+        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('ctokenResponse', `Error: ${error.message}`);
+    }
+}
+// Patch SDK status
+function initializePatternSDK() {
+    try {
+        if (typeof LovensePattern === 'undefined') {
+            throw new Error('LovensePattern SDK not loaded');
+        }
+        if (!lovensePattern) {
+            lovensePattern = new LovensePattern();
+        }
+        setResponse('jsInitStatus', '✅ SDK Initialized Successfully');
+        document.getElementById('jsInitStatus').className = 'status-indicator success';
+    } catch (error) {
+        setResponse('jsInitStatus', '❌ Initialization Failed: ' + error.message);
+        document.getElementById('jsInitStatus').className = 'status-indicator error';
+    }
+}
+
+function resetToDefaults() {
+    document.getElementById('userId').value = 'deltatest';
+    document.getElementById('developerToken').value = 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
+    document.getElementById('mediaIdDisplay').textContent = 'test_media_001';
+    switchMediaTab('audio');
+    selectSupportedApp('app3');
+    document.getElementById('patternLink').value = '';
+    document.getElementById('patternData').value = '';
+}
+document.addEventListener('DOMContentLoaded', function() {
+    resetToDefaults();
+});
+
+// Fill FunScript Example
+function fillFunScriptExample() {
+    document.getElementById('patternData').value = `[
+                { "at": 0, "pos": 20 }, { "at": 3000, "pos": 35 }, { "at": 6000, "pos": 25 },
+                { "at": 9000, "pos": 40 }, { "at": 12000, "pos": 30 }, { "at": 15000, "pos": 50 },
+                { "at": 18000, "pos": 35 }, { "at": 21000, "pos": 55 }, { "at": 24000, "pos": 40 },
+                { "at": 27000, "pos": 30 }, { "at": 30000, "pos": 45 }, { "at": 33000, "pos": 20 },
+                { "at": 36000, "pos": 50 }, { "at": 39000, "pos": 25 }, { "at": 42000, "pos": 55 },
+                { "at": 45000, "pos": 35 }, { "at": 48000, "pos": 40 }, { "at": 51000, "pos": 30 },
+                { "at": 54000, "pos": 60 }, { "at": 57000, "pos": 25 }, { "at": 60000, "pos": 20 }
+            ]`;
+}
+
+// Remove undefined from response
+function cleanResponseText(text) {
+    if (!text) return '';
+    return text.replace(/undefined/g, '').trim();
+}
+</script>
+
+<style>
+.api-documentation {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+}
+
+.test-section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h3 {
+    color: #34495e;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+h4 {
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+h5 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+.data-box {
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-family: monospace;
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+}
+
+.code-block {
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.status-indicator {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.status-indicator.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-indicator.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.json-textarea {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    padding: 1rem;
+    resize: vertical;
+    white-space: pre;
+    tab-size: 2;
+}
+
+.media-preview {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.media-example {
+    text-align: center;
+}
+
+.media-example h5 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group.compact {
+    margin-bottom: 0;
+}
+
+.input-group label {
+    display: inline-block;
+    margin-right: 0.5rem;
+    font-weight: 500;
+    color: #2c3e50;
+    min-width: 80px;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.input-row .input-group {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+}
+
+.input-row .btn {
+    margin-bottom: 0;
+    align-self: flex-end;
+}
+
+.info-text {
+    margin: 0.5rem 0;
+    color: #666;
+    font-style: italic;
+}
+
+.request-url {
+    font-family: monospace;
+    color: #0066cc;
+    margin-bottom: 8px;
+    padding: 4px 0;
+    font-size: 0.9em;
+}
+
+.timestamp {
+    font-family: monospace;
+    color: #666;
+    font-size: 0.85em;
+    margin-bottom: 8px;
+}
+
+.api-test-results {
+    margin-top: 1.5rem;
+}
+
+.request-box, .response-box {
+    margin-bottom: 1rem;
+}
+
+.request-box h4, .response-box h4 {
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.api-reference {
+    background: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.api-reference p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+
+.api-reference a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.api-reference a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .input-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .input-row .input-group {
+        min-width: auto;
+    }
+    
+    .checkbox-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+.code-row { display: flex; align-items: center; gap: 1rem; }
+.media-tabs { display: flex; gap: 0.5rem; }
+.media-tab { padding: 0.5rem 1.5rem; border: 1px solid #ddd; background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0; font-weight: 500; }
+.media-tab.active { background: #3498db; color: #fff; border-bottom: 2px solid #3498db; }
+.sync-btn-pink {
+    background: linear-gradient(90deg, #ff5fa2 0%, #ff498a 100%);
+    color: #fff !important;
+    border: none;
+    border-radius: 14px;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.75rem 2.5rem;
+    box-shadow: 0 2px 8px 0 rgba(255, 89, 138, 0.15);
+    transition: background 0.2s, box-shadow 0.2s;
+    margin-right: 0.5rem;
+}
+.sync-btn-pink:hover, .sync-btn-pink:focus {
+    background: linear-gradient(90deg, #ff498a 0%, #ff5fa2 100%);
+    box-shadow: 0 4px 16px 0 rgba(255, 89, 138, 0.25);
+}
+.form-control.half-width {
+    width: 220px;
+    min-width: 120px;
+    display: inline-block;
+}
+.input-group.compact .form-control.half-width {
+    margin-bottom: 0;
+}
+</style>
