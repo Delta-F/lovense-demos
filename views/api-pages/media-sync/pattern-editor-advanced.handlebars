@@ -1,18 +1,1648 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pattern Editor (Advanced) - Media Sync</title>
-</head>
-<body>
-    <div class="container">
-        <h1>Pattern Editor (Advanced)</h1>
-        <p>This is a test demo page for Advanced Pattern Editor functionality.</p>
-        <div class="demo-content">
-            <h2>Advanced Demo Content</h2>
-            <p>Advanced pattern editor demo content will be added here.</p>
+<div class="api-documentation">
+    <h1>Media Sync - Pattern Editor</h1>
+
+    <div class="api-reference">
+        <p>Based on <a href="https://developer.lovense.com/docs/media-sync.html#sync-with-lovense-toys" target="_blank">Lovense Pattern Editor Documentation</a></p>
+    </div>
+
+    <!-- Step 1: Get CToken -->
+    <div class="test-section">
+        <h3>Step 1: Get CToken</h3>
+        <div class="ctoken-container">
+            <p class="info-text">Get ctoken for pattern editor initialization.</p>
+            <div class="ctoken-controls">
+                <div class="input-row">
+                    <div class="input-group compact">
+                        <label>User ID:</label>
+                        <input type="text" id="userId" placeholder="Enter User ID" class="form-control half-width" style="margin-right:1rem;">
+                        <label>Developer Token:</label>
+                        <input type="text" id="developerToken" placeholder="Enter Developer Token" class="form-control half-width">
+                        <button onclick="getCToken()" class="btn btn-primary" style="margin-left:1rem;">Get CToken</button>
+                    </div>
+                </div>
+            </div>
+            <div class="api-test-results">
+                <div style="display:flex;align-items:center;gap:2rem;">
+                    <div id="ctokenRequestUrl" class="request-url">URL: </div>
+                </div>
+                <div class="response-box">
+                    <div class="timestamp" id="ctokenResponseTime">Timestamp: -</div>
+                    <div id="ctokenResponse" class="data-box">Response will appear here...</div>
+                </div>
+            </div>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Step 2: Initialize JavaScript -->
+    <div class="test-section">
+        <h3>Step 2: Initialize SDK</h3>
+        <div class="js-init-container">
+            <div class="code-row">
+                <div class="code-block">
+                    <code>&lt;script src=&quot;https://cdn.lovense-api.com/peditor-v2/pattern-sdk.js&quot;&gt;&lt;/script&gt;<br>const lovensePattern = new LovensePattern()</code>
+                </div>
+                <button onclick="initializePatternSDK()" class="btn btn-primary" style="margin-left:1rem;">Initialize SDK</button>
+            </div>
+            <div id="jsInitStatus" class="status-indicator" style="margin-top:0.5rem;">Not Initialized</div>
+        </div>
+    </div>
+
+    <!-- Step 3: Media Initialization -->
+    <div class="test-section">
+        <h3>Step 3: Initialize Media</h3>
+        <div class="advanced-init-container">
+            <div class="step-header">
+                <p class="info-text">Call this method every time you open a media page or switch media.</p>
+                <button onclick="advancedInit()" class="btn btn-primary">Run Media Init</button>
+            </div>
+            <!-- Media selection merged here -->
+            <div class="media-container">
+                <div class="media-inputs">
+                    <div class="input-row">
+                        <div class="input-group compact">
+                            <label>Media Type:</label>
+                            <div class="media-tabs">
+                                <button id="audioTab" class="media-tab active" onclick="switchMediaTab('audio')">Audio</button>
+                                <button id="videoTab" class="media-tab" onclick="switchMediaTab('video')">Video</button>
+                            </div>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Media ID:</label>
+                            <span id="mediaIdDisplay" class="audio-media-id" style="font-weight:500;">audio_sample_001</span>
+                        </div>
+                        <div class="input-group compact">
+                            <label>Duration (ms):</label>
+                            <span id="mediaDurationDisplay" style="font-weight:500;">-</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="mediaPreview" class="media-preview">
+                    <div id="audioPreview" class="media-example" style="display: block;">
+                        <h5>Audio Example: Sibbydex - Draining the Power of a Saiyan</h5>
+                        <audio id="audioElementUnique" controls class="enhanced-audio-player">
+                            <source src="https://assets.shibbydex.com/audio/d4e5bb34-3673-40c4-ad5a-17e4da998d5a.mp3" type="audio/mpeg">
+                            Your browser does not support the audio tag.
+                        </audio>
+                    </div>
+                    <div id="videoPreview" class="media-example" style="display: none;">
+                        <h5>Video Example: Lovense Random Video</h5>
+                        <video id="videoElementUnique" controls style="max-width: 100%; height: auto;">
+                            <source src="https://cdn.lovense.com/UploadFiles/peditor/video/yukari001-720p.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            </div>
+            <div class="api-test-results">
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div id="advancedInitCallLabel" class="request-url">URL: -</div>
+                    <div class="timestamp" id="advancedInitResponseTime">Timestamp: -</div>
+                    <div id="advancedInitResponse" class="data-box">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: Connect to Apps -->
+    <div class="test-section">
+        <h3>Step 4: Connect to Apps</h3>
+        <div class="connect-apps-container">
+            <div class="step-header">
+                <p class="info-text">Get QR Code, app URL, or Unique Code to connect to Lovense Remote.</p>
+                <div class="connect-controls">
+                    <button onclick="getAppConnection()" class="btn btn-primary">Get Connection Info</button>
+                    <button onclick="clearConnectionInfo()" class="btn btn-secondary">Clear</button>
+                    <div class="input-group compact">
+                        <label>Status:</label>
+                        <span id="appConnectionStatus" class="status-indicator">Not Connected</span>
+                    </div>
+                </div>
+            </div>
+            <div class="connection-display" id="connectionDisplay" style="display: none;">
+                <div class="connection-methods">
+                    <div class="qr-section">
+                        <h4>QR Code (PC)</h4>
+                        <div id="qrCodeDisplay" class="qr-container"></div>
+                    </div>
+                    <div class="app-url-section">
+                        <h4>App URL (Mobile)</h4>
+                        <div id="appUrlDisplay" class="app-url-container"></div>
+                    </div>
+                    <div class="code-section">
+                        <h4>Code (VR)</h4>
+                        <div id="uniqueCodeDisplay" class="unique-code-container"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="api-test-results">
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div id="connectionCallLabel" class="request-url">URL: -</div>
+                    <div class="timestamp" id="connectionResponseTime">Timestamp: -</div>
+                    <div id="connectionResponse" class="data-box">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 5: Load Pattern(s) -->
+    <div class="test-section">
+        <h3>Step 5: Load Pattern(s)</h3>
+        <div class="load-pattern-container">
+            <div class="step-header">
+                <p class="info-text">Load single pattern or multiple patterns for different toys.</p>
+            </div>
+            
+            <!-- Pattern Loading Tabs -->
+            <div class="pattern-loading-tabs">
+                <button id="singlePatternTab" class="pattern-tab active" onclick="switchPatternTab('single')">Single Pattern</button>
+                <button id="multiplePatternsTab" class="pattern-tab" onclick="switchPatternTab('multiple')">Multiple Patterns</button>
+            </div>
+            
+            <!-- Single Pattern Loading -->
+            <div id="singlePatternSection" class="pattern-section">
+                <div class="pattern-type-selector">
+                    <label>Pattern Type:</label>
+                    <select id="singlePatternType" class="form-control half-width">
+                        <option value="funScript">FunScript</option>
+                        <option value="lovense">Lovense</option>
+                    </select>
+                </div>
+                
+                <!-- Pattern Configuration Cards -->
+                <div class="pattern-cards">
+                    <div class="pattern-card" id="singlePatternLinkCard">
+                        <div class="card-header">
+                            <h4>📎 Pattern Link (URL)</h4>
+                            <p>Use a remote pattern file</p>
+                        </div>
+                        <div class="card-content">
+                            <input type="url" id="singlePatternLink" class="form-control" placeholder="https://example.com/pattern.funscript or https://example.com/pattern.json">
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-card active" id="singlePatternDataCard">
+                        <div class="card-header">
+                            <h4>📝 Pattern Data (JSON)</h4>
+                            <p>Enter pattern data directly</p>
+                        </div>
+                        <div class="card-content">
+                            <div class="pattern-data-container">
+                                <div class="pattern-data-header">
+                                    <span class="pattern-label">Pattern Data:</span>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="fillSinglePatternExample()">Load 1-min Pattern Sample</button>
+                                </div>
+                                <textarea id="singlePatternData" class="form-control pattern-textarea fixed-height" rows="8" placeholder='// FunScript format:
+[
+  {"pos": 50, "at": 1000},
+  {"pos": 80, "at": 2000},
+  {"pos": 20, "at": 3000}
+]
+
+// Lovense format:
+[
+  {"v": 10, "t": 1000},
+  {"v": 20, "t": 2000},
+  {"v": 5, "t": 3000}
+]'></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pattern-input-section">
+                    <button onclick="loadSinglePattern()" class="btn btn-primary">Load Pattern</button>
+                    <button onclick="clearSinglePattern()" class="btn btn-secondary">Clear</button>
+                </div>
+            </div>
+            
+            <!-- Multiple Patterns Loading -->
+            <div id="multiplePatternsSection" class="pattern-section" style="display: none;">
+                <div class="multiple-patterns-config">
+                    <div class="pattern-entry">
+                        <h5>Pattern 1</h5>
+                        <div class="input-row">
+                            <div class="input-group compact">
+                                <label>Type:</label>
+                                <select id="multiPatternType1" class="form-control half-width">
+                                    <option value="funScript">FunScript</option>
+                                    <option value="lovense">Lovense</option>
+                                </select>
+                            </div>
+                            <div class="input-group compact">
+                                <label>Toy ID:</label>
+                                <input type="text" id="multiToyId1" class="form-control half-width" placeholder="Lush 4 toyId">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group compact">
+                                <label>Pattern Link:</label>
+                                <input type="url" id="multiPatternLink1" class="form-control" placeholder="https://example.com/pattern1.funscript">
+                            </div>
+                            <div class="input-group compact">
+                                <label>Pattern Data:</label>
+                                <textarea id="multiPatternData1" class="form-control fixed-height" rows="3" placeholder='[{"pos": 50, "at": 1000}]'></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pattern-entry">
+                        <h5>Pattern 2</h5>
+                        <div class="input-row">
+                            <div class="input-group compact">
+                                <label>Type:</label>
+                                <select id="multiPatternType2" class="form-control half-width">
+                                    <option value="funScript">FunScript</option>
+                                    <option value="lovense">Lovense</option>
+                                </select>
+                            </div>
+                            <div class="input-group compact">
+                                <label>Toy ID:</label>
+                                <input type="text" id="multiToyId2" class="form-control half-width" placeholder="Nora toyId">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group compact">
+                                <label>Pattern Link:</label>
+                                <input type="url" id="multiPatternLink2" class="form-control" placeholder="https://example.com/pattern2.funscript">
+                            </div>
+                            <div class="input-group compact">
+                                <label>Pattern Data:</label>
+                                <textarea id="multiPatternData2" class="form-control fixed-height" rows="3" placeholder='[{"pos": 80, "at": 2000}]'></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="loadMultiplePatterns()" class="btn btn-primary">Load Multiple Patterns</button>
+                </div>
+            </div>
+            
+            <div class="api-test-results">
+                <div class="response-box">
+                    <h4>Response:</h4>
+                    <div id="loadPatternCallLabel" class="request-url">URL: -</div>
+                    <div class="timestamp" id="loadPatternResponseTime">Timestamp: -</div>
+                    <div id="loadPatternResponse" class="data-box scrollable-request" style="max-height: 240px;">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    
+</div>
+
+<script src="https://cdn.lovense-api.com/peditor-v2/pattern-sdk.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
+
+<script>
+let lovensePattern = null;
+let currentCToken = null;
+let currentMediaType = 'audio';
+
+function switchMediaTab(type) {
+    const audioTab = document.getElementById('audioTab');
+    const videoTab = document.getElementById('videoTab');
+    const audioPreview = document.getElementById('audioPreview');
+    const videoPreview = document.getElementById('videoPreview');
+    const audioEl = document.getElementById('audioElementUnique');
+    const videoEl = document.getElementById('videoElementUnique');
+    const mediaIdDisplay = document.getElementById('mediaIdDisplay');
+    const mediaDurationDisplay = document.getElementById('mediaDurationDisplay');
+    
+    if (type === 'audio') {
+        audioTab.classList.add('active');
+        videoTab.classList.remove('active');
+        audioPreview.style.display = 'block';
+        videoPreview.style.display = 'none';
+        if (videoEl) videoEl.pause();
+        mediaIdDisplay.textContent = 'audio_sample_001';
+        mediaIdDisplay.className = 'audio-media-id';
+        updateDurationFromMedia(audioEl, mediaDurationDisplay);
+    } else {
+        audioTab.classList.remove('active');
+        videoTab.classList.add('active');
+        audioPreview.style.display = 'none';
+        videoPreview.style.display = 'block';
+        if (audioEl) audioEl.pause();
+        mediaIdDisplay.textContent = 'video_sample_001';
+        mediaIdDisplay.className = 'video-media-id';
+        updateDurationFromMedia(videoEl, mediaDurationDisplay);
+    }
+    
+    // Reset configuration when media type changes
+    if (currentMediaType !== type) {
+        showMediaChangeWarning();
+    }
+    currentMediaType = type;
+}
+function updateDurationFromMedia(mediaEl, displayEl) {
+    const setDuration = () => {
+        const durationMs = mediaEl && !isNaN(mediaEl.duration) && mediaEl.duration > 0 ? Math.round(mediaEl.duration * 1000) : '-';
+        displayEl.textContent = durationMs;
+    };
+    if (!mediaEl) {
+        displayEl.textContent = '-';
+        return;
+    }
+    if (isNaN(mediaEl.duration) || mediaEl.duration === Infinity) {
+        mediaEl.addEventListener('loadedmetadata', setDuration, { once: true });
+    } else {
+        setDuration();
+    }
+}
+
+
+// Step 1: Get CToken
+async function getCToken() {
+    const userId = document.getElementById('userId').value;
+    const developerToken = document.getElementById('developerToken').value;
+    
+    if (!userId || !developerToken) {
+        setResponse('ctokenResponse', 'Error: Please enter both User ID and Developer Token');
+        return;
+    }
+
+    try {
+        const url = `https://api.lovense-api.com/api/media/pattern/user/ctoken?userId=${encodeURIComponent(userId)}&developerToken=${encodeURIComponent(developerToken)}`;
+        
+        document.getElementById('ctokenRequestUrl').innerHTML = `URL: ${url}`;
+        const response = await axios.get(url);
+        
+        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('ctokenResponse', JSON.stringify(response.data, null, 2) + ((response.data && response.data.code === 0) ? '' : '\n❌ Failed to get CToken: ' + (response.data.message || 'Unknown error')));
+        
+        if (response.data && response.data.code === 0) {
+            currentCToken = response.data.data.ctoken;
+        }
+    } catch (error) {
+        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('ctokenResponse', `Error: ${error.message}`);
+    }
+}
+
+// Step 2: Initialize JavaScript
+function initializePatternSDK() {
+    try {
+        if (typeof LovensePattern === 'undefined') {
+            throw new Error('LovensePattern SDK not loaded');
+        }
+        if (!lovensePattern) {
+            lovensePattern = new LovensePattern();
+        }
+        setResponse('jsInitStatus', 'SDK Initialized');
+        document.getElementById('jsInitStatus').className = 'status-indicator success';
+        // ensure appConnected listener is registered
+        registerAppConnectionListener();
+    } catch (error) {
+        setResponse('jsInitStatus', '❌ Initialization Failed: ' + error.message);
+        document.getElementById('jsInitStatus').className = 'status-indicator error';
+    }
+}
+
+
+
+function showMediaChangeWarning() {
+    const warningDiv = document.createElement('div');
+    warningDiv.className = 'media-change-warning';
+    warningDiv.innerHTML = `
+        <div class="warning-content">
+            <span>⚠️ Media type changed! Please reconfigure the advanced initialization if needed.</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="btn-close">×</button>
+        </div>
+    `;
+    
+    const mediaContainer = document.querySelector('.media-container');
+    mediaContainer.insertBefore(warningDiv, mediaContainer.firstChild);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (warningDiv.parentElement) {
+            warningDiv.remove();
+        }
+    }, 5000);
+}
+
+function getTimestamp() {
+    return new Date().toLocaleString('en-US', {
+        timeZone: 'Asia/Shanghai',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    });
+}
+
+
+
+
+
+function resetToDefaults() {
+    document.getElementById('userId').value = 'deltatest';
+    document.getElementById('developerToken').value = 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
+    switchMediaTab('audio');
+    
+    // Reset new advanced fields
+    document.getElementById('singlePatternLink').value = '';
+    document.getElementById('singlePatternData').value = '';
+    document.getElementById('multiToyId1').value = '';
+    document.getElementById('multiPatternLink1').value = '';
+    document.getElementById('multiPatternData1').value = '';
+    document.getElementById('multiToyId2').value = '';
+    document.getElementById('multiPatternLink2').value = '';
+    document.getElementById('multiPatternData2').value = '';
+    
+    // Clear connection display
+    clearConnectionInfo();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    resetToDefaults();
+    initializeSinglePatternCards();
+    registerAppConnectionListener();
+});
+
+
+
+function setResponse(id, value) {
+    document.getElementById(id).innerHTML = cleanResponseText(value);
+}
+async function getCToken() {
+    const userId = document.getElementById('userId').value;
+    const developerToken = document.getElementById('developerToken').value;
+    if (!userId || !developerToken) {
+        setResponse('ctokenResponse', 'Error: Please enter both User ID and Developer Token');
+        return;
+    }
+    try {
+        const url = `https://api.lovense-api.com/api/media/pattern/user/ctoken?userId=${encodeURIComponent(userId)}&developerToken=${encodeURIComponent(developerToken)}`;
+        document.getElementById('ctokenRequestUrl').innerHTML = `URL: ${url}`;
+        const response = await axios.get(url);
+        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('ctokenResponse', JSON.stringify(response.data, null, 2) + ((response.data && response.data.code === 0) ? '' : '\n❌ Failed to get CToken: ' + (response.data.message || 'Unknown error')));
+        if (response.data && response.data.code === 0) {
+            currentCToken = response.data.data.ctoken;
+        }
+    } catch (error) {
+        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('ctokenResponse', `Error: ${error.message}`);
+    }
+}
+
+
+
+function fillSinglePatternExample() {
+    document.getElementById('singlePatternData').value = `[
+  { "at": 0, "pos": 20 },
+  { "at": 3000, "pos": 35 },
+  { "at": 6000, "pos": 25 },
+  { "at": 9000, "pos": 40 },
+  { "at": 12000, "pos": 30 },
+  { "at": 15000, "pos": 50 },
+  { "at": 18000, "pos": 35 },
+  { "at": 21000, "pos": 55 },
+  { "at": 24000, "pos": 40 },
+  { "at": 27000, "pos": 30 },
+  { "at": 30000, "pos": 45 },
+  { "at": 33000, "pos": 20 },
+  { "at": 36000, "pos": 50 },
+  { "at": 39000, "pos": 25 },
+  { "at": 42000, "pos": 55 },
+  { "at": 45000, "pos": 35 },
+  { "at": 48000, "pos": 40 },
+  { "at": 51000, "pos": 30 },
+  { "at": 54000, "pos": 60 },
+  { "at": 57000, "pos": 25 },
+  { "at": 60000, "pos": 20 }
+]`;
+}
+
+function clearSinglePattern() {
+    document.getElementById('singlePatternLink').value = '';
+    document.getElementById('singlePatternData').value = '';
+    document.getElementById('loadPatternResponse').innerHTML = 'Response will appear here...';
+    document.getElementById('loadPatternResponseTime').innerHTML = 'Timestamp: -';
+}
+
+function cleanResponseText(text) {
+    if (!text) return '';
+    return text.replace(/undefined/g, '').trim();
+}
+
+// Step 3: Advanced Initialization & Media
+async function advancedInit() {
+    if (!lovensePattern) {
+        setResponse('advancedInitResponse', 'Error: Please initialize the Pattern SDK first');
+        return;
+    }
+    if (!currentCToken) {
+        setResponse('advancedInitResponse', 'Error: Please get a CToken first');
+        return;
+    }
+    
+    try {
+        const mediaId = document.getElementById('mediaIdDisplay').textContent;
+        let mediaEl;
+        if (document.getElementById('videoTab').classList.contains('active')) {
+            mediaEl = document.getElementById('videoElementUnique');
+        } else {
+            mediaEl = document.getElementById('audioElementUnique');
+        }
+        const computedDuration = mediaEl && !isNaN(mediaEl.duration) && mediaEl.duration > 0 ? Math.round(mediaEl.duration * 1000) : 60000;
+        document.getElementById('mediaDurationDisplay').textContent = computedDuration;
+        const initData = {
+            ctoken: currentCToken,
+            mediaId: mediaId,
+            videoEl: mediaEl,
+            duration: computedDuration
+        };
+        
+        console.log('Advanced init data:', JSON.stringify(initData, null, 2));
+        document.getElementById('advancedInitResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('advancedInitResponse', JSON.stringify(initData, null, 2));
+        document.getElementById('advancedInitCallLabel').textContent = 'URL: lovensePattern.init(...)';
+        
+        lovensePattern.init(initData);
+        setResponse('advancedInitResponse', '✅ Advanced initialization completed successfully!\n\n' + JSON.stringify(initData, null, 2));
+        
+    } catch (error) {
+        document.getElementById('advancedInitResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('advancedInitResponse', `Error: ${error.message}`);
+        document.getElementById('advancedInitCallLabel').textContent = 'URL: lovensePattern.init(...)';
+    }
+}
+
+// Step 4: Connect to Apps
+async function getAppConnection() {
+    if (!lovensePattern) {
+        setResponse('connectionResponse', 'Error: Please initialize the Pattern SDK first');
+        return;
+    }
+    
+    try {
+        lovensePattern.getApp((data) => {
+            console.log('App connection data:', data);
+            document.getElementById('connectionResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+            setResponse('connectionResponse', JSON.stringify(data, null, 2));
+            document.getElementById('connectionCallLabel').textContent = 'URL: lovensePattern.getApp(...)';
+            
+            // Display QR Code, App URL, and Unique Code
+            displayConnectionInfo(data);
+        });
+    } catch (error) {
+        document.getElementById('connectionResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('connectionResponse', `Error: ${error.message}`);
+        document.getElementById('connectionCallLabel').textContent = 'URL: lovensePattern.getApp(...)';
+    }
+}
+
+// Register appConnected event once SDK is ready
+function registerAppConnectionListener() {
+    try {
+        if (!lovensePattern || typeof lovensePattern.on !== 'function') return;
+        lovensePattern.on('appConnected', () => {
+            console.log('appConnected');
+            const statusEl = document.getElementById('appConnectionStatus');
+            console.log('statusEl found:', statusEl);
+            if (statusEl) {
+                statusEl.textContent = 'Connected';
+                statusEl.classList.add('success');
+            }
+        });
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function displayConnectionInfo(data) {
+    const connectionDisplay = document.getElementById('connectionDisplay');
+    const qrCodeDisplay = document.getElementById('qrCodeDisplay');
+    const appUrlDisplay = document.getElementById('appUrlDisplay');
+    const uniqueCodeDisplay = document.getElementById('uniqueCodeDisplay');
+    
+    // Show QR Code
+    if (data.qrCode) {
+        qrCodeDisplay.innerHTML = `
+            <div class="qr-code-wrapper">
+                <img src="${data.qrCode}" alt="QR Code" style="max-width: 200px; border: 1px solid #ddd; border-radius: 8px;">
+                <p class="qr-instruction">Scan with Lovense Remote mobile app</p>
+            </div>
+        `;
+    }
+    
+    // Show App URL
+    if (data.appOpenUrl) {
+        appUrlDisplay.innerHTML = `
+            <div class="app-url-wrapper">
+                <a href="${data.appOpenUrl}" class="btn btn-primary" target="_blank">
+                    🔗 Open in Lovense Remote App
+                </a>
+                <p class="app-url-instruction">Click to connect directly to Lovense Remote app</p>
+            </div>
+        `;
+    }
+    
+    // Show Unique Code
+    if (data.code) {
+        uniqueCodeDisplay.innerHTML = `
+            <div class="unique-code-wrapper">
+                <div class="code-display">${data.code}</div>
+                <p class="code-instruction">Enter this code in Lovense Remote app</p>
+            </div>
+        `;
+    }
+    
+    connectionDisplay.style.display = 'block';
+}
+
+function clearConnectionInfo() {
+    document.getElementById('connectionDisplay').style.display = 'none';
+    document.getElementById('connectionResponse').innerHTML = 'Response will appear here...';
+    document.getElementById('connectionResponseTime').innerHTML = 'Timestamp: -';
+}
+
+// Step 5: Load Pattern(s)
+function switchPatternTab(type) {
+    const singlePatternTab = document.getElementById('singlePatternTab');
+    const multiplePatternsTab = document.getElementById('multiplePatternsTab');
+    const singlePatternSection = document.getElementById('singlePatternSection');
+    const multiplePatternsSection = document.getElementById('multiplePatternsSection');
+    
+    if (type === 'single') {
+        singlePatternTab.classList.add('active');
+        multiplePatternsTab.classList.remove('active');
+        singlePatternSection.style.display = 'block';
+        multiplePatternsSection.style.display = 'none';
+    } else {
+        singlePatternTab.classList.remove('active');
+        multiplePatternsTab.classList.add('active');
+        singlePatternSection.style.display = 'none';
+        multiplePatternsSection.style.display = 'block';
+    }
+}
+
+// Initialize Single Pattern Cards
+function initializeSinglePatternCards() {
+    const singlePatternLinkCard = document.getElementById('singlePatternLinkCard');
+    const singlePatternDataCard = document.getElementById('singlePatternDataCard');
+    
+    singlePatternLinkCard.addEventListener('click', function() {
+        switchSinglePatternCard('link');
+    });
+    
+    singlePatternDataCard.addEventListener('click', function() {
+        switchSinglePatternCard('data');
+    });
+}
+
+function switchSinglePatternCard(type) {
+    const singlePatternLinkCard = document.getElementById('singlePatternLinkCard');
+    const singlePatternDataCard = document.getElementById('singlePatternDataCard');
+    const singlePatternLinkInput = document.getElementById('singlePatternLink');
+    const singlePatternDataInput = document.getElementById('singlePatternData');
+    
+    if (type === 'link') {
+        singlePatternLinkCard.classList.add('active');
+        singlePatternDataCard.classList.remove('active');
+        singlePatternLinkInput.focus();
+    } else {
+        singlePatternDataCard.classList.add('active');
+        singlePatternLinkCard.classList.remove('active');
+        singlePatternDataInput.focus();
+    }
+}
+
+async function loadSinglePattern() {
+    if (!lovensePattern) {
+        setResponse('loadPatternResponse', 'Error: Please initialize the Pattern SDK first');
+        return;
+    }
+    
+    try {
+        const type = document.getElementById('singlePatternType').value;
+        const patternLink = document.getElementById('singlePatternLink').value;
+        const patternDataInput = document.getElementById('singlePatternData').value;
+        
+        const patternData = {
+            type: type
+        };
+        
+        // Check if pattern link is provided
+        if (patternLink.trim()) {
+            patternData.patternLink = patternLink;
+        }
+        
+        // Check if pattern data is provided
+        if (patternDataInput.trim()) {
+            try {
+                patternData.data = JSON.parse(patternDataInput);
+            } catch (e) {
+                throw new Error('Invalid JSON in pattern data');
+            }
+        }
+        
+        // Validate that at least one input is provided
+        if (!patternData.patternLink && !patternData.data) {
+            throw new Error('Please provide either a pattern link or pattern data');
+        }
+        
+        console.log('Loading single pattern:', JSON.stringify(patternData, null, 2));
+        document.getElementById('loadPatternResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('loadPatternResponse', JSON.stringify(patternData, null, 2));
+        document.getElementById('loadPatternCallLabel').textContent = 'URL: lovensePattern.loadPattern(...)';
+        
+        lovensePattern.loadPattern(patternData);
+        setResponse('loadPatternResponse', '✅ Single pattern loaded successfully!\n\n' + JSON.stringify(patternData, null, 2));
+        
+    } catch (error) {
+        document.getElementById('loadPatternResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('loadPatternResponse', `Error: ${error.message}`);
+        document.getElementById('loadPatternCallLabel').textContent = 'URL: lovensePattern.loadPattern(...)';
+    }
+}
+
+async function loadMultiplePatterns() {
+    if (!lovensePattern) {
+        setResponse('loadPatternResponse', 'Error: Please initialize the Pattern SDK first');
+        return;
+    }
+    
+    try {
+        const patterns = [];
+        
+        // Pattern 1
+        const type1 = document.getElementById('multiPatternType1').value;
+        const toyId1 = document.getElementById('multiToyId1').value;
+        const patternLink1 = document.getElementById('multiPatternLink1').value;
+        const patternData1 = document.getElementById('multiPatternData1').value;
+        
+        if (toyId1.trim()) {
+            const pattern1 = {
+                type: type1,
+                toyId: toyId1
+            };
+            
+            if (patternLink1.trim()) {
+                pattern1.patternLink = patternLink1;
+            }
+            
+            if (patternData1.trim()) {
+                try {
+                    pattern1.data = JSON.parse(patternData1);
+                } catch (e) {
+                    throw new Error('Invalid JSON in Pattern 1 data');
+                }
+            }
+            
+            patterns.push(pattern1);
+        }
+        
+        // Pattern 2
+        const type2 = document.getElementById('multiPatternType2').value;
+        const toyId2 = document.getElementById('multiToyId2').value;
+        const patternLink2 = document.getElementById('multiPatternLink2').value;
+        const patternData2 = document.getElementById('multiPatternData2').value;
+        
+        if (toyId2.trim()) {
+            const pattern2 = {
+                type: type2,
+                toyId: toyId2
+            };
+            
+            if (patternLink2.trim()) {
+                pattern2.patternLink = patternLink2;
+            }
+            
+            if (patternData2.trim()) {
+                try {
+                    pattern2.data = JSON.parse(patternData2);
+                } catch (e) {
+                    throw new Error('Invalid JSON in Pattern 2 data');
+                }
+            }
+            
+            patterns.push(pattern2);
+        }
+        
+        if (patterns.length === 0) {
+            throw new Error('Please enter at least one toy ID');
+        }
+        
+        console.log('Loading multiple patterns:', JSON.stringify(patterns, null, 2));
+        document.getElementById('loadPatternResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('loadPatternResponse', JSON.stringify(patterns, null, 2));
+        document.getElementById('loadPatternCallLabel').textContent = 'URL: lovensePattern.loadMultiplePatterns(...)';
+        
+        lovensePattern.loadMultiplePatterns(patterns);
+        setResponse('loadPatternResponse', '✅ Multiple patterns loaded successfully!\n\n' + JSON.stringify(patterns, null, 2));
+        
+    } catch (error) {
+        document.getElementById('loadPatternResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
+        setResponse('loadPatternResponse', `Error: ${error.message}`);
+        document.getElementById('loadPatternCallLabel').textContent = 'URL: lovensePattern.loadMultiplePatterns(...)';
+    }
+}
+</script>
+
+<style>
+.api-documentation {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+}
+
+.test-section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+h3 {
+    color: #34495e;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+h4 {
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+h5 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+}
+
+.data-box {
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-family: monospace;
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+}
+
+.code-block {
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.status-indicator {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.status-indicator.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.status-indicator.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.json-textarea {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    padding: 1rem;
+    resize: vertical;
+    white-space: pre;
+    tab-size: 2;
+}
+
+.media-preview {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.media-example {
+    text-align: center;
+}
+
+.media-example h5 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group.compact {
+    margin-bottom: 0;
+}
+
+.input-group label {
+    display: inline-block;
+    margin-right: 0.5rem;
+    font-weight: 500;
+    color: #2c3e50;
+    min-width: 80px;
+}
+
+.checkbox-group {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.input-row .input-group {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    align-items: center;
+}
+
+.input-row .btn {
+    margin-bottom: 0;
+    align-self: flex-end;
+}
+
+.info-text {
+    margin: 0.5rem 0;
+    color: #666;
+    font-style: italic;
+}
+
+.request-url {
+    font-family: monospace;
+    color: #0066cc;
+    margin-bottom: 8px;
+    padding: 4px 0;
+    font-size: 0.9em;
+}
+
+.timestamp {
+    font-family: monospace;
+    color: #666;
+    font-size: 0.85em;
+    margin-bottom: 8px;
+}
+
+.api-test-results {
+    margin-top: 1.5rem;
+}
+
+.request-box, .response-box {
+    margin-bottom: 1rem;
+}
+
+.request-box h4, .response-box h4 {
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.api-reference {
+    background: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.api-reference p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+
+.api-reference a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.api-reference a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .input-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .input-row .input-group {
+        min-width: auto;
+    }
+    
+    .checkbox-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .pattern-cards {
+        flex-direction: column;
+    }
+    
+    .pattern-card {
+        margin-bottom: 1rem;
+    }
+}
+.code-row { display: flex; align-items: center; gap: 1rem; }
+.media-tabs { display: flex; gap: 0.5rem; }
+.media-tab { padding: 0.5rem 1.5rem; border: 1px solid #ddd; background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0; font-weight: 500; }
+.media-tab.active { background: #3498db; color: #fff; border-bottom: 2px solid #3498db; }
+.sync-btn-pink {
+    background: linear-gradient(90deg, #ff5fa2 0%, #ff498a 100%);
+    color: #fff !important;
+    border: none;
+    border-radius: 14px;
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.75rem 2.5rem;
+    box-shadow: 0 2px 8px 0 rgba(255, 89, 138, 0.15);
+    transition: background 0.2s, box-shadow 0.2s;
+    margin-right: 0.5rem;
+}
+.sync-btn-pink:hover, .sync-btn-pink:focus {
+    background: linear-gradient(90deg, #ff498a 0%, #ff5fa2 100%);
+    box-shadow: 0 4px 16px 0 rgba(255, 89, 138, 0.25);
+}
+
+/* Enhanced Audio Player */
+.enhanced-audio-player {
+    width: 100%;
+    max-width: 600px;
+    height: 60px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: none;
+    outline: none;
+}
+
+.enhanced-audio-player::-webkit-media-controls-panel {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 30px;
+}
+
+.enhanced-audio-player::-webkit-media-controls-play-button {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    margin: 0 10px;
+}
+
+.enhanced-audio-player::-webkit-media-controls-timeline {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    margin: 0 10px;
+}
+
+.enhanced-audio-player::-webkit-media-controls-current-time-display,
+.enhanced-audio-player::-webkit-media-controls-time-remaining-display {
+    color: white;
+    font-weight: 500;
+}
+
+/* Sync Button Area with dashed border */
+.sync-button-area {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 2px dashed #3498db;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(52, 152, 219, 0.1) 100%);
+    position: relative;
+}
+
+.sync-button-area::before {
+    content: "🎯 Pattern Editor Area - Use advanced methods to control Lovense toys";
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: white;
+    padding: 0 10px;
+    color: #3498db;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.sync-button-container {
+    text-align: center;
+    padding: 1rem 0;
+}
+
+/* Scrollable Request Box */
+.scrollable-request {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 2px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.scrollable-request::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-request::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.scrollable-request::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.scrollable-request::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Pattern Cards */
+.pattern-cards {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.pattern-card {
+    flex: 1;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.pattern-card:hover {
+    border-color: #3498db;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+}
+
+.pattern-card.active {
+    border-color: #3498db;
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(52, 152, 219, 0.1) 100%);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+}
+
+.card-header {
+    padding: 1rem;
+    background: rgba(52, 152, 219, 0.1);
+    border-bottom: 1px solid #e9ecef;
+}
+
+.card-header h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.card-header p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.card-content {
+    padding: 1rem;
+}
+
+.pattern-data-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.pattern-data-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pattern-label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
+.pattern-textarea {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    resize: none;
+    min-height: 200px;
+}
+
+.fixed-height {
+    resize: none !important;
+}
+
+.sync-controls {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Media ID Styling */
+.audio-media-id {
+    color: #3498db;
+    font-weight: 600;
+    background: rgba(52, 152, 219, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.video-media-id {
+    color: #e74c3c;
+    font-weight: 600;
+    background: rgba(231, 76, 60, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+/* Media Change Warning */
+.media-change-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    animation: slideIn 0.3s ease-out;
+}
+
+.warning-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: #856404;
+    font-weight: 500;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    color: #856404;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.btn-close:hover {
+    background-color: rgba(133, 100, 4, 0.1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-control.half-width {
+    width: 220px;
+    min-width: 120px;
+    display: inline-block;
+}
+.input-group.compact .form-control.half-width {
+    margin-bottom: 0;
+}
+
+/* Advanced Initialization Styles */
+.advanced-init-container {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.step-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.step-header .info-text {
+    margin: 0;
+    flex: 1;
+    margin-right: 1rem;
+}
+
+.function-call-display {
+    background: #2c3e50;
+    color: #ecf0f1;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.9rem;
+}
+
+.function-call-display code {
+    color: #3498db;
+    font-weight: 500;
+}
+
+/* Connect to Apps Styles */
+.connect-apps-container {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.connect-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0;
+}
+
+.connection-display {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.connection-methods {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.qr-section, .app-url-section, .code-section {
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    flex: 1;
+    min-width: 0;
+}
+
+.qr-code-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.qr-instruction {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.app-url-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.app-url-instruction {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.unique-code-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.code-display {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #3498db;
+    background: white;
+    padding: 1rem 2rem;
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    letter-spacing: 0.5rem;
+    text-align: center;
+    min-width: 200px;
+}
+
+.code-instruction {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Load Pattern(s) Styles */
+.load-pattern-container {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.pattern-loading-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.pattern-tab {
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #ddd;
+    background: #f8f9fa;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.pattern-tab.active {
+    background: #3498db;
+    color: #fff;
+    border-color: #3498db;
+}
+
+.pattern-tab:hover:not(.active) {
+    background: #e9ecef;
+}
+
+.pattern-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+    margin-bottom: 1rem;
+}
+
+.pattern-type-selector {
+    margin-bottom: 1rem;
+}
+
+.pattern-input-section {
+    margin-top: 1rem;
+}
+
+.multiple-patterns-config {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.pattern-entry {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+}
+
+.pattern-entry h5 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+}
+
+/* Responsive Design for New Components */
+@media (max-width: 768px) {
+    .step-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .step-header .info-text {
+        margin-right: 0;
+    }
+    
+    .connect-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .connection-methods {
+        flex-direction: column;
+    }
+    
+    .pattern-loading-tabs {
+        flex-direction: column;
+    }
+    
+    .pattern-tab {
+        text-align: center;
+    }
+    
+    .code-display {
+        font-size: 1.5rem;
+        letter-spacing: 0.25rem;
+        min-width: 150px;
+        padding: 0.75rem 1.5rem;
+    }
+}
+</style>

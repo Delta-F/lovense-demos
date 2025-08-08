@@ -2,14 +2,14 @@
     <h1>Media Sync - Pattern Editor</h1>
 
     <div class="api-reference">
-        <p>This implementation is based on the <a href="https://developer.lovense.com/docs/media-sync.html#sync-with-lovense-toys" target="_blank">Official Lovense Pattern Editor Documentation</a>.</p>
+        <p>Based on <a href="https://developer.lovense.com/docs/media-sync.html#sync-with-lovense-toys" target="_blank">Lovense Pattern Editor Documentation</a></p>
     </div>
 
     <!-- Step 1: Get CToken -->
     <div class="test-section">
         <h3>Step 1: Get CToken</h3>
         <div class="ctoken-container">
-            <p class="info-text">Get the ctoken required for pattern editor initialization.</p>
+            <p class="info-text">Get ctoken for pattern editor initialization.</p>
             <div class="ctoken-controls">
                 <div class="input-row">
                     <div class="input-group compact">
@@ -35,9 +35,8 @@
 
     <!-- Step 2: Initialize JavaScript -->
     <div class="test-section">
-        <h3>Step 2: Initialize</h3>
+        <h3>Step 2: Initialize SDK</h3>
         <div class="js-init-container">
-            <p class="info-text">Include the pattern SDK and initialize the LovensePattern object.</p>
             <div class="code-row">
                 <div class="code-block">
                     <code>&lt;script src=&quot;https://cdn.lovense-api.com/peditor-v2/pattern-sdk.js&quot;&gt;&lt;/script&gt;<br>const lovensePattern = new LovensePattern()</code>
@@ -48,55 +47,54 @@
         </div>
     </div>
 
-    <!-- Step 3: Media Configuration -->
+    <!-- Step 3: Pattern & Sync Configuration -->
     <div class="test-section">
-        <h3>Step 3: Media Configuration & Sync</h3>
-        <div class="media-container">
-            <p class="info-text">Configure media file for sync testing.</p>
-            <div class="media-inputs">
-                <div class="input-row">
-                    <div class="input-group compact">
-                        <label>Media Type:</label>
-                        <div class="media-tabs">
-                            <button id="audioTab" class="media-tab active" onclick="switchMediaTab('audio')">Audio</button>
-                            <button id="videoTab" class="media-tab" onclick="switchMediaTab('video')">Video</button>
+        <h3>Step 3: Pattern Configuration</h3>
+        <div class="sync-container">
+            <p class="info-text">Configure pattern data. Choose Pattern Link or Pattern Data.</p>
+            
+            <!-- Pattern Configuration Cards -->
+            <div class="pattern-cards">
+                <div class="pattern-card" id="patternLinkCard">
+                    <div class="card-header">
+                        <h4>📎 Pattern Link (URL)</h4>
+                        <p>Use a remote pattern file</p>
+                    </div>
+                    <div class="card-content">
+                        <input type="url" id="patternLink" class="form-control" placeholder="https://example.com/pattern.funscript or https://example.com/pattern.json">
+                    </div>
+                </div>
+                
+                <div class="pattern-card active" id="patternDataCard">
+                    <div class="card-header">
+                        <h4>📝 Pattern Data (JSON)</h4>
+                        <p>Enter pattern data directly</p>
+                    </div>
+                    <div class="card-content">
+                        <div class="pattern-data-container">
+                            <div class="pattern-data-header">
+                                <span class="pattern-label">Pattern Data:</span>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="fillFunScriptExample()">Load 1-min Pattern Sample</button>
+                            </div>
+                            <textarea id="patternData" class="form-control pattern-textarea" rows="8" placeholder='// FunScript format:
+[
+  {"pos": 50, "at": 1000},
+  {"pos": 80, "at": 2000},
+  {"pos": 20, "at": 3000}
+]
+
+// Lovense format:
+[
+  {"v": 10, "t": 1000},
+  {"v": 20, "t": 2000},
+  {"v": 5, "t": 3000}
+]'></textarea>
                         </div>
                     </div>
-                    <div class="input-group compact">
-                        <label>Media ID:</label>
-                        <span id="mediaIdDisplay" style="font-weight:500;">test_media_001</span>
-                    </div>
                 </div>
             </div>
-            <div id="mediaPreview" class="media-preview">
-                <div id="audioPreview" class="media-example" style="display: block;">
-                    <h5>Audio Example: Sibbydex - Draining the Power of a Saiyan</h5>
-                    <audio id="audioElementUnique" controls style="max-width: 100%;">
-                        <source src="https://assets.shibbydex.com/audio/d4e5bb34-3673-40c4-ad5a-17e4da998d5a.mp3" type="audio/mpeg">
-                        Your browser does not support the audio tag.
-                    </audio>
-                </div>
-                <div id="videoPreview" class="media-example" style="display: none;">
-                    <h5>Video Example: Lovense Random Video</h5>
-                    <video id="videoElementUnique" controls style="max-width: 100%; height: auto;">
-                        <source src="https://cdn.lovense.com/UploadFiles/peditor/video/yukari001-720p.mp4" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            </div>
-            <!-- Lovense Sync Button rendered here -->
-            <div style="text-align:center; margin: 1.5rem 0 0.5rem 0;">
-                <div id="lovense-sync-btn"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 4: Pattern & Sync Configuration -->
-    <div class="test-section">
-        <h3>Step 4: Pattern & Sync Configuration</h3>
-        <div class="sync-container">
-            <p class="info-text">Configure pattern data and sync parameters.</p>
-            <div class="sync-inputs">
+            
+            <div class="sync-controls">
                 <div class="input-row">
                     <div class="input-group compact">
                         <label>Supported App:</label>
@@ -116,40 +114,63 @@
                     <button onclick="clearSync()" class="btn btn-secondary">Clear</button>
                 </div>
             </div>
-            <!-- Insert Pattern Url or Pattern Data -->
-            <div class="pattern-inputs">
-                <div class="input-group">
-                    <label>Pattern Link (URL):</label>
-                    <input type="url" id="patternLink" class="form-control half-width" placeholder="https://example.com/pattern.funscript or https://example.com/pattern.json">
-                </div>
-                <div class="input-group" style="align-items: flex-start;">
-                    <label>Pattern Data (JSON):</label>
-                    <textarea id="patternData" class="form-control" rows="6" style="width: 350px; min-width: 120px;" placeholder='//FunScript format:
-[
-  {"pos": 50, "at": 1000},
-  {"pos": 80, "at": 2000},
-  {"pos": 20, "at": 3000}
-]
-//Lovense format:
-[
-  {"v": 10, "t": 1000},
-  {"v": 20, "t": 2000},
-  {"v": 5, "t": 3000}
-]'></textarea>
-                    <button type="button" class="btn btn-secondary" style="margin-left:1rem; margin-top:0.2rem;" onclick="fillFunScriptExample()">Use 60s-funscript example</button>
-                </div>
-            </div>
+            
             <!-- API Test Results -->
             <div class="api-test-results">
                 <div class="request-box">
                     <h4>Sync Request:</h4>
                     <div class="timestamp" id="syncRequestTime">Timestamp: -</div>
-                    <div id="syncRequest" class="data-box">Request will appear here...</div>
+                    <div id="syncRequest" class="data-box scrollable-request">Request will appear here...</div>
                 </div>
                 <div class="response-box">
                     <h4>Sync Response:</h4>
                     <div class="timestamp" id="syncResponseTime">Timestamp: -</div>
                     <div id="syncResponse" class="data-box">Response will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 4: Media Sample & Sync Test -->
+    <div class="test-section">
+        <h3>Step 4: Media Sample & Sync Test</h3>
+        <div class="media-container">
+            <p class="info-text">Choose media file and test sync.</p>
+            <div class="media-inputs">
+                <div class="input-row">
+                    <div class="input-group compact">
+                        <label>Media Type:</label>
+                        <div class="media-tabs">
+                            <button id="audioTab" class="media-tab active" onclick="switchMediaTab('audio')">Audio</button>
+                            <button id="videoTab" class="media-tab" onclick="switchMediaTab('video')">Video</button>
+                        </div>
+                    </div>
+                    <div class="input-group compact">
+                        <label>Media ID:</label>
+                        <span id="mediaIdDisplay" style="font-weight:500;">test_media_001</span>
+                    </div>
+                </div>
+            </div>
+            <div id="mediaPreview" class="media-preview">
+                <div id="audioPreview" class="media-example" style="display: block;">
+                    <h5>Audio Example: Sibbydex - Draining the Power of a Saiyan</h5>
+                    <audio id="audioElementUnique" controls class="enhanced-audio-player">
+                        <source src="https://assets.shibbydex.com/audio/d4e5bb34-3673-40c4-ad5a-17e4da998d5a.mp3" type="audio/mpeg">
+                        Your browser does not support the audio tag.
+                    </audio>
+                </div>
+                <div id="videoPreview" class="media-example" style="display: none;">
+                    <h5>Video Example: Lovense Random Video</h5>
+                    <video id="videoElementUnique" controls style="max-width: 100%; height: auto;">
+                        <source src="https://cdn.lovense.com/UploadFiles/peditor/video/yukari001-720p.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <!-- Lovense Sync Button Area with dashed border -->
+            <div class="sync-button-area">
+                <div class="sync-button-container">
+                    <div id="lovense-sync-btn"></div>
                 </div>
             </div>
         </div>
@@ -162,6 +183,8 @@
 <script>
 let lovensePattern = null;
 let currentCToken = null;
+let syncConfigured = false;
+let currentMediaType = 'audio';
 
 function switchMediaTab(type) {
     const audioTab = document.getElementById('audioTab');
@@ -170,19 +193,33 @@ function switchMediaTab(type) {
     const videoPreview = document.getElementById('videoPreview');
     const audioEl = document.getElementById('audioElementUnique');
     const videoEl = document.getElementById('videoElementUnique');
+    const mediaIdDisplay = document.getElementById('mediaIdDisplay');
+    
     if (type === 'audio') {
         audioTab.classList.add('active');
         videoTab.classList.remove('active');
         audioPreview.style.display = 'block';
         videoPreview.style.display = 'none';
         if (videoEl) videoEl.pause();
+        mediaIdDisplay.textContent = 'audio_sample_001';
+        mediaIdDisplay.className = 'audio-media-id';
     } else {
         audioTab.classList.remove('active');
         videoTab.classList.add('active');
         audioPreview.style.display = 'none';
         videoPreview.style.display = 'block';
         if (audioEl) audioEl.pause();
+        mediaIdDisplay.textContent = 'video_sample_001';
+        mediaIdDisplay.className = 'video-media-id';
     }
+    
+    // Reset sync configuration when media type changes
+    if (currentMediaType !== type && syncConfigured) {
+        syncConfigured = false;
+        clearSync();
+        showMediaChangeWarning();
+    }
+    currentMediaType = type;
 }
 
 // Step 1: Get CToken
@@ -202,7 +239,7 @@ async function getCToken() {
         const response = await axios.get(url);
         
         document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('ctokenResponse', JSON.stringify(response.data, null, 2) + ((response.data && response.data.code === 0) ? '\n✅ CToken retrieved successfully!' : '\n❌ Failed to get CToken: ' + (response.data.message || 'Unknown error')));
+        setResponse('ctokenResponse', JSON.stringify(response.data, null, 2) + ((response.data && response.data.code === 0) ? '' : '\n❌ Failed to get CToken: ' + (response.data.message || 'Unknown error')));
         
         if (response.data && response.data.code === 0) {
             currentCToken = response.data.data.ctoken;
@@ -222,7 +259,7 @@ function initializePatternSDK() {
         if (!lovensePattern) {
             lovensePattern = new LovensePattern();
         }
-        setResponse('jsInitStatus', '✅ SDK Initialized Successfully');
+        setResponse('jsInitStatus', 'SDK Initialized');
         document.getElementById('jsInitStatus').className = 'status-indicator success';
     } catch (error) {
         setResponse('jsInitStatus', '❌ Initialization Failed: ' + error.message);
@@ -240,7 +277,6 @@ async function testSync() {
         return;
     }
     try {
-        // Get current media element and duration
         let mediaEl, duration;
         if (document.getElementById('videoTab').classList.contains('active')) {
             mediaEl = document.getElementById('videoElementUnique');
@@ -248,32 +284,20 @@ async function testSync() {
             mediaEl = document.getElementById('audioElementUnique');
         }
         duration = mediaEl && !isNaN(mediaEl.duration) && mediaEl.duration > 0 ? Math.round(mediaEl.duration * 1000) : 60000;
-        // Get patternData from input or use default
         let patternDataInput = document.getElementById('patternData').value;
-        let patternData;
-        if (patternDataInput) {
-            try {
-                patternData = JSON.parse(patternDataInput);
-            } catch (e) {
-                throw new Error('Invalid JSON in pattern data');
-            }
-        } else {
-            patternData = [
-                { "at": 0, "pos": 20 }, { "at": 3000, "pos": 35 }, { "at": 6000, "pos": 25 },
-                { "at": 9000, "pos": 40 }, { "at": 12000, "pos": 30 }, { "at": 15000, "pos": 50 },
-                { "at": 18000, "pos": 35 }, { "at": 21000, "pos": 55 }, { "at": 24000, "pos": 40 },
-                { "at": 27000, "pos": 30 }, { "at": 30000, "pos": 45 }, { "at": 33000, "pos": 20 },
-                { "at": 36000, "pos": 50 }, { "at": 39000, "pos": 25 }, { "at": 42000, "pos": 55 },
-                { "at": 45000, "pos": 35 }, { "at": 48000, "pos": 40 }, { "at": 51000, "pos": 30 },
-                { "at": 54000, "pos": 60 }, { "at": 57000, "pos": 25 }, { "at": 60000, "pos": 20 }
-            ];
+        if (!patternDataInput.trim()) {
+            throw new Error('Please enter pattern data or use the "Load Example" button');
         }
-        // Supported app
+        let patternData;
+        try {
+            patternData = JSON.parse(patternDataInput);
+        } catch (e) {
+            throw new Error('Invalid JSON in pattern data');
+        }
         let supportedApp = 3;
         if (document.getElementById('app1').checked) supportedApp = 1;
         else if (document.getElementById('app2').checked) supportedApp = 2;
         else if (document.getElementById('app3').checked) supportedApp = 3;
-        // Build syncData
         const syncData = {
             ctoken: currentCToken,
             mediaId: document.getElementById('mediaIdDisplay').textContent,
@@ -285,19 +309,39 @@ async function testSync() {
             syncButtonText: 'Sync with Lovense Toy',
             syncedButtonText: 'Connected to Lovense Toy'
         };
-        // Debug log
         console.log('Lovense sync data:', JSON.stringify(syncData, null, 2));
         document.getElementById('syncRequestTime').innerHTML = `Timestamp: ${getTimestamp()}`;
         setResponse('syncRequest', JSON.stringify(syncData, null, 2));
-        // Render SDK sync button in the media section
         document.getElementById('lovense-sync-btn').innerHTML = '';
         lovensePattern.sync(syncData);
+        syncConfigured = true;
         document.getElementById('syncResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('syncResponse', 'Sync button initialized. Please use the button for further actions.');
+        setResponse('syncResponse', '✅ Sync button generated successfully!\n\n📱 Go to Step 4 and click the sync button to connect with your Lovense toys.\n\n💡 Make sure your toys are connected to Lovense Remote app first.');
     } catch (error) {
         document.getElementById('syncResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
         setResponse('syncResponse', `Error: ${error.message}`);
     }
+}
+
+function showMediaChangeWarning() {
+    const warningDiv = document.createElement('div');
+    warningDiv.className = 'media-change-warning';
+    warningDiv.innerHTML = `
+        <div class="warning-content">
+            <span>⚠️ Media type changed! Please click the 'Test Sync' button again, and reconfigure if needed.</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="btn-close">×</button>
+        </div>
+    `;
+    
+    const mediaContainer = document.querySelector('.media-container');
+    mediaContainer.insertBefore(warningDiv, mediaContainer.firstChild);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (warningDiv.parentElement) {
+            warningDiv.remove();
+        }
+    }, 5000);
 }
 
 function getTimestamp() {
@@ -313,7 +357,6 @@ function getTimestamp() {
     });
 }
 
-// Supported app radio-like logic
 function selectSupportedApp(app) {
     document.getElementById('app1').checked = false;
     document.getElementById('app2').checked = false;
@@ -326,27 +369,58 @@ function clearSync() {
     setResponse('syncResponse', 'Response will appear here...');
     document.getElementById('syncRequestTime').innerHTML = 'Timestamp: -';
     document.getElementById('syncResponseTime').innerHTML = 'Timestamp: -';
+    syncConfigured = false;
 }
 
 function resetToDefaults() {
     document.getElementById('userId').value = 'deltatest';
     document.getElementById('developerToken').value = 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
-    document.getElementById('mediaIdDisplay').textContent = 'test_media_001';
     switchMediaTab('audio');
     selectSupportedApp('app3');
     document.getElementById('patternLink').value = '';
     document.getElementById('patternData').value = '';
+    syncConfigured = false;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     resetToDefaults();
+    initializePatternCards();
 });
 
-// Patch all response displayers
+// Pattern Card Switching
+function initializePatternCards() {
+    const patternLinkCard = document.getElementById('patternLinkCard');
+    const patternDataCard = document.getElementById('patternDataCard');
+    
+    patternLinkCard.addEventListener('click', function() {
+        switchPatternCard('link');
+    });
+    
+    patternDataCard.addEventListener('click', function() {
+        switchPatternCard('data');
+    });
+}
+
+function switchPatternCard(type) {
+    const patternLinkCard = document.getElementById('patternLinkCard');
+    const patternDataCard = document.getElementById('patternDataCard');
+    const patternLinkInput = document.getElementById('patternLink');
+    const patternDataInput = document.getElementById('patternData');
+    
+    if (type === 'link') {
+        patternLinkCard.classList.add('active');
+        patternDataCard.classList.remove('active');
+        patternLinkInput.focus();
+    } else {
+        patternDataCard.classList.add('active');
+        patternLinkCard.classList.remove('active');
+        patternDataInput.focus();
+    }
+}
+
 function setResponse(id, value) {
     document.getElementById(id).innerHTML = cleanResponseText(value);
 }
-// Patch CToken response
 async function getCToken() {
     const userId = document.getElementById('userId').value;
     const developerToken = document.getElementById('developerToken').value;
@@ -359,7 +433,7 @@ async function getCToken() {
         document.getElementById('ctokenRequestUrl').innerHTML = `URL: ${url}`;
         const response = await axios.get(url);
         document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('ctokenResponse', JSON.stringify(response.data, null, 2) + ((response.data && response.data.code === 0) ? '\n\n✅ CToken retrieved successfully!' : '\n\n❌ Failed to get CToken: ' + (response.data.message || 'Unknown error')));
+        setResponse('ctokenResponse', JSON.stringify(response.data, null, 2) + ((response.data && response.data.code === 0) ? '' : '\n❌ Failed to get CToken: ' + (response.data.message || 'Unknown error')));
         if (response.data && response.data.code === 0) {
             currentCToken = response.data.data.ctoken;
         }
@@ -368,50 +442,33 @@ async function getCToken() {
         setResponse('ctokenResponse', `Error: ${error.message}`);
     }
 }
-// Patch SDK status
-function initializePatternSDK() {
-    try {
-        if (typeof LovensePattern === 'undefined') {
-            throw new Error('LovensePattern SDK not loaded');
-        }
-        if (!lovensePattern) {
-            lovensePattern = new LovensePattern();
-        }
-        setResponse('jsInitStatus', '✅ SDK Initialized Successfully');
-        document.getElementById('jsInitStatus').className = 'status-indicator success';
-    } catch (error) {
-        setResponse('jsInitStatus', '❌ Initialization Failed: ' + error.message);
-        document.getElementById('jsInitStatus').className = 'status-indicator error';
-    }
-}
 
-function resetToDefaults() {
-    document.getElementById('userId').value = 'deltatest';
-    document.getElementById('developerToken').value = 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
-    document.getElementById('mediaIdDisplay').textContent = 'test_media_001';
-    switchMediaTab('audio');
-    selectSupportedApp('app3');
-    document.getElementById('patternLink').value = '';
-    document.getElementById('patternData').value = '';
-}
-document.addEventListener('DOMContentLoaded', function() {
-    resetToDefaults();
-});
-
-// Fill FunScript Example
 function fillFunScriptExample() {
     document.getElementById('patternData').value = `[
-                { "at": 0, "pos": 20 }, { "at": 3000, "pos": 35 }, { "at": 6000, "pos": 25 },
-                { "at": 9000, "pos": 40 }, { "at": 12000, "pos": 30 }, { "at": 15000, "pos": 50 },
-                { "at": 18000, "pos": 35 }, { "at": 21000, "pos": 55 }, { "at": 24000, "pos": 40 },
-                { "at": 27000, "pos": 30 }, { "at": 30000, "pos": 45 }, { "at": 33000, "pos": 20 },
-                { "at": 36000, "pos": 50 }, { "at": 39000, "pos": 25 }, { "at": 42000, "pos": 55 },
-                { "at": 45000, "pos": 35 }, { "at": 48000, "pos": 40 }, { "at": 51000, "pos": 30 },
-                { "at": 54000, "pos": 60 }, { "at": 57000, "pos": 25 }, { "at": 60000, "pos": 20 }
-            ]`;
+  { "at": 0, "pos": 20 },
+  { "at": 3000, "pos": 35 },
+  { "at": 6000, "pos": 25 },
+  { "at": 9000, "pos": 40 },
+  { "at": 12000, "pos": 30 },
+  { "at": 15000, "pos": 50 },
+  { "at": 18000, "pos": 35 },
+  { "at": 21000, "pos": 55 },
+  { "at": 24000, "pos": 40 },
+  { "at": 27000, "pos": 30 },
+  { "at": 30000, "pos": 45 },
+  { "at": 33000, "pos": 20 },
+  { "at": 36000, "pos": 50 },
+  { "at": 39000, "pos": 25 },
+  { "at": 42000, "pos": 55 },
+  { "at": 45000, "pos": 35 },
+  { "at": 48000, "pos": 40 },
+  { "at": 51000, "pos": 30 },
+  { "at": 54000, "pos": 60 },
+  { "at": 57000, "pos": 25 },
+  { "at": 60000, "pos": 20 }
+]`;
 }
 
-// Remove undefined from response
 function cleanResponseText(text) {
     if (!text) return '';
     return text.replace(/undefined/g, '').trim();
@@ -691,6 +748,14 @@ h5 {
         align-items: flex-start;
         gap: 0.5rem;
     }
+    
+    .pattern-cards {
+        flex-direction: column;
+    }
+    
+    .pattern-card {
+        margin-bottom: 1rem;
+    }
 }
 .code-row { display: flex; align-items: center; gap: 1rem; }
 .media-tabs { display: flex; gap: 0.5rem; }
@@ -712,6 +777,249 @@ h5 {
     background: linear-gradient(90deg, #ff498a 0%, #ff5fa2 100%);
     box-shadow: 0 4px 16px 0 rgba(255, 89, 138, 0.25);
 }
+
+/* Enhanced Audio Player */
+.enhanced-audio-player {
+    width: 100%;
+    max-width: 600px;
+    height: 60px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: none;
+    outline: none;
+}
+
+.enhanced-audio-player::-webkit-media-controls-panel {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 30px;
+}
+
+.enhanced-audio-player::-webkit-media-controls-play-button {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    margin: 0 10px;
+}
+
+.enhanced-audio-player::-webkit-media-controls-timeline {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    margin: 0 10px;
+}
+
+.enhanced-audio-player::-webkit-media-controls-current-time-display,
+.enhanced-audio-player::-webkit-media-controls-time-remaining-display {
+    color: white;
+    font-weight: 500;
+}
+
+/* Sync Button Area with dashed border */
+.sync-button-area {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 2px dashed #3498db;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(52, 152, 219, 0.1) 100%);
+    position: relative;
+}
+
+.sync-button-area::before {
+    content: "🎯 Sync Button Area - Click to connect with Lovense toys";
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: white;
+    padding: 0 10px;
+    color: #3498db;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.sync-button-container {
+    text-align: center;
+    padding: 1rem 0;
+}
+
+/* Scrollable Request Box */
+.scrollable-request {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 2px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.scrollable-request::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-request::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.scrollable-request::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.scrollable-request::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Pattern Cards */
+.pattern-cards {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.pattern-card {
+    flex: 1;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.pattern-card:hover {
+    border-color: #3498db;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
+}
+
+.pattern-card.active {
+    border-color: #3498db;
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(52, 152, 219, 0.1) 100%);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+}
+
+.card-header {
+    padding: 1rem;
+    background: rgba(52, 152, 219, 0.1);
+    border-bottom: 1px solid #e9ecef;
+}
+
+.card-header h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.card-header p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.card-content {
+    padding: 1rem;
+}
+
+.pattern-data-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.pattern-data-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pattern-label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
+.pattern-textarea {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    resize: vertical;
+    min-height: 200px;
+}
+
+.sync-controls {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Media ID Styling */
+.audio-media-id {
+    color: #3498db;
+    font-weight: 600;
+    background: rgba(52, 152, 219, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.video-media-id {
+    color: #e74c3c;
+    font-weight: 600;
+    background: rgba(231, 76, 60, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+/* Media Change Warning */
+.media-change-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    animation: slideIn 0.3s ease-out;
+}
+
+.warning-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: #856404;
+    font-weight: 500;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    color: #856404;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.btn-close:hover {
+    background-color: rgba(133, 100, 4, 0.1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .form-control.half-width {
     width: 220px;
     min-width: 120px;
