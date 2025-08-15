@@ -1,0 +1,1537 @@
+<!-- Media Sync Methods Page -->
+<div class="api-documentation">
+    <h1>Media Sync - Sync Methods</h1>
+    
+    <div class="api-reference">
+        <p>This implementation is based on 
+        <a href="https://developer.lovense.com/docs/media-sync.html#advanced-custom-sync-methods" target="_blank">Advanced Custom Sync Methods</a>
+        and <a href="https://developer.lovense.com/proposal/sync-custom-methods.html" target="_blank">Lovense Sync Methods</a></p>
+    </div>
+    
+    <!-- Module 1: Auto Initialization -->
+    <div class="test-section">
+        <h3>Step 1: Initialize SDK</h3>
+        <div class="init-container">
+            <p class="info-text">Initialize the Lovense Pattern SDK and get authentication token.</p>
+            <div class="init-controls">
+                <button id="initBtn" class="btn btn-primary" onclick="autoInitialize()">🚀 Auto Initialize</button>
+                <div id="initStatus" class="status-indicator inline-status"></div>
+            </div>
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Initialization Request:</h4>
+                    <div id="initRequestInfo" class="data-box scrollable-request"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Module 2: Connect with Remote App -->
+    <div class="test-section">
+        <h3>Step 2: Connect Remote App</h3>
+        <div class="connection-container">
+            <p class="info-text">Connect to Lovense Remote app to enable toy synchronization.</p>
+            <div class="connect-controls">
+                <button id="connectBtn" class="btn btn-success btn-core" onclick="connectRemoteApp()">🔗 Connect Remote App</button>
+            </div>
+            <div class="connection-methods-container">
+                <div class="connection-method-card">
+                    <div class="method-header">
+                        <div class="method-icon">💻</div>
+                        <div class="method-title">PC</div>
+                    </div>
+                    <div class="method-content" id="pcMethodContent">
+                        <div class="method-placeholder">Click connect to show QR code</div>
+                    </div>
+                </div>
+                <div class="connection-method-card">
+                    <div class="method-header">
+                        <div class="method-icon">📱</div>
+                        <div class="method-title">Mobile</div>
+                    </div>
+                    <div class="method-content" id="mobileMethodContent">
+                        <div class="method-placeholder">Click connect to show app button</div>
+                    </div>
+                </div>
+                <div class="connection-method-card">
+                    <div class="method-header">
+                        <div class="method-icon">🥽</div>
+                        <div class="method-title">VR</div>
+                    </div>
+                    <div class="method-content" id="vrMethodContent">
+                        <div class="method-placeholder">Click connect to show code</div>
+                    </div>
+                </div>
+            </div>
+            <div id="connectionStatus" class="status-indicator" style="display:none;"></div>
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Connection Request:</h4>
+                    <div id="connectRequestInfo" class="data-box scrollable-request"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Module 3: Audio Synchronize with Remote -->
+    <div class="test-section">
+        <h3>Step 3: Test Media Sync</h3>
+        <div class="media-container">
+            <p class="info-text">Test audio synchronization with connected Lovense toys after sending single pattern or multiple patterns.</p>
+            <div class="media-info">
+                <div class="media-meta">
+                    <div><strong>Media ID:</strong> <span id="mediaIdText" class="audio-media-id">-</span></div>
+                    <div><strong>Duration:</strong> <span id="mediaDurationText">-</span></div>
+                    <div><strong>Media Name:</strong> <span id="mediaNameText" class="audio-media-name">Sibbydex - Draining the Power of a Saiyan</span></div>
+                </div>
+            </div>
+            <div class="media-preview">
+                <audio id="audioPlayer" controls class="enhanced-audio-player">
+                    <source src="https://assets.shibbydex.com/audio/d4e5bb34-3673-40c4-ad5a-17e4da998d5a.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Media Sync Events:</h4>
+                    <div id="syncRequestInfo" class="data-box scrollable-request"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Module 4: Pattern Upload (Transport only) -->
+    <div class="test-section">
+        <h3>Step 4: Test Single Pattern</h3>
+        <div class="pattern-container">
+            <p class="info-text">Load predefined test patterns to verify toy synchronization after you connect to Lovense Remote App.</p>
+            <div class="pattern-controls">
+                <button id="loadPattern20Btn" class="btn btn-outline" onclick="loadPattern20s()">20s</button>
+                <button id="loadPattern2mBtn" class="btn btn-outline" onclick="loadPattern2m()">2m</button>
+                <button id="loadPattern30mBtn" class="btn btn-outline" onclick="loadPattern30m()">30m</button>
+                <button id="loadPattern50mBtn" class="btn btn-outline" onclick="loadPattern50m()">50m</button>
+            </div>
+            <div id="patternStatus" class="status-indicator"></div>
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Pattern Request:</h4>
+                    <div id="patternRequestInfo" class="data-box scrollable-request"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Module 5: Toy Management & Multiple Patterns -->
+    <div class="test-section">
+        <h3>Step 5: Test Multiple Patterns For Multiple Toys</h3>
+        <div class="toy-container">
+            <p class="info-text">Create custom pattern configurations for individual toys.</p>
+            
+            <div class="toy-status-section">
+                <h4>🎮 Connected Toys Status</h4>
+                <div id="toyList" class="toy-list">
+                    <div class="toy-placeholder">No toys connected yet. Connect to Lovense Remote first.</div>
+                </div>
+            </div>
+            
+            <div class="pattern-cards-container">
+                <div class="pattern-cards-header">
+                    <h4>📊 Toy Pattern Configuration</h4>
+                    <button id="addPatternCardBtn" class="btn btn-outline" onclick="addPatternCard()">
+                        <span class="btn-icon">➕</span> Add Toy Pattern
+                    </button>
+                </div>
+                
+                <div id="patternCardsContainer" class="pattern-cards-wrapper">
+                    <!-- Default card will be added here -->
+                </div>
+                
+                <div class="pattern-actions">
+                    <button id="loadMultiplePatternsBtn" class="btn btn-success btn-core" onclick="loadMultiplePatterns()" disabled>
+                        <span class="btn-icon">🚀</span> Load All Patterns
+                    </button>
+                </div>
+            </div>
+            
+            <div id="multiplePatternStatus" class="status-indicator"></div>
+            <div class="api-test-results">
+                <div class="request-box">
+                    <h4>Multiple Patterns Request:</h4>
+                    <div id="multiplePatternRequestInfo" class="data-box scrollable-request"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.api-documentation {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+}
+
+.api-reference {
+    background: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.api-reference p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+
+.api-reference a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.api-reference a:hover {
+    text-decoration: underline;
+}
+
+.test-section {
+    background: #ffffff;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.test-section h3 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+}
+
+.info-text {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.init-controls,
+.connect-controls,
+.pattern-controls {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.inline-status {
+    margin: 0;
+    flex: 1;
+    min-width: 200px;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-primary { background: #3498db; color: white; }
+.btn-success { background: #27ae60; color: white; }
+.btn-info { background: #17a2b8; color: white; }
+.btn-warning { background: #f39c12; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
+
+.btn-outline {
+    background: transparent;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+}
+
+.btn-outline:hover {
+    background: #f8f9fa;
+    border-color: #adb5bd;
+    color: #495057;
+}
+
+.req-highlight {
+    background: #e3f2fd;
+    border: 1px solid #2196f3;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    color: #1565c0;
+    font-weight: 600;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+}
+
+.btn-core {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    margin: 1rem auto;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+.status-indicator {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    min-height: 20px;
+    font-weight: 500;
+}
+
+.status-success {
+    color: #155724;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.status-ready {
+    color: #0c5460;
+    background: #d1ecf1;
+    border: 1px solid #bee5eb;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.status-info {
+    color: #495057;
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.api-test-results {
+    margin-top: 2rem;
+}
+
+.request-box h4 {
+    color: #3498db;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-style: italic;
+}
+
+.data-box {
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.9rem;
+    color: #495057;
+    white-space: pre-wrap;
+    min-height: 100px;
+}
+
+.scrollable-request {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.scrollable-request::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-request::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.scrollable-request::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.scrollable-request::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+.connection-methods-container {
+    display: flex;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    justify-content: center;
+}
+
+.connection-method-card {
+    flex: 1;
+    max-width: 200px;
+    background: #ffffff;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.connection-method-card:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+}
+
+.method-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.method-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+}
+
+.method-title {
+    font-weight: 600;
+    color: #495057;
+    font-size: 1rem;
+}
+
+.method-content {
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.method-placeholder {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.media-info {
+    margin-bottom: 1.5rem;
+}
+
+.media-meta {
+    display: flex;
+    gap: 2rem;
+    font-size: 0.9rem;
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+.media-preview {
+    margin-bottom: 1.5rem;
+}
+
+.media-preview h5 {
+    color: #2c3e50;
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.enhanced-audio-player {
+    width: 100%;
+    height: 60px;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    outline: none;
+}
+
+.audio-media-id {
+    color: #3498db;
+    font-weight: 600;
+    background: rgba(52, 152, 219, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+.audio-media-name {
+    color: #27ae60;
+    font-weight: 600;
+    background: rgba(39, 174, 96, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid rgba(39, 174, 96, 0.3);
+}
+
+.toy-status-section {
+    margin-bottom: 2rem;
+}
+
+.toy-status-section h4 {
+    color: #2c3e50;
+    margin: 0 0 1rem 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.toy-list {
+    background: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    min-height: 60px;
+}
+
+.toy-placeholder {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.toy-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.toy-table th,
+.toy-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.toy-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+.toy-table td {
+    color: #495057;
+}
+
+.toy-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.toy-status.connected {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.toy-status.disconnected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.pattern-cards-container {
+    margin-bottom: 2rem;
+}
+
+.pattern-cards-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.pattern-actions {
+    display: flex;
+    justify-content: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.pattern-cards-header h4 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.pattern-cards-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.pattern-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.pattern-card:hover {
+    border-color: #adb5bd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: none;
+}
+
+.pattern-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.pattern-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pattern-card-title .card-icon {
+    font-size: 1.25rem;
+    color: #3498db;
+}
+
+.pattern-card-remove {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.pattern-card-remove:hover {
+    background: #fecaca;
+    transform: scale(1.1);
+}
+
+.pattern-card-remove:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pattern-card-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.pattern-card-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.pattern-card-section.full-width {
+    grid-column: 1 / -1;
+}
+
+.pattern-card-section label {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.field-hint {
+    font-weight: 400;
+    color: #6b7280;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+    font-style: italic;
+}
+
+.pattern-card-section input,
+.pattern-card-section select {
+    width: 90%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    background: #fafafa;
+}
+
+.pattern-card-section input:focus,
+.pattern-card-section select:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.pattern-card-section textarea {
+    width: 90%;
+    padding: 0.75rem 1rem;
+    height: 120px;
+    resize: vertical;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    color: #495057;
+    transition: all 0.2s ease;
+}
+
+.pattern-card-section textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.quick-pattern-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pattern-generators {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.quick-pattern-btn {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.quick-pattern-btn:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.quick-pattern-btn.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.clear-btn {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.clear-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+
+
+.btn-icon {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .api-documentation {
+        padding: 1rem;
+    }
+    
+    .test-section {
+        padding: 1.5rem;
+    }
+    
+    .pattern-cards-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .pattern-card-content {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .connection-methods-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .connection-method-card {
+        max-width: 100%;
+    }
+    
+    .btn {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .api-documentation h1 {
+        font-size: 2rem;
+    }
+    
+    .test-section {
+        padding: 1rem;
+    }
+    
+    .pattern-card {
+        padding: 1rem;
+    }
+}
+</style>
+
+<script src="https://cdn.lovense-api.com/peditor-v2/pattern-sdk.js"></script>
+<script>
+// Global variables
+let lovensePattern = null;
+let ctoken = null;
+let mediaId = null;
+let isConnected = false;
+let patternLoaded = false;
+let connectedToys = []; // Store connected toys information
+
+// Helper function to convert milliseconds to MM:SS format
+function formatTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Helper function to get current audio time in milliseconds
+function getCurrentAudioTimeMs() {
+    return Math.round(audioEl.currentTime * 1000);
+}
+
+// Helper function to get audio parameters
+function getAudioParams() {
+    const currentTimeMs = getCurrentAudioTimeMs();
+    return { 
+        speed: audioEl.playbackRate || 1, 
+        currentTime: currentTimeMs 
+    };
+}
+
+// Helper function to update request info and auto-scroll to bottom
+function updateRequestInfo(elementId, content, append = false) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    if (append) {
+        element.innerHTML += content;
+    } else {
+        element.innerHTML = content;
+    }
+    
+    // Auto-scroll to bottom to show latest content
+    element.scrollTop = element.scrollHeight;
+    
+    // Add a subtle highlight effect to the latest content
+    const latestContent = element.lastElementChild;
+    if (latestContent) {
+        latestContent.style.backgroundColor = '#fff3cd';
+        latestContent.style.borderLeft = '4px solid #ffc107';
+        setTimeout(() => {
+            latestContent.style.backgroundColor = '';
+            latestContent.style.borderLeft = '';
+        }, 2000);
+    }
+}
+
+// Module 1: Auto Initialization
+async function autoInitialize() {
+    // Action: Initialize
+    try {
+        // Step 1: Get ctoken
+        // Request: Get ctoken
+        const randomId = Math.floor(Math.random() * 10000);
+        const ctokenUrl = `https://api.lovense-api.com/api/media/pattern/user/ctoken?userId=deltatest_${randomId}&developerToken=tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle`;
+        
+        // Display request details
+        const initRequestInfo = document.getElementById('initRequestInfo');
+        updateRequestInfo('initRequestInfo', `<div class="req-highlight">GET ${ctokenUrl}</div>`);
+        
+        const response = await fetch(ctokenUrl);
+        const data = await response.json();
+        
+        // Display response details
+        updateRequestInfo('initRequestInfo', `${JSON.stringify(data, null, 2)}`, true);
+        
+        if (data.data && data.data.ctoken) {
+            ctoken = data.data.ctoken;
+            
+        } else {
+            throw new Error('Failed to get ctoken');
+        }
+
+        // Step 2: Create JS instance
+        // Create SDK instance
+        if (typeof LovensePattern === 'undefined') {
+            throw new Error('LovensePattern SDK not loaded');
+        }
+        
+        lovensePattern = new LovensePattern();
+        
+        // Step 3: Initialize media
+        // Initialize media
+        const audioEl = document.getElementById('audioPlayer');
+        // Ensure we have metadata to read duration and currentSrc
+        if (!audioEl.duration || !isFinite(audioEl.duration)) {
+            await new Promise((resolve) => {
+                if (audioEl.readyState >= 1) return resolve();
+                audioEl.addEventListener('loadedmetadata', () => resolve(), { once: true });
+            });
+        }
+        const duration = Math.round(audioEl.duration * 1000); // ms
+        const boundMediaId = 'shibbydex_audio_test';
+        document.getElementById('mediaIdText').textContent = boundMediaId || '-';
+        document.getElementById('mediaDurationText').textContent = `${duration} ms`;
+        
+        const initParams = {
+            ctoken: ctoken,
+            mediaId: boundMediaId,
+            videoEl: audioEl,
+            duration: duration
+        };
+        
+        // Display init parameters
+        updateRequestInfo('initRequestInfo', `\n<div class="req-highlight">lovensePattern.init() called with:</div>${JSON.stringify(initParams, null, 2)}`, true);
+        
+        await lovensePattern.init(initParams);
+        
+        document.getElementById('initStatus').innerHTML = '✅ Initialization Complete';
+        
+        // Enable connection button
+        document.getElementById('connectBtn').disabled = false;
+        
+    } catch (error) {
+        document.getElementById('initStatus').innerHTML = `❌ Failed: ${error.message}`;
+        updateRequestInfo('initRequestInfo', `\n❌ Error: ${error.message}`, true);
+    }
+}
+
+// Module 2: Audio Player & Connection
+async function connectRemoteApp() {
+    if (!lovensePattern) return;
+    // Action: Connect to Lovense Remote App
+    
+    // Display request details
+    updateRequestInfo('connectRequestInfo', `<div class="req-highlight">lovensePattern.getApp() called</div>`);
+    
+    const pcMethodContent = document.getElementById('pcMethodContent');
+    const mobileMethodContent = document.getElementById('mobileMethodContent');
+    const vrMethodContent = document.getElementById('vrMethodContent');
+
+    pcMethodContent.innerHTML = 'Waiting...';
+    mobileMethodContent.innerHTML = 'Waiting...';
+    vrMethodContent.innerHTML = 'Waiting...';
+
+    try {
+        lovensePattern.getApp((data) => {
+            // Display response details
+            updateRequestInfo('connectRequestInfo', `${JSON.stringify(data, null, 2)}`, true);
+            
+            // PC: Show QR code
+            if (data.qrCode) {
+                pcMethodContent.innerHTML = `<img src="${data.qrCode}" alt="QR Code" style="max-width: 100%; height: auto;">`;
+            } else {
+                pcMethodContent.innerHTML = '<div style="color: #dc3545;">❌ QR code not available</div>';
+            }
+            
+            // Mobile: Show Open App button
+            if (data.appOpenUrl) {
+                mobileMethodContent.innerHTML = `<a class="btn btn-primary" href="${data.appOpenUrl}" target="_blank">Open App</a>`;
+            } else {
+                mobileMethodContent.innerHTML = '<div style="color: #dc3545;">❌ App URL not available</div>';
+            }
+            
+            // VR: Show connection code
+            if (data.code) {
+                vrMethodContent.innerHTML = `<div style="font-size: 18px; font-weight: bold; color: #007bff; padding: 8px; background: #f8f9fa; border-radius: 6px; border: 2px dashed #007bff;">${data.code}</div>`;
+            } else {
+                vrMethodContent.innerHTML = '<div style="color: #dc3545;">❌ Code not available</div>';
+            }
+            
+            // No extra status text
+            document.getElementById('connectionStatus').textContent = '';
+        });
+        
+        // Listen for connection events
+        lovensePattern.on("appConnected", () => {
+            isConnected = true;
+            document.getElementById('connectionStatus').innerHTML += '<br>✅ Connected!';
+            updateRequestInfo('connectRequestInfo', `\n🎉 Event: "appConnected" triggered`, true);
+        });
+        
+        lovensePattern.on("appDisconnected", () => {
+            isConnected = false;
+            document.getElementById('connectionStatus').innerHTML += '<br>❌ Disconnected';
+            updateRequestInfo('connectRequestInfo', `\n🔌 Event: "appDisconnected" triggered`, true);
+        });
+        
+        // Listen for toy status updates
+        lovensePattern.on("appToyStatus", (data) => {
+            updateRequestInfo('connectRequestInfo', `\n🎮 Event: "appToyStatus" triggered\n${JSON.stringify(data, null, 2)}`, true);
+            
+            // Update connected toys list
+            connectedToys = data || [];
+            updateToyList();
+            
+            // Auto-fill toy IDs in existing pattern cards
+            if (connectedToys.length > 0) {
+                const patternCards = document.querySelectorAll('.pattern-card');
+                patternCards.forEach((card, index) => {
+                    const toyIdInput = card.querySelector('.toy-id-input');
+                    if (toyIdInput && !toyIdInput.value) {
+                        // Distribute toys across cards if multiple toys
+                        const toyIndex = Math.min(index, connectedToys.length - 1);
+                        toyIdInput.value = connectedToys[toyIndex].toyId;
+                    }
+                });
+            }
+            
+            // Enable loadMultiplePatterns button if toys are connected
+            const loadMultiplePatternsBtn = document.getElementById('loadMultiplePatternsBtn');
+            if (connectedToys.length > 0) {
+                loadMultiplePatternsBtn.disabled = false;
+                loadMultiplePatternsBtn.innerHTML = `<span class="btn-icon">🚀</span> Load All Patterns (${connectedToys.length} toys)`;
+            } else {
+                loadMultiplePatternsBtn.disabled = true;
+                loadMultiplePatternsBtn.innerHTML = '<span class="btn-icon">🚀</span> Load All Patterns';
+            }
+        });
+        
+        // Initialize pattern cards after connection
+        initializePatternCards();
+        
+    } catch (error) {
+        updateRequestInfo('connectRequestInfo', `\n❌ Error: ${error.message}`, true);
+        pcMethodContent.innerHTML = `❌ Error: ${error.message}`;
+        mobileMethodContent.innerHTML = `❌ Error: ${error.message}`;
+        vrMethodContent.innerHTML = `❌ Error: ${error.message}`;
+    }
+}
+
+// Module 3: Pattern Management
+function buildWavePattern(totalMs, intervalMs) {
+    const data = [];
+    for (let t = 0, up = true; t <= totalMs; t += intervalMs, up = !up) {
+        data.push({ pos: up ? 80 : 20, at: t });
+    }
+    return data;
+}
+
+function loadPatternWithData(testPattern, label) {
+    if (!lovensePattern) {
+        return;
+    }
+    
+    // Display request details
+    const patternRequestInfo = document.getElementById('patternRequestInfo');
+    const timestamp = new Date().toLocaleString();
+    updateRequestInfo('patternRequestInfo', `<div class="req-highlight">⏰ [${timestamp}] 🔗 lovensePattern.loadPattern() called (${label})</div>\n${JSON.stringify({
+        type: "funScript",
+        data: testPattern
+    }, null, 2)}`);
+    
+    try {
+        lovensePattern.loadPattern({
+            type: "funScript",
+            data: testPattern
+        });
+                
+        // Listen for pattern loaded event
+        lovensePattern.on("patternLoaded", () => {
+            patternLoaded = true;
+            document.getElementById('patternStatus').innerHTML = `<div class="status-ready">🎯 Pattern Ready to Play (${label})</div>`;
+            const timestamp = new Date().toLocaleString();
+            updateRequestInfo('patternRequestInfo', `\n⏰ [${timestamp}] 🎯 Event: "patternLoaded" triggered for single patterns`, true);
+        });
+        
+    } catch (error) {
+        updateRequestInfo('patternRequestInfo', `\n❌ Error: ${error.message}`, true);
+    }
+}
+
+function loadPattern20s() {
+    const totalMs = 20 * 1000; // 20s
+    const interval = 1000; // 1s step
+    const pattern = buildWavePattern(totalMs, interval);
+    loadPatternWithData(pattern, '20s');
+}
+
+function loadPattern2m() {
+    const totalMs = 2 * 60 * 1000; // 2 minutes
+    const interval = 2000; // 2s step
+    const pattern = buildWavePattern(totalMs, interval);
+    loadPatternWithData(pattern, '2m');
+}
+
+function loadPattern30m() {
+    const totalMs = 30 * 60 * 1000; // 30 minutes
+    const interval = 5000; // 5s step to keep data size modest
+    const pattern = buildWavePattern(totalMs, interval);
+    loadPatternWithData(pattern, '30m');
+}
+
+function loadPattern50m() {
+    const totalMs = 50 * 60 * 1000; // 50 minutes
+    const interval = 8000; // 8s step to keep data size manageable
+    const pattern = buildWavePattern(totalMs, interval);
+    loadPatternWithData(pattern, '50m');
+}
+
+// Media sync via audio events (requested): play -> play(), pause -> pause(), seek/speed -> change()
+const audioEl = document.getElementById('audioPlayer');
+const syncRequestInfo = document.getElementById('syncRequestInfo');
+
+function onAudioPlay() {
+    if (!lovensePattern || !patternLoaded) return;
+    const currentTimeMs = getCurrentAudioTimeMs();
+    const params = getAudioParams();
+    updateRequestInfo('syncRequestInfo', `<div class=\"req-out\">▶️ lovensePattern.play() (audio play) ~ ${currentTimeMs} ms (${formatTime(currentTimeMs)})</div>${JSON.stringify(params, null, 2)}`, true);
+    try { lovensePattern.play(params); } catch (e) { updateRequestInfo('syncRequestInfo', `\n❌ ${e.message}`, true); }
+}
+
+function onAudioPause() {
+    if (!lovensePattern) return;
+    const currentTimeMs = getCurrentAudioTimeMs();
+    updateRequestInfo('syncRequestInfo', `<div class=\"req-out\">⏸️ lovensePattern.pause() (audio pause) ~ ${currentTimeMs} ms (${formatTime(currentTimeMs)})</div>`, true);
+    try { lovensePattern.pause(); } catch (e) { updateRequestInfo('syncRequestInfo', `\n❌ ${e.message}`, true); }
+}
+
+function onAudioSeeked() {
+    if (!lovensePattern || !patternLoaded) return;
+    const currentTimeMs = getCurrentAudioTimeMs();
+    const params = getAudioParams();
+    updateRequestInfo('syncRequestInfo', `<div class=\"req-out\">🔄 lovensePattern.change() (audio seek) ~ ${currentTimeMs} ms (${formatTime(currentTimeMs)})</div>${JSON.stringify(params, null, 2)}`, true);
+    try { lovensePattern.change(params); } catch (e) { updateRequestInfo('syncRequestInfo', `\n❌ ${e.message}`, true); }
+}
+
+function onAudioRateChange() {
+    if (!lovensePattern || !patternLoaded || audioEl.paused) return;
+    const currentTimeMs = getCurrentAudioTimeMs();
+    const params = getAudioParams();
+    updateRequestInfo('syncRequestInfo', `<div class=\"req-out\">⚡ lovensePattern.change() (rate change) ~ ${currentTimeMs} ms (${formatTime(currentTimeMs)})</div>${JSON.stringify(params, null, 2)}`, true);
+    try { lovensePattern.change(params); } catch (e) { updateRequestInfo('syncRequestInfo', `\n❌ ${e.message}`, true); }
+}
+
+audioEl.addEventListener('play', onAudioPlay);
+audioEl.addEventListener('pause', onAudioPause);
+audioEl.addEventListener('seeked', onAudioSeeked);
+audioEl.addEventListener('ratechange', onAudioRateChange);
+
+// Toy Management and Multiple Patterns
+let patternCardCounter = 0;
+
+function updateToyList() {
+    const toyListElement = document.getElementById('toyList');
+    if (!toyListElement) return;
+
+    toyListElement.innerHTML = ''; // Clear existing list
+
+    if (connectedToys.length === 0) {
+        toyListElement.innerHTML = '<div class="toy-placeholder">No toys connected yet. Connect to Lovense Remote first.</div>';
+        return;
+    }
+
+    // Create simple table
+    const table = document.createElement('table');
+    table.className = 'toy-table';
+    
+    // Table header
+    const thead = document.createElement('thead');
+    thead.innerHTML = `
+        <tr>
+            <th>Nickname</th>
+            <th>Type</th>
+            <th>Type : Toy ID</th>
+            <th>Version</th>
+            <th>Battery</th>
+            <th>Status</th>
+        </tr>
+    `;
+    table.appendChild(thead);
+    
+    // Table body
+    const tbody = document.createElement('tbody');
+    connectedToys.forEach(toy => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${toy.nickName || '-'}</td>
+            <td>${toy.toyType || '-'}</td>
+            <td>${toy.toyId || '-'}</td>
+            <td>${toy.toyVersion || '-'}</td>
+            <td>${toy.battery || 0}%</td>
+            <td><span class="toy-status ${toy.connect ? 'connected' : 'disconnected'}">${toy.connect ? 'Connected' : 'Disconnected'}</span></td>
+        `;
+        tbody.appendChild(row);
+    });
+    table.appendChild(tbody);
+    
+    toyListElement.appendChild(table);
+    
+    // Update all pattern card toy ID dropdowns
+    updateAllPatternCardToyDropdowns();
+}
+
+// Update all pattern card toy ID dropdowns with current connected toys
+function updateAllPatternCardToyDropdowns() {
+    const patternCards = document.querySelectorAll('.pattern-card');
+    
+    patternCards.forEach(card => {
+        const toyIdSelect = card.querySelector('.toy-id-select');
+        if (toyIdSelect) {
+            updateToyDropdown(toyIdSelect);
+        }
+    });
+}
+
+// Update a single toy dropdown with current connected toys
+function updateToyDropdown(toyIdSelect) {
+    // Store current selection
+    const currentValue = toyIdSelect.value;
+    
+    // Clear existing options except "All toys"
+    toyIdSelect.innerHTML = '<option value="">All toys</option>';
+    
+    // Add options for each connected toy
+    connectedToys.forEach(toy => {
+        const option = document.createElement('option');
+        option.value = toy.toyId;
+        option.textContent = `${toy.toyType || 'Unknown'} : ${toy.toyId}`;
+        toyIdSelect.appendChild(option);
+    });
+    
+    // Restore previous selection if it still exists
+    if (currentValue && connectedToys.some(toy => toy.toyId === currentValue)) {
+        toyIdSelect.value = currentValue;
+    }
+}
+
+// Initialize pattern cards
+function initializePatternCards() {
+    const container = document.getElementById('patternCardsContainer');
+    if (!container) return;
+    
+    // Add default card
+    addPatternCard();
+}
+
+// Add a new pattern card
+function addPatternCard() {
+    patternCardCounter++;
+    const cardId = `patternCard${patternCardCounter}`;
+    
+    const card = document.createElement('div');
+    card.className = 'pattern-card';
+    card.id = cardId;
+    
+    card.innerHTML = `
+        <div class="pattern-card-header">
+            <div class="pattern-card-title">
+                <span class="card-icon">🎮</span>
+                Toy Pattern ${patternCardCounter}
+            </div>
+            <button class="pattern-card-remove" onclick="removePatternCard('${cardId}')" ${patternCardCounter === 1 ? 'disabled' : ''}>
+                <span>✕</span>
+            </button>
+        </div>
+        <div class="pattern-card-content">
+            <div class="pattern-card-section">
+                <label for="${cardId}-toyId">Toy ID (optional):</label>
+                <select id="${cardId}-toyId" class="toy-id-select">
+                    <option value="">All toys</option>
+                </select>
+            </div>
+            <div class="pattern-card-section">
+                <label for="${cardId}-patternType">Pattern Type:</label>
+                <select id="${cardId}-patternType" class="pattern-type-select">
+                    <option value="funScript">funScript</option>
+                    <option value="lovense">Lovense</option>
+                </select>
+            </div>
+            <div class="pattern-card-section full-width">
+                <label for="${cardId}-patternData">
+                    Pattern Data
+                    <span class="field-hint">Enter JSON array or use quick buttons below</span>
+                </label>
+                <textarea id="${cardId}-patternData" placeholder="Enter pattern data (JSON array) or use quick buttons below" class="pattern-data-textarea"></textarea>
+                                    <div class="quick-pattern-buttons">
+                        <div class="pattern-generators">
+                            <button class="quick-pattern-btn" onclick="applyQuickPattern('${cardId}', '20s')">20s</button>
+                            <button class="quick-pattern-btn" onclick="applyQuickPattern('${cardId}', '2m')">2m</button>
+                            <button class="quick-pattern-btn" onclick="applyQuickPattern('${cardId}', '30m')">30m</button>
+                            <button class="quick-pattern-btn" onclick="applyQuickPattern('${cardId}', '50m')">50m</button>
+                        </div>
+                        <button class="quick-pattern-btn clear-btn" onclick="clearPatternData('${cardId}')">Clear</button>
+                    </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('patternCardsContainer').appendChild(card);
+    
+    // Auto-fill toy ID dropdown if available
+    if (connectedToys.length > 0) {
+        const toyIdSelect = card.querySelector('.toy-id-select');
+        if (toyIdSelect) {
+            updateToyDropdown(toyIdSelect);
+            // Auto-select first toy for this card
+            toyIdSelect.value = connectedToys[0].toyId;
+        }
+    }
+}
+
+// Remove a pattern card
+function removePatternCard(cardId) {
+    const card = document.getElementById(cardId);
+    if (card) {
+        card.remove();
+        
+        // Update card numbers
+        const cards = document.querySelectorAll('.pattern-card');
+        cards.forEach((card, index) => {
+            const title = card.querySelector('.pattern-card-title');
+            const removeBtn = card.querySelector('.pattern-card-remove');
+            const cardNumber = index + 1;
+            const newCardId = `patternCard${cardNumber}`;
+            
+            title.innerHTML = `<span class="card-icon">🎮</span> Toy Pattern ${cardNumber}`;
+            card.id = newCardId;
+            
+            // Update onclick handlers
+            const quickBtns = card.querySelectorAll('.quick-pattern-btn');
+            quickBtns.forEach(btn => {
+                btn.onclick = function() {
+                    applyQuickPattern(newCardId, btn.textContent);
+                };
+            });
+            
+            // Update remove button
+            removeBtn.onclick = function() {
+                removePatternCard(newCardId);
+            };
+            
+            // Disable remove button for first card
+            removeBtn.disabled = cardNumber === 1;
+        });
+        
+        patternCardCounter = cards.length;
+    }
+}
+
+// Helper function to apply quick pattern to pattern data
+function applyQuickPattern(cardId, patternType) {
+    const patternData = document.getElementById(`${cardId}-patternData`);
+    
+    let pattern;
+    switch (patternType) {
+        case '20s':
+            pattern = buildWavePattern(20 * 1000, 1000); // 20s, 1s step
+            break;
+        case '2m':
+            pattern = buildWavePattern(2 * 60 * 1000, 2000); // 2m, 2s step
+            break;
+        case '30m':
+            pattern = buildWavePattern(30 * 60 * 1000, 5000); // 30m, 5s step
+            break;
+        case '50m':
+            pattern = buildWavePattern(50 * 60 * 1000, 8000); // 50m, 8s step
+            break;
+        default:
+            pattern = [];
+    }
+    
+    patternData.value = JSON.stringify(pattern, null, 2);
+}
+
+// Helper function to clear pattern data
+function clearPatternData(cardId) {
+    const patternData = document.getElementById(`${cardId}-patternData`);
+    if (patternData) {
+        patternData.value = '';
+    }
+}
+
+async function loadMultiplePatterns() {
+    if (!lovensePattern) {
+        updateRequestInfo('multiplePatternRequestInfo', '<div class="req-out">❌ LovensePattern SDK not initialized.</div>');
+        return;
+    }
+
+    // Get all pattern cards
+    const patternCards = document.querySelectorAll('.pattern-card');
+    if (patternCards.length === 0) {
+        updateRequestInfo('multiplePatternRequestInfo', '<div class="req-out">❌ No pattern cards found. Please add at least one pattern card.</div>');
+        return;
+    }
+
+    const patterns = [];
+    let hasValidPattern = false;
+
+    // Process each pattern card
+    patternCards.forEach((card, index) => {
+        const cardId = card.id;
+        const toyId = document.getElementById(`${cardId}-toyId`).value;
+        const patternType = document.getElementById(`${cardId}-patternType`).value;
+        const patternData = document.getElementById(`${cardId}-patternData`).value.trim();
+
+        // Pattern type is required
+        if (!patternType) {
+            updateRequestInfo('multiplePatternRequestInfo', `<div class="req-out">❌ Please select Pattern Type for Toy Pattern ${index + 1}.</div>`);
+            return;
+        }
+
+        // Pattern data is required
+        if (!patternData) {
+            updateRequestInfo('multiplePatternRequestInfo', `<div class="req-out">❌ Please provide Pattern Data for Toy Pattern ${index + 1}.</div>`);
+            return;
+        }
+
+        // Build pattern object
+        const pattern = {
+            type: patternType
+        };
+
+        // Add toyId only if provided (allows empty toyId for all toys)
+        if (toyId) {
+            pattern.toyId = toyId;
+        }
+
+        // Add pattern data
+        try {
+            pattern.data = JSON.parse(patternData);
+        } catch (e) {
+            updateRequestInfo('multiplePatternRequestInfo', `<div class="req-out">❌ Invalid JSON in Pattern Data ${index + 1}: ${e.message}</div>`);
+            return;
+        }
+
+        patterns.push(pattern);
+        hasValidPattern = true;
+    });
+
+    if (!hasValidPattern) {
+        return;
+    }
+
+            // Display request details
+        const toyIdInfo = patterns.map((p, index) => {
+            const patternName = `Toy Pattern ${index + 1}`;
+            
+            // Calculate pattern duration from the last 'at' parameter
+            let duration = '';
+            if (p.data && Array.isArray(p.data) && p.data.length > 0) {
+                const lastPattern = p.data[p.data.length - 1];
+                if (lastPattern && lastPattern.at) {
+                    const totalMs = lastPattern.at;
+                    const totalSeconds = Math.floor(totalMs / 1000);
+                    const totalMinutes = Math.floor(totalSeconds / 60);
+                    
+                    if (totalMinutes >= 1) {
+                        duration = ` - ${totalMinutes}min`;
+                    } else {
+                        duration = ` - ${totalSeconds}s`;
+                    }
+                }
+            }
+            
+            // Get toy type from connected toys if toyId is provided
+            let toyDisplay = 'All toys';
+            if (p.toyId) {
+                const connectedToy = connectedToys.find(toy => toy.toyId === p.toyId);
+                if (connectedToy) {
+                    toyDisplay = `${connectedToy.toyType || 'Unknown'} : ${p.toyId}`;
+                } else {
+                    toyDisplay = p.toyId; // Fallback if toy not found
+                }
+            }
+            
+            return `${toyDisplay}（${patternName}${duration}）`;
+        }).join(', ');
+        const timestamp = new Date().toLocaleString();
+        updateRequestInfo('multiplePatternRequestInfo', `<div class="req-highlight">⏰ [${timestamp}] 🔗 lovensePattern.loadMultiplePatterns() called</div>${JSON.stringify(patterns, null, 2)}`);
+
+    try {
+        // Call the API
+        lovensePattern.loadMultiplePatterns(patterns);
+        
+        // Add pattern loaded listener
+        lovensePattern.on("patternLoaded", (data) => {
+            patternLoaded = true;
+            const timestamp = new Date().toLocaleString();
+            updateRequestInfo('multiplePatternRequestInfo', `\n⏰ [${timestamp}] 🎯 Event: "patternLoaded" triggered for multiple patterns`, true);
+            document.getElementById('multiplePatternStatus').innerHTML = `🎯 Multiple patterns ready to play: ${toyIdInfo}`;
+        });        
+    } catch (error) {
+        document.getElementById('multiplePatternStatus').innerHTML = `❌ Failed: ${error.message}`;
+        updateRequestInfo('multiplePatternRequestInfo', `\n❌ Error: ${error.message}`, true);
+    }
+}
+</script>

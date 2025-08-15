@@ -1,1648 +1,1907 @@
 <div class="api-documentation">
-    <h1>Media Sync - Pattern Editor</h1>
+  <h1>Media Sync - Pattern Editor Advanced</h1>
+  <div class="content">
+    <div class="peditor-advanced">
+      <style>
+        :root {
+          --primary-color: #667eea;
+          --primary-dark: #5a6fd8;
+          --primary-light: #e8ecff;
+          --secondary-color: #764ba2;
+          --success-color: #28a745;
+          --success-light: #d4edda;
+          --warning-color: #ffc107;
+          --warning-light: #fff3cd;
+          --danger-color: #dc3545;
+          --danger-light: #f8d7da;
+          --info-color: #17a2b8;
+          --info-light: #d1ecf1;
+          --light-gray: #f8f9fa;
+          --medium-gray: #e9ecef;
+          --dark-gray: #6c757d;
+          --border-color: #dee2e6;
+          --text-primary: #212529;
+          --text-secondary: #6c757d;
+          --text-muted: #868e96;
+        }
 
-    <div class="api-reference">
-        <p>Based on <a href="https://developer.lovense.com/docs/media-sync.html#sync-with-lovense-toys" target="_blank">Lovense Pattern Editor Documentation</a></p>
-    </div>
+        .peditor-advanced fieldset { 
+          border: 2px solid var(--border-color); 
+          padding: 16px; 
+          margin: 16px 0; 
+          border-radius: 8px;
+          background: white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .peditor-advanced legend { 
+          padding: 0 8px; 
+          font-size: 16px; 
+          font-weight: 700; 
+          color: var(--primary-color);
+          background: white;
+        }
+        .peditor-advanced label { 
+          display: inline-block; 
+          min-width: 80px; 
+          font-size: 14px; 
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+        .peditor-advanced input[type="text"],
+        .peditor-advanced input[type="number"] { 
+          width: 200px; 
+          padding: 8px 12px; 
+          border: 2px solid var(--border-color);
+          border-radius: 6px;
+          font-size: 14px;
+          transition: all 0.2s ease;
+        }
+        .peditor-advanced input[type="text"]:focus,
+        .peditor-advanced input[type="number"]:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        .peditor-advanced .row { margin: 8px 0; }
+        .peditor-advanced button { 
+          padding: 8px 16px; 
+          margin-right: 8px; 
+          font-size: 14px; 
+          font-weight: 500;
+          border: 1px solid #dee2e6;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          background: #f8f9fa;
+          color: #495057;
+        }
+        .peditor-advanced button:hover {
+          background: #e9ecef;
+          border-color: #adb5bd;
+        }
+        .peditor-advanced .btn-success {
+          background: #28a745;
+          color: white;
+          border-color: #28a745;
+        }
+        .peditor-advanced .btn-success:hover {
+          background: #218838;
+          border-color: #1e7e34;
+        }
+        .peditor-advanced .btn-danger {
+          background: #f8f9fa;
+          color: #dc3545;
+          border-color: #dc3545;
+        }
+        .peditor-advanced .btn-danger:hover {
+          background: #dc3545;
+          color: white;
+        }
 
-    <!-- Step 1: Get CToken -->
-    <div class="test-section">
-        <h3>Step 1: Get CToken</h3>
-        <div class="ctoken-container">
-            <p class="info-text">Get ctoken for pattern editor initialization.</p>
-            <div class="ctoken-controls">
-                <div class="input-row">
-                    <div class="input-group compact">
-                        <label>User ID:</label>
-                        <input type="text" id="userId" placeholder="Enter User ID" class="form-control half-width" style="margin-right:1rem;">
-                        <label>Developer Token:</label>
-                        <input type="text" id="developerToken" placeholder="Enter Developer Token" class="form-control half-width">
-                        <button onclick="getCToken()" class="btn btn-primary" style="margin-left:1rem;">Get CToken</button>
-                    </div>
-                </div>
+        .peditor-advanced .grid { 
+          display: grid; 
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+          gap: 16px; 
+          align-items: start; 
+        }
+        .peditor-advanced #status { 
+          padding: 12px 20px; 
+          background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); 
+          color: white; 
+          border-radius: 8px; 
+          font-weight: 700; 
+          text-align: center; 
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          margin-bottom: 20px;
+          font-size: 16px;
+          letter-spacing: 0.5px;
+        }
+
+        .peditor-advanced #qr { 
+          max-width: 240px; 
+          border: 2px solid var(--border-color); 
+          border-radius: 8px;
+        }
+        .peditor-advanced code { 
+          background: var(--light-gray); 
+          padding: 4px 8px; 
+          border-radius: 4px; 
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          border: 1px solid var(--border-color);
+        }
+        .peditor-advanced .muted { color: var(--text-muted); }
+        .peditor-advanced .toys-table { 
+          width: 100%; 
+          border-collapse: collapse; 
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .peditor-advanced .toys-table th, .peditor-advanced .toys-table td { 
+          border: 1px solid var(--border-color); 
+          padding: 8px 12px; 
+          text-align: left; 
+          font-size: 12px;
+        }
+        .peditor-advanced .toys-table th { 
+          background: #f8f9fa;
+          color: #495057;
+          font-weight: 500;
+          border-bottom: 2px solid #dee2e6;
+        }
+        .peditor-advanced .toys-table tr:nth-child(even) {
+          background: var(--light-gray);
+        }
+        .peditor-advanced textarea { 
+          width: 100%; 
+          min-height: 120px; 
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; 
+          font-size: 12px; 
+          padding: 12px;
+          border: 2px solid var(--border-color);
+          border-radius: 6px;
+          transition: all 0.2s ease;
+        }
+        .peditor-advanced textarea:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        .peditor-advanced .pattern-entry { 
+          border: 2px solid var(--border-color); 
+          border-radius: 8px; 
+          padding: 16px; 
+          margin: 12px 0; 
+          background: white; 
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .peditor-advanced .pattern-entry:hover { 
+          box-shadow: 0 8px 24px rgba(0,0,0,0.15); 
+          transform: translateY(-2px);
+          border-color: var(--primary-color);
+        }
+        .peditor-advanced .pattern-entry h4 { 
+          margin: 0 0 16px 0; 
+          color: var(--primary-color); 
+          font-size: 16px; 
+          font-weight: 700; 
+        }
+        .peditor-advanced .pattern-entry select, .peditor-advanced .pattern-entry input, .peditor-advanced .pattern-entry textarea { 
+          width: 100%; 
+          padding: 8px 12px; 
+          border: 2px solid var(--border-color); 
+          border-radius: 6px; 
+          font-size: 14px; 
+          transition: all 0.2s ease;
+        }
+        .peditor-advanced .pattern-entry select:focus, .peditor-advanced .pattern-entry input:focus, .peditor-advanced .pattern-entry textarea:focus { 
+          outline: none; 
+          border-color: var(--primary-color); 
+          box-shadow: 0 0 0 3px var(--primary-light); 
+        }
+        .peditor-advanced .pattern-entry label { 
+          display: block; 
+          margin-bottom: 6px; 
+          font-weight: 600; 
+          color: var(--text-primary); 
+          font-size: 14px; 
+        }
+        .peditor-advanced .pattern-entry .note { 
+          font-size: 12px; 
+          color: var(--text-muted); 
+          margin-top: 6px; 
+          font-style: italic;
+        }
+        .peditor-advanced .api-demo {
+          margin-top: 16px;
+          border: 2px solid var(--border-color);
+          border-radius: 8px;
+          background: white;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          overflow: hidden;
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+        }
+        .peditor-advanced .api-demo-header {
+          background: linear-gradient(135deg, var(--medium-gray), #d6d8db);
+          padding: 12px 16px;
+          border-bottom: 2px solid var(--border-color);
+          font-weight: 700;
+          font-size: 14px;
+          color: var(--text-primary);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .peditor-advanced .api-demo-content {
+          padding: 16px;
+        }
+        .peditor-advanced .api-section {
+          margin-bottom: 16px;
+        }
+        .peditor-advanced .api-section:last-child {
+          margin-bottom: 0;
+        }
+        .peditor-advanced .api-label {
+          font-weight: 700;
+          font-size: 14px;
+          color: var(--primary-color);
+          margin-bottom: 8px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .peditor-advanced .api-label::before {
+          content: "▶";
+          font-size: 12px;
+        }
+        .peditor-advanced .api-code {
+          background: var(--light-gray);
+          border: 2px solid var(--border-color);
+          border-radius: 6px;
+          padding: 12px 16px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          font-size: 12px;
+          line-height: 1.5;
+          color: var(--text-primary);
+          white-space: pre-wrap;
+          word-wrap: break-word;
+          word-break: break-all;
+          overflow-wrap: break-word;
+          position: relative;
+          overflow-x: auto;
+          overflow-y: auto;
+          max-width: 100%;
+          width: 100%;
+          max-height: 300px;
+          box-sizing: border-box;
+        }
+
+        .peditor-advanced .status-indicator {
+          padding: 6px 12px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 600;
+          text-align: center;
+          min-width: 100px;
+        }
+        .peditor-advanced .status-connected {
+          background: var(--success-light);
+          color: var(--success-color);
+          border: 2px solid var(--success-color);
+        }
+        .peditor-advanced .status-disconnected {
+          background: var(--warning-light);
+          color: #856404;
+          border: 2px solid var(--warning-color);
+        }
+        .peditor-advanced .quick-pattern-btn {
+          border: 1px solid #ccc;
+          background: #f8f9fa;
+          color: #495057;
+          padding: 4px 8px;
+          font-size: 12px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .peditor-advanced .quick-pattern-btn:hover {
+          background: #e9ecef;
+          border-color: #adb5bd;
+        }
+
+        .peditor-advanced .flex-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        .peditor-advanced .flex-row-8 {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+        .peditor-advanced .small-label {
+          min-width: auto;
+          font-size: 13px;
+        }
+        .peditor-advanced .auto-label {
+          min-width: auto;
+        }
+        .peditor-advanced .timestamp {
+          color: #6f42c1;
+          font-weight: 600;
+        }
+      </style>
+
+      <div id="status">Ready to generate ctoken</div>
+
+      <fieldset>
+        <legend>Step 1: Generate ctoken</legend>
+        <div class="grid">
+          <div>
+            <div class="row">
+              <label for="userId">userId:</label>
+              <input id="userId" type="text" placeholder="deltatest_123456" value="deltatest_123456" />
+              <label for="devToken">devToken:</label>
+              <input id="devToken" type="text" placeholder="tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle" value="tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle" />
+              <button id="btn-generate-ctoken" class="btn-success">Generate ctoken</button>
             </div>
-            <div class="api-test-results">
-                <div style="display:flex;align-items:center;gap:2rem;">
-                    <div id="ctokenRequestUrl" class="request-url">URL: </div>
-                </div>
-                <div class="response-box">
-                    <div class="timestamp" id="ctokenResponseTime">Timestamp: -</div>
-                    <div id="ctokenResponse" class="data-box">Response will appear here...</div>
-                </div>
-            </div>
+          </div>
         </div>
-    </div>
-
-    <!-- Step 2: Initialize JavaScript -->
-    <div class="test-section">
-        <h3>Step 2: Initialize SDK</h3>
-        <div class="js-init-container">
-            <div class="code-row">
-                <div class="code-block">
-                    <code>&lt;script src=&quot;https://cdn.lovense-api.com/peditor-v2/pattern-sdk.js&quot;&gt;&lt;/script&gt;<br>const lovensePattern = new LovensePattern()</code>
-                </div>
-                <button onclick="initializePatternSDK()" class="btn btn-primary" style="margin-left:1rem;">Initialize SDK</button>
-            </div>
-            <div id="jsInitStatus" class="status-indicator" style="margin-top:0.5rem;">Not Initialized</div>
-        </div>
-    </div>
-
-    <!-- Step 3: Media Initialization -->
-    <div class="test-section">
-        <h3>Step 3: Initialize Media</h3>
-        <div class="advanced-init-container">
-            <div class="step-header">
-                <p class="info-text">Call this method every time you open a media page or switch media.</p>
-                <button onclick="advancedInit()" class="btn btn-primary">Run Media Init</button>
-            </div>
-            <!-- Media selection merged here -->
-            <div class="media-container">
-                <div class="media-inputs">
-                    <div class="input-row">
-                        <div class="input-group compact">
-                            <label>Media Type:</label>
-                            <div class="media-tabs">
-                                <button id="audioTab" class="media-tab active" onclick="switchMediaTab('audio')">Audio</button>
-                                <button id="videoTab" class="media-tab" onclick="switchMediaTab('video')">Video</button>
-                            </div>
-                        </div>
-                        <div class="input-group compact">
-                            <label>Media ID:</label>
-                            <span id="mediaIdDisplay" class="audio-media-id" style="font-weight:500;">audio_sample_001</span>
-                        </div>
-                        <div class="input-group compact">
-                            <label>Duration (ms):</label>
-                            <span id="mediaDurationDisplay" style="font-weight:500;">-</span>
-                        </div>
-                    </div>
-                </div>
-                <div id="mediaPreview" class="media-preview">
-                    <div id="audioPreview" class="media-example" style="display: block;">
-                        <h5>Audio Example: Sibbydex - Draining the Power of a Saiyan</h5>
-                        <audio id="audioElementUnique" controls class="enhanced-audio-player">
-                            <source src="https://assets.shibbydex.com/audio/d4e5bb34-3673-40c4-ad5a-17e4da998d5a.mp3" type="audio/mpeg">
-                            Your browser does not support the audio tag.
-                        </audio>
-                    </div>
-                    <div id="videoPreview" class="media-example" style="display: none;">
-                        <h5>Video Example: Lovense Random Video</h5>
-                        <video id="videoElementUnique" controls style="max-width: 100%; height: auto;">
-                            <source src="https://cdn.lovense.com/UploadFiles/peditor/video/yukari001-720p.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                </div>
-            </div>
-            <div class="api-test-results">
-                <div class="response-box">
-                    <h4>Response:</h4>
-                    <div id="advancedInitCallLabel" class="request-url">URL: -</div>
-                    <div class="timestamp" id="advancedInitResponseTime">Timestamp: -</div>
-                    <div id="advancedInitResponse" class="data-box">Response will appear here...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 4: Connect to Apps -->
-    <div class="test-section">
-        <h3>Step 4: Connect to Apps</h3>
-        <div class="connect-apps-container">
-            <div class="step-header">
-                <p class="info-text">Get QR Code, app URL, or Unique Code to connect to Lovense Remote.</p>
-                <div class="connect-controls">
-                    <button onclick="getAppConnection()" class="btn btn-primary">Get Connection Info</button>
-                    <button onclick="clearConnectionInfo()" class="btn btn-secondary">Clear</button>
-                    <div class="input-group compact">
-                        <label>Status:</label>
-                        <span id="appConnectionStatus" class="status-indicator">Not Connected</span>
-                    </div>
-                </div>
-            </div>
-            <div class="connection-display" id="connectionDisplay" style="display: none;">
-                <div class="connection-methods">
-                    <div class="qr-section">
-                        <h4>QR Code (PC)</h4>
-                        <div id="qrCodeDisplay" class="qr-container"></div>
-                    </div>
-                    <div class="app-url-section">
-                        <h4>App URL (Mobile)</h4>
-                        <div id="appUrlDisplay" class="app-url-container"></div>
-                    </div>
-                    <div class="code-section">
-                        <h4>Code (VR)</h4>
-                        <div id="uniqueCodeDisplay" class="unique-code-container"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="api-test-results">
-                <div class="response-box">
-                    <h4>Response:</h4>
-                    <div id="connectionCallLabel" class="request-url">URL: -</div>
-                    <div class="timestamp" id="connectionResponseTime">Timestamp: -</div>
-                    <div id="connectionResponse" class="data-box">Response will appear here...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Step 5: Load Pattern(s) -->
-    <div class="test-section">
-        <h3>Step 5: Load Pattern(s)</h3>
-        <div class="load-pattern-container">
-            <div class="step-header">
-                <p class="info-text">Load single pattern or multiple patterns for different toys.</p>
-            </div>
-            
-            <!-- Pattern Loading Tabs -->
-            <div class="pattern-loading-tabs">
-                <button id="singlePatternTab" class="pattern-tab active" onclick="switchPatternTab('single')">Single Pattern</button>
-                <button id="multiplePatternsTab" class="pattern-tab" onclick="switchPatternTab('multiple')">Multiple Patterns</button>
-            </div>
-            
-            <!-- Single Pattern Loading -->
-            <div id="singlePatternSection" class="pattern-section">
-                <div class="pattern-type-selector">
-                    <label>Pattern Type:</label>
-                    <select id="singlePatternType" class="form-control half-width">
-                        <option value="funScript">FunScript</option>
-                        <option value="lovense">Lovense</option>
-                    </select>
-                </div>
-                
-                <!-- Pattern Configuration Cards -->
-                <div class="pattern-cards">
-                    <div class="pattern-card" id="singlePatternLinkCard">
-                        <div class="card-header">
-                            <h4>📎 Pattern Link (URL)</h4>
-                            <p>Use a remote pattern file</p>
-                        </div>
-                        <div class="card-content">
-                            <input type="url" id="singlePatternLink" class="form-control" placeholder="https://example.com/pattern.funscript or https://example.com/pattern.json">
-                        </div>
-                    </div>
-                    
-                    <div class="pattern-card active" id="singlePatternDataCard">
-                        <div class="card-header">
-                            <h4>📝 Pattern Data (JSON)</h4>
-                            <p>Enter pattern data directly</p>
-                        </div>
-                        <div class="card-content">
-                            <div class="pattern-data-container">
-                                <div class="pattern-data-header">
-                                    <span class="pattern-label">Pattern Data:</span>
-                                    <button type="button" class="btn btn-secondary btn-sm" onclick="fillSinglePatternExample()">Load 1-min Pattern Sample</button>
-                                </div>
-                                <textarea id="singlePatternData" class="form-control pattern-textarea fixed-height" rows="8" placeholder='// FunScript format:
-[
-  {"pos": 50, "at": 1000},
-  {"pos": 80, "at": 2000},
-  {"pos": 20, "at": 3000}
-]
-
-// Lovense format:
-[
-  {"v": 10, "t": 1000},
-  {"v": 20, "t": 2000},
-  {"v": 5, "t": 3000}
-]'></textarea>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="pattern-input-section">
-                    <button onclick="loadSinglePattern()" class="btn btn-primary">Load Pattern</button>
-                    <button onclick="clearSinglePattern()" class="btn btn-secondary">Clear</button>
-                </div>
-            </div>
-            
-            <!-- Multiple Patterns Loading -->
-            <div id="multiplePatternsSection" class="pattern-section" style="display: none;">
-                <div class="multiple-patterns-config">
-                    <div class="pattern-entry">
-                        <h5>Pattern 1</h5>
-                        <div class="input-row">
-                            <div class="input-group compact">
-                                <label>Type:</label>
-                                <select id="multiPatternType1" class="form-control half-width">
-                                    <option value="funScript">FunScript</option>
-                                    <option value="lovense">Lovense</option>
-                                </select>
-                            </div>
-                            <div class="input-group compact">
-                                <label>Toy ID:</label>
-                                <input type="text" id="multiToyId1" class="form-control half-width" placeholder="Lush 4 toyId">
-                            </div>
-                        </div>
-                        <div class="input-row">
-                            <div class="input-group compact">
-                                <label>Pattern Link:</label>
-                                <input type="url" id="multiPatternLink1" class="form-control" placeholder="https://example.com/pattern1.funscript">
-                            </div>
-                            <div class="input-group compact">
-                                <label>Pattern Data:</label>
-                                <textarea id="multiPatternData1" class="form-control fixed-height" rows="3" placeholder='[{"pos": 50, "at": 1000}]'></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="pattern-entry">
-                        <h5>Pattern 2</h5>
-                        <div class="input-row">
-                            <div class="input-group compact">
-                                <label>Type:</label>
-                                <select id="multiPatternType2" class="form-control half-width">
-                                    <option value="funScript">FunScript</option>
-                                    <option value="lovense">Lovense</option>
-                                </select>
-                            </div>
-                            <div class="input-group compact">
-                                <label>Toy ID:</label>
-                                <input type="text" id="multiToyId2" class="form-control half-width" placeholder="Nora toyId">
-                            </div>
-                        </div>
-                        <div class="input-row">
-                            <div class="input-group compact">
-                                <label>Pattern Link:</label>
-                                <input type="url" id="multiPatternLink2" class="form-control" placeholder="https://example.com/pattern2.funscript">
-                            </div>
-                            <div class="input-group compact">
-                                <label>Pattern Data:</label>
-                                <textarea id="multiPatternData2" class="form-control fixed-height" rows="3" placeholder='[{"pos": 80, "at": 2000}]'></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button onclick="loadMultiplePatterns()" class="btn btn-primary">Load Multiple Patterns</button>
-                </div>
-            </div>
-            
-            <div class="api-test-results">
-                <div class="response-box">
-                    <h4>Response:</h4>
-                    <div id="loadPatternCallLabel" class="request-url">URL: -</div>
-                    <div class="timestamp" id="loadPatternResponseTime">Timestamp: -</div>
-                    <div id="loadPatternResponse" class="data-box scrollable-request" style="max-height: 240px;">Response will appear here...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-    
-</div>
-
-<script src="https://cdn.lovense-api.com/peditor-v2/pattern-sdk.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.0/axios.min.js"></script>
-
-<script>
-let lovensePattern = null;
-let currentCToken = null;
-let currentMediaType = 'audio';
-
-function switchMediaTab(type) {
-    const audioTab = document.getElementById('audioTab');
-    const videoTab = document.getElementById('videoTab');
-    const audioPreview = document.getElementById('audioPreview');
-    const videoPreview = document.getElementById('videoPreview');
-    const audioEl = document.getElementById('audioElementUnique');
-    const videoEl = document.getElementById('videoElementUnique');
-    const mediaIdDisplay = document.getElementById('mediaIdDisplay');
-    const mediaDurationDisplay = document.getElementById('mediaDurationDisplay');
-    
-    if (type === 'audio') {
-        audioTab.classList.add('active');
-        videoTab.classList.remove('active');
-        audioPreview.style.display = 'block';
-        videoPreview.style.display = 'none';
-        if (videoEl) videoEl.pause();
-        mediaIdDisplay.textContent = 'audio_sample_001';
-        mediaIdDisplay.className = 'audio-media-id';
-        updateDurationFromMedia(audioEl, mediaDurationDisplay);
-    } else {
-        audioTab.classList.remove('active');
-        videoTab.classList.add('active');
-        audioPreview.style.display = 'none';
-        videoPreview.style.display = 'block';
-        if (audioEl) audioEl.pause();
-        mediaIdDisplay.textContent = 'video_sample_001';
-        mediaIdDisplay.className = 'video-media-id';
-        updateDurationFromMedia(videoEl, mediaDurationDisplay);
-    }
-    
-    // Reset configuration when media type changes
-    if (currentMediaType !== type) {
-        showMediaChangeWarning();
-    }
-    currentMediaType = type;
-}
-function updateDurationFromMedia(mediaEl, displayEl) {
-    const setDuration = () => {
-        const durationMs = mediaEl && !isNaN(mediaEl.duration) && mediaEl.duration > 0 ? Math.round(mediaEl.duration * 1000) : '-';
-        displayEl.textContent = durationMs;
-    };
-    if (!mediaEl) {
-        displayEl.textContent = '-';
-        return;
-    }
-    if (isNaN(mediaEl.duration) || mediaEl.duration === Infinity) {
-        mediaEl.addEventListener('loadedmetadata', setDuration, { once: true });
-    } else {
-        setDuration();
-    }
-}
-
-
-// Step 1: Get CToken
-async function getCToken() {
-    const userId = document.getElementById('userId').value;
-    const developerToken = document.getElementById('developerToken').value;
-    
-    if (!userId || !developerToken) {
-        setResponse('ctokenResponse', 'Error: Please enter both User ID and Developer Token');
-        return;
-    }
-
-    try {
-        const url = `https://api.lovense-api.com/api/media/pattern/user/ctoken?userId=${encodeURIComponent(userId)}&developerToken=${encodeURIComponent(developerToken)}`;
         
-        document.getElementById('ctokenRequestUrl').innerHTML = `URL: ${url}`;
-        const response = await axios.get(url);
-        
-        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('ctokenResponse', JSON.stringify(response.data, null, 2) + ((response.data && response.data.code === 0) ? '' : '\n❌ Failed to get CToken: ' + (response.data.message || 'Unknown error')));
-        
-        if (response.data && response.data.code === 0) {
-            currentCToken = response.data.data.ctoken;
-        }
-    } catch (error) {
-        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('ctokenResponse', `Error: ${error.message}`);
-    }
-}
-
-// Step 2: Initialize JavaScript
-function initializePatternSDK() {
-    try {
-        if (typeof LovensePattern === 'undefined') {
-            throw new Error('LovensePattern SDK not loaded');
-        }
-        if (!lovensePattern) {
-            lovensePattern = new LovensePattern();
-        }
-        setResponse('jsInitStatus', 'SDK Initialized');
-        document.getElementById('jsInitStatus').className = 'status-indicator success';
-        // ensure appConnected listener is registered
-        registerAppConnectionListener();
-    } catch (error) {
-        setResponse('jsInitStatus', '❌ Initialization Failed: ' + error.message);
-        document.getElementById('jsInitStatus').className = 'status-indicator error';
-    }
-}
-
-
-
-function showMediaChangeWarning() {
-    const warningDiv = document.createElement('div');
-    warningDiv.className = 'media-change-warning';
-    warningDiv.innerHTML = `
-        <div class="warning-content">
-            <span>⚠️ Media type changed! Please reconfigure the advanced initialization if needed.</span>
-            <button onclick="this.parentElement.parentElement.remove()" class="btn-close">×</button>
+        <div class="api-demo">
+          <div class="api-demo-content">
+            <div class="api-section">
+              <div class="api-label">Request</div>
+              <div class="api-code" id="ctoken-request">Click "Generate ctoken" to see the actual request</div>
+            </div>
+            <div class="api-section">
+              <div class="api-label">Response</div>
+              <div class="api-code" id="ctoken-response">Response will appear here after request</div>
+            </div>
+          </div>
         </div>
-    `;
-    
-    const mediaContainer = document.querySelector('.media-container');
-    mediaContainer.insertBefore(warningDiv, mediaContainer.firstChild);
-    
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        if (warningDiv.parentElement) {
-            warningDiv.remove();
-        }
-    }, 5000);
-}
+      </fieldset>
 
-function getTimestamp() {
-    return new Date().toLocaleString('en-US', {
-        timeZone: 'Asia/Shanghai',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-    });
-}
+      <fieldset>
+        <legend>Step 2: Create JavaScript Object</legend>
+        
+        <div class="row">
+          <button id="btn-create-object" class="btn-success">Create lovensePattern Object</button>
+        </div>
+        
+        <div class="api-demo">
+          <div class="api-demo-content">
+            <div class="api-section">
+              <div class="api-label">Request</div>
+              <div class="api-code" id="create-object-code"><code>&lt;script src=&quot;https://cdn.lovense-api.com/peditor-v2/pattern-sdk.js&quot;&gt;&lt;/script&gt;<br>const lovensePattern = new LovensePattern()</code></div>
+            </div>
+            <div class="api-section">
+              <div class="api-label">Response</div>
+              <div class="api-code" id="create-object-response">Click "Create lovensePattern Object" to see if initialization was successful</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
 
+      <fieldset>
+        <legend>Step 3: Media Initialization</legend>
+        
+        <!-- Audio Player -->
+        <div class="row flex-row">
+          <div style="flex: 1; min-width: 300px;">
+            <strong>Test Audio:</strong>
+            <audio id="test-audio" controls preload="metadata" style="width: 100%; margin: 8px 0;">
+              <source src="https://assets.shibbydex.com/audio/d4e5bb34-3673-40c4-ad5a-17e4da998d5a.mp3" type="audio/mpeg" />
+              Your browser does not support the audio tag.
+            </audio>
+          </div>
+        </div>
+        
+        <!-- Configuration and Button in Same Row -->
+        <div class="row flex-row">
+          <div class="flex-row-8">
+            <label for="ctoken-step2" class="auto-label">ctoken:</label>
+            <input id="ctoken-step2" type="text" placeholder="[ctoken]" style="width: 200px;" />
+          </div>
+          <div class="flex-row-8">
+            <label for="mediaId" class="auto-label">mediaId:</label>
+            <input id="mediaId" type="text" placeholder="[mediaId]" value="test-audio" style="width: 120px;" />
+          </div>
+          <div class="flex-row-8">
+            <label for="duration" class="auto-label">duration:</label>
+            <input id="duration" type="number" step="0.001" placeholder="Auto-detect" style="width: 140px;" />
+          </div>
+          <button id="btn-init" class="btn-success">Init Media</button>
+        </div>
+        
+        <div class="api-demo">
+          <div class="api-demo-content">
+            <div class="api-section">
+              <div class="api-label">Request</div>
+              <div class="api-code" id="init-code">Click "Init Media" to see the actual initialization parameters</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
 
+      <fieldset>
+        <legend>Step 4: Connect Remote App</legend>
+        <div class="row">
+          <button id="btn-get-app" class="btn-success">Get Connection Info (QR / App Link / Unique Code)</button>
+        </div>
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px;">
+          <!-- QR Code Container -->
+          <div id="connectionQr" style="display:none">
+            <h3 style="margin: 0 0 12px 0; color: var(--primary-color); font-size: 16px;">Desktop Users (Scan QR Code)</h3>
+            <img id="qrImage" alt="QR Code" style="max-width: 180px; border: 2px solid var(--border-color); border-radius: 8px;" />
+          </div>
+          
+          <!-- App Link Container -->
+          <div id="connectionLink" style="display:none">
+            <h3 style="margin: 0 0 12px 0; color: var(--primary-color); font-size: 16px;">Mobile Users (Open App)</h3>
+            <a id="openLink" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 8px 16px; background: var(--primary-color); color: white; text-decoration: none; border-radius: 6px; word-break: break-all;">Open Lovense Remote</a>
+          </div>
+          
+          <!-- Unique Code Container -->
+          <div id="connectionCode" style="display:none; max-width: 200px;">
+            <h3 style="margin: 0 0 8px 0; color: var(--primary-color); font-size: 14px;">VR Users (Enter Unique Code)</h3>
+            <div style="padding: 8px; background: var(--primary-light); border: 1px solid var(--primary-color); border-radius: 6px; text-align: center;">
+              <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 4px;">Unique Code:</div>
+              <span id="textCode" style="font-family: monospace; font-size: 16px; font-weight: 700; color: var(--primary-color); letter-spacing: 1px;"></span>
+            </div>
+          </div>
+          
+          <!-- Default Placeholder -->
+          <div id="connection-placeholder" style="grid-column: 1 / -1; padding: 20px; text-align: center; color: var(--text-muted); border: 2px dashed var(--border-color); border-radius: 8px;">
+            Connection info will appear here after clicking "Get Connection Info"
+          </div>
+        </div>
+        
+        <div class="api-demo">
+          <div class="api-demo-content">
+            <div class="api-section">
+              <div class="api-label">Request</div>
+              <div class="api-code">lovensePattern.getApp(function (data) {...})</div>
+            </div>
+            <div class="api-section">
+              <div class="api-label">Response</div>
+              <div class="api-code" id="getapp-response">Click "Get Connection Info" to see the actual response data</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
 
+      <fieldset>
+        <legend>Step 5: Monitor App Connection Status & Control</legend>
+        <div class="row muted">Real-time monitoring of Lovense Remote or VibeMate connection status and session control.</div>
+        
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0;">
+          <div style="padding: 16px; border-radius: 8px; background: var(--light-gray); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px; color: var(--text-primary);">Connection Status:</div>
+            <div id="connection-status" class="status-indicator status-disconnected">Not Connected</div>
+          </div>
+          
+          <div style="padding: 16px; border-radius: 8px; background: var(--light-gray); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px; color: var(--text-primary);">Connected Toys:</div>
+            <div id="connected-toys-count" style="padding: 6px 12px; border-radius: 20px; background: var(--dark-gray); color: white; font-weight: 600; font-size: 12px; text-align: center;">0 toys</div>
+          </div>
+          
+          <div style="padding: 16px; border-radius: 8px; background: var(--light-gray); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div style="font-weight: 700; margin-bottom: 8px; font-size: 14px; color: var(--text-primary);">Last Event:</div>
+            <div id="last-event" style="padding: 6px 12px; border-radius: 4px; background: var(--medium-gray); color: var(--text-secondary); font-size: 12px; font-family: monospace;">Page loaded</div>
+          </div>
+          
+          <div style="padding: 16px; border-radius: 8px; background: var(--light-gray); border: 2px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <button id="btn-exit" class="btn-danger" style="margin: 0;">🚪 Exit Session</button>
+            <span class="muted" style="font-size: 11px; margin-top: 4px; text-align: center;">Clean exit</span>
+          </div>
+        </div>
+        
+        <div class="api-demo">
+          <div class="api-demo-content">
+            <div class="api-section">
+              <div class="api-label">Request</div>
+              <div class="api-code">lovensePattern.exit()</div>
+            </div>
+            <div class="api-section">
+              <div class="api-label">Response</div>
+              <div class="api-code" id="exit-response">Click "Exit Session" to see the actual response</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
 
+      <fieldset>
+        <legend>Toy Information</legend>
+        <div id="toys-empty" class="row muted">No devices</div>
+        <table id="toys-table" class="toys-table" style="display:none">
+          <thead>
+            <tr>
+              <th>Nickname</th>
+              <th>Type</th>
+              <th>Version</th>
+              <th>Battery</th>
+              <th>Connection</th>
+              <th>ID</th>
+            </tr>
+          </thead>
+          <tbody id="toys-tbody"></tbody>
+        </table>
+      </fieldset>
 
-function resetToDefaults() {
-    document.getElementById('userId').value = 'deltatest';
-    document.getElementById('developerToken').value = 'tf7_SsG7X8qJm5l4gSYzfdLSeaZtlLl8ZaWNOSLt_ScnbUpimwPUIxB5l9TAgNle';
-    switchMediaTab('audio');
-    
-    // Reset new advanced fields
-    document.getElementById('singlePatternLink').value = '';
-    document.getElementById('singlePatternData').value = '';
-    document.getElementById('multiToyId1').value = '';
-    document.getElementById('multiPatternLink1').value = '';
-    document.getElementById('multiPatternData1').value = '';
-    document.getElementById('multiToyId2').value = '';
-    document.getElementById('multiPatternLink2').value = '';
-    document.getElementById('multiPatternData2').value = '';
-    
-    // Clear connection display
-    clearConnectionInfo();
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    resetToDefaults();
-    initializeSinglePatternCards();
-    registerAppConnectionListener();
-});
-
-
-
-function setResponse(id, value) {
-    document.getElementById(id).innerHTML = cleanResponseText(value);
-}
-async function getCToken() {
-    const userId = document.getElementById('userId').value;
-    const developerToken = document.getElementById('developerToken').value;
-    if (!userId || !developerToken) {
-        setResponse('ctokenResponse', 'Error: Please enter both User ID and Developer Token');
-        return;
-    }
-    try {
-        const url = `https://api.lovense-api.com/api/media/pattern/user/ctoken?userId=${encodeURIComponent(userId)}&developerToken=${encodeURIComponent(developerToken)}`;
-        document.getElementById('ctokenRequestUrl').innerHTML = `URL: ${url}`;
-        const response = await axios.get(url);
-        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('ctokenResponse', JSON.stringify(response.data, null, 2) + ((response.data && response.data.code === 0) ? '' : '\n❌ Failed to get CToken: ' + (response.data.message || 'Unknown error')));
-        if (response.data && response.data.code === 0) {
-            currentCToken = response.data.data.ctoken;
-        }
-    } catch (error) {
-        document.getElementById('ctokenResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('ctokenResponse', `Error: ${error.message}`);
-    }
-}
-
-
-
-function fillSinglePatternExample() {
-    document.getElementById('singlePatternData').value = `[
-  { "at": 0, "pos": 20 },
+      <fieldset>
+        <legend>Single Pattern Sync Module</legend>        
+        
+        <div class="row" style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="flex-row-8">
+            <button id="btn-load-pattern" class="btn-success">Load Pattern</button>
+            <button class="quick-pattern-btn" data-duration="20">20s</button>
+            <button class="quick-pattern-btn" data-duration="60">1m</button>
+            <button class="quick-pattern-btn" data-duration="300">5m</button>
+            <button class="quick-pattern-btn" data-duration="900">15m</button>
+            <button class="quick-pattern-btn" data-duration="1800">30m</button>
+          </div>
+        </div>
+        
+        <div class="row" style="display: flex; gap: 20px; align-items: flex-start; margin-top: 16px;">
+          <div style="flex: 0 0 calc(30% - 10px); min-width: 200px;">
+            <label for="pattern-link" style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">Pattern Link (optional):</label>
+            <input id="pattern-link" type="text" placeholder="https://example.com/pattern.funscript" style="width: 100%; padding: 8px 12px; border: 2px solid var(--border-color); border-radius: 6px; font-size: 14px; box-sizing: border-box;" />
+          </div>
+          <div style="flex: 0 0 calc(70% - 10px); min-width: 300px;">
+            <label for="pattern-data" style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary);">Pattern Data (FunScript JSON):</label>
+            <textarea id="pattern-data" placeholder='[{"at":1000, "pos":20}, {"at":3000, "pos":35}]' style="width: 100%; height: 100px; padding: 12px; border: 2px solid var(--border-color); border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 12px; line-height: 1.4; box-sizing: border-box; resize: vertical;">[
+  { "at": 1000, "pos": 20 },
   { "at": 3000, "pos": 35 },
   { "at": 6000, "pos": 25 },
   { "at": 9000, "pos": 40 },
   { "at": 12000, "pos": 30 },
-  { "at": 15000, "pos": 50 },
-  { "at": 18000, "pos": 35 },
-  { "at": 21000, "pos": 55 },
-  { "at": 24000, "pos": 40 },
-  { "at": 27000, "pos": 30 },
-  { "at": 30000, "pos": 45 },
-  { "at": 33000, "pos": 20 },
-  { "at": 36000, "pos": 50 },
-  { "at": 39000, "pos": 25 },
-  { "at": 42000, "pos": 55 },
-  { "at": 45000, "pos": 35 },
-  { "at": 48000, "pos": 40 },
-  { "at": 51000, "pos": 30 },
-  { "at": 54000, "pos": 60 },
-  { "at": 57000, "pos": 25 },
-  { "at": 60000, "pos": 20 }
-]`;
-}
-
-function clearSinglePattern() {
-    document.getElementById('singlePatternLink').value = '';
-    document.getElementById('singlePatternData').value = '';
-    document.getElementById('loadPatternResponse').innerHTML = 'Response will appear here...';
-    document.getElementById('loadPatternResponseTime').innerHTML = 'Timestamp: -';
-}
-
-function cleanResponseText(text) {
-    if (!text) return '';
-    return text.replace(/undefined/g, '').trim();
-}
-
-// Step 3: Advanced Initialization & Media
-async function advancedInit() {
-    if (!lovensePattern) {
-        setResponse('advancedInitResponse', 'Error: Please initialize the Pattern SDK first');
-        return;
-    }
-    if (!currentCToken) {
-        setResponse('advancedInitResponse', 'Error: Please get a CToken first');
-        return;
-    }
-    
-    try {
-        const mediaId = document.getElementById('mediaIdDisplay').textContent;
-        let mediaEl;
-        if (document.getElementById('videoTab').classList.contains('active')) {
-            mediaEl = document.getElementById('videoElementUnique');
-        } else {
-            mediaEl = document.getElementById('audioElementUnique');
-        }
-        const computedDuration = mediaEl && !isNaN(mediaEl.duration) && mediaEl.duration > 0 ? Math.round(mediaEl.duration * 1000) : 60000;
-        document.getElementById('mediaDurationDisplay').textContent = computedDuration;
-        const initData = {
-            ctoken: currentCToken,
-            mediaId: mediaId,
-            videoEl: mediaEl,
-            duration: computedDuration
-        };
+  { "at": 15000, "pos": 50 }
+]</textarea>
+          </div>
+        </div>
         
-        console.log('Advanced init data:', JSON.stringify(initData, null, 2));
-        document.getElementById('advancedInitResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('advancedInitResponse', JSON.stringify(initData, null, 2));
-        document.getElementById('advancedInitCallLabel').textContent = 'URL: lovensePattern.init(...)';
-        
-        lovensePattern.init(initData);
-        setResponse('advancedInitResponse', '✅ Advanced initialization completed successfully!\n\n' + JSON.stringify(initData, null, 2));
-        
-    } catch (error) {
-        document.getElementById('advancedInitResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('advancedInitResponse', `Error: ${error.message}`);
-        document.getElementById('advancedInitCallLabel').textContent = 'URL: lovensePattern.init(...)';
-    }
-}
+        <div class="api-demo">
+          <div class="api-demo-content">
+            <div class="api-section">
+              <div class="api-label">Request</div>
+              <div class="api-code" id="pattern-call">Click "Load Pattern" to see the actual call with your data</div>
+            </div>
+            <div class="api-section">
+              <div class="api-label">Response</div>
+              <div class="api-code" id="pattern-response">Response will appear here after loading</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
 
-// Step 4: Connect to Apps
-async function getAppConnection() {
-    if (!lovensePattern) {
-        setResponse('connectionResponse', 'Error: Please initialize the Pattern SDK first');
-        return;
-    }
-    
-    try {
-        lovensePattern.getApp((data) => {
-            console.log('App connection data:', data);
-            document.getElementById('connectionResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-            setResponse('connectionResponse', JSON.stringify(data, null, 2));
-            document.getElementById('connectionCallLabel').textContent = 'URL: lovensePattern.getApp(...)';
-            
-            // Display QR Code, App URL, and Unique Code
-            displayConnectionInfo(data);
-        });
-    } catch (error) {
-        document.getElementById('connectionResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('connectionResponse', `Error: ${error.message}`);
-        document.getElementById('connectionCallLabel').textContent = 'URL: lovensePattern.getApp(...)';
-    }
-}
+      <fieldset>
+        <legend>Advanced: Multiple Patterns for Multiple Toys</legend>
+        
+        <div class="row" style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="flex-row-8">
+            <button id="btn-load-multiple-patterns" class="btn-success">Load Multiple Patterns</button>
+          </div>
+          <div class="flex-row-8">
+            <button id="btn-add-pattern" class="btn-success">+ Add Toy Pattern</button>
+            <button id="btn-clear-patterns" class="btn-danger">Clear All</button>
+          </div>
+        </div>
+        
+        <div id="multiple-patterns-container">
+          <!-- Dynamic pattern entries will be added here -->
+        </div>
+        
+        <div class="api-demo">
+          <div class="api-demo-content">
+            <div class="api-section">
+              <div class="api-label">Request</div>
+              <div class="api-code" id="multiple-patterns-call">Click "Load Multiple Patterns" to see the actual call with your configured patterns</div>
+            </div>
+            <div class="api-section">
+              <div class="api-label">Response</div>
+              <div class="api-code" id="multiple-patterns-response">Response will appear here after loading</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
 
-// Register appConnected event once SDK is ready
-function registerAppConnectionListener() {
-    try {
-        if (!lovensePattern || typeof lovensePattern.on !== 'function') return;
-        lovensePattern.on('appConnected', () => {
-            console.log('appConnected');
-            const statusEl = document.getElementById('appConnectionStatus');
-            console.log('statusEl found:', statusEl);
-            if (statusEl) {
-                statusEl.textContent = 'Connected';
-                statusEl.classList.add('success');
+      <fieldset>
+        <legend>Pattern Data Management</legend>        
+        <div class="row muted">Get patterns by audio/video. If you only support one pattern per video, then there's no need to call it.</div>
+        
+        <!-- Configuration and Button -->
+        <div class="row flex-row">
+          <div class="flex-row-8">
+            <label for="pattern-page" class="auto-label">Page:</label>
+            <input id="pattern-page" type="number" value="1" min="1" style="width: 80px;" />
+          </div>
+          <div class="flex-row-8">
+            <label for="pattern-page-size" class="auto-label">Page Size:</label>
+            <input id="pattern-page-size" type="number" value="10" min="1" max="50" style="width: 80px;" />
+          </div>
+          <button id="btn-get-pattern-list" class="btn-success">Get Pattern List</button>
+        </div>
+        
+        <!-- Pattern List Display -->
+        <div id="pattern-list-container" style="margin-top: 16px; display: none;">
+          <h4 style="margin: 0 0 12px 0; color: var(--primary-color); font-size: 16px;">Pattern List Results</h4>
+          <div id="pattern-list-results" style="max-height: 300px; overflow-y: auto; background: var(--light-gray); border: 2px solid var(--border-color); border-radius: 6px; padding: 12px;">
+            <!-- Pattern results will be displayed here -->
+          </div>
+        </div>
+
+        <div class="api-demo">
+          <div class="api-demo-content">
+            <div class="api-section">
+              <div class="api-label">Request</div>
+              <div class="api-code" id="pattern-list-call">Click "Get Pattern List" to see the actual call with your parameters</div>
+            </div>
+            <div class="api-section">
+              <div class="api-label">Response</div>
+              <div class="api-code" id="pattern-list-response">Response will appear here after fetching</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Pattern Sync Error Monitoring</legend>
+        <div class="row muted">Lovense Remote downloads patterns through HTTP requests. This event will be triggered when Lovense Remote or VibeMate fails to download a pattern.</div>
+        
+        <div class="api-demo">
+          <div class="api-demo-content">
+            <div class="api-section">
+              <div class="api-label">Event</div>
+              <div class="api-code">lovensePattern.on("PatternSyncError", (data) => {
+  console.log("PatternSyncError", data.msg);
+  });</div>
+            </div>
+            <div class="api-section">
+              <div class="api-label">Error Log</div>
+              <div class="api-code" id="pattern-sync-errors">No pattern sync errors detected yet.</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+
+
+      <!-- 1) Initialization: Lovense SDK -->
+      <script src="https://cdn.lovense-api.com/peditor-v2/pattern-sdk.js"></script>
+      <script>
+        (function () {
+          // Global variable to store lovensePattern instance
+          let lovensePattern = null;
+          
+          const statusEl = document.getElementById('status');
+          const audioEl = document.getElementById('test-audio');
+          const inputUserId = document.getElementById('userId');
+          const inputDevToken = document.getElementById('devToken');
+          const inputCtokenStep2 = document.getElementById('ctoken-step2');
+          const inputMediaId = document.getElementById('mediaId');
+          const inputDuration = document.getElementById('duration');
+          const btnGenerateCtoken = document.getElementById('btn-generate-ctoken');
+          const btnCreateObject = document.getElementById('btn-create-object');
+          const btnInit = document.getElementById('btn-init');
+          const btnGetApp = document.getElementById('btn-get-app');
+          const toysEmptyEl = document.getElementById('toys-empty');
+          const toysTableEl = document.getElementById('toys-table');
+          const toysTbodyEl = document.getElementById('toys-tbody');
+          const inputPatternLink = document.getElementById('pattern-link');
+          const inputPatternData = document.getElementById('pattern-data');
+          const btnLoadPattern = document.getElementById('btn-load-pattern');
+          const btnAddPattern = document.getElementById('btn-add-pattern');
+          const btnClearPatterns = document.getElementById('btn-clear-patterns');
+          const btnLoadMultiplePatterns = document.getElementById('btn-load-multiple-patterns');
+          const multiplePatternsContainer = document.getElementById('multiple-patterns-container');
+
+          const connectionStatusEl = document.getElementById('connection-status');
+          const connectedToysCountEl = document.getElementById('connected-toys-count');
+          const lastEventEl = document.getElementById('last-event');
+          const patternPageEl = document.getElementById('pattern-page');
+          const patternPageSizeEl = document.getElementById('pattern-page-size');
+          const btnGetPatternList = document.getElementById('btn-get-pattern-list');
+          const btnExit = document.getElementById('btn-exit');
+
+
+
+          function updateConnectionStatus(status, event) {
+            if (connectionStatusEl) {
+              if (status === 'connected') {
+                connectionStatusEl.textContent = 'Connected';
+                connectionStatusEl.className = 'status-indicator status-connected';
+              } else {
+                connectionStatusEl.textContent = 'Not Connected';
+                connectionStatusEl.className = 'status-indicator status-disconnected';
+              }
             }
-        });
-    } catch (err) {
-        console.error(err);
-    }
-}
+            if (lastEventEl && event) {
+              lastEventEl.textContent = event;
+            }
+          }
 
-function displayConnectionInfo(data) {
-    const connectionDisplay = document.getElementById('connectionDisplay');
-    const qrCodeDisplay = document.getElementById('qrCodeDisplay');
-    const appUrlDisplay = document.getElementById('appUrlDisplay');
-    const uniqueCodeDisplay = document.getElementById('uniqueCodeDisplay');
-    
-    // Show QR Code
-    if (data.qrCode) {
-        qrCodeDisplay.innerHTML = `
-            <div class="qr-code-wrapper">
-                <img src="${data.qrCode}" alt="QR Code" style="max-width: 200px; border: 1px solid #ddd; border-radius: 8px;">
-                <p class="qr-instruction">Scan with Lovense Remote mobile app</p>
-            </div>
-        `;
-    }
-    
-    // Show App URL
-    if (data.appOpenUrl) {
-        appUrlDisplay.innerHTML = `
-            <div class="app-url-wrapper">
-                <a href="${data.appOpenUrl}" class="btn btn-primary" target="_blank">
-                    🔗 Open in Lovense Remote App
-                </a>
-                <p class="app-url-instruction">Click to connect directly to Lovense Remote app</p>
-            </div>
-        `;
-    }
-    
-    // Show Unique Code
-    if (data.code) {
-        uniqueCodeDisplay.innerHTML = `
-            <div class="unique-code-wrapper">
-                <div class="code-display">${data.code}</div>
-                <p class="code-instruction">Enter this code in Lovense Remote app</p>
-            </div>
-        `;
-    }
-    
-    connectionDisplay.style.display = 'block';
-}
+          function updateConnectedToysCount(count) {
+            if (connectedToysCountEl) {
+              connectedToysCountEl.textContent = `${count} toys`;
+              if (count > 0) {
+                connectedToysCountEl.style.background = 'var(--success-color)';
+                connectedToysCountEl.style.color = 'white';
+              } else {
+                connectedToysCountEl.style.background = 'var(--dark-gray)';
+                connectedToysCountEl.style.color = 'white';
+              }
+            }
+          }
 
-function clearConnectionInfo() {
-    document.getElementById('connectionDisplay').style.display = 'none';
-    document.getElementById('connectionResponse').innerHTML = 'Response will appear here...';
-    document.getElementById('connectionResponseTime').innerHTML = 'Timestamp: -';
-}
+          // Helper function to format local machine datetime
+          function formatLocalDateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const milliseconds = String(now.getMilliseconds()).padStart(3, '0');
+            
+            return `🕐 ${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
+          }
 
-// Step 5: Load Pattern(s)
-function switchPatternTab(type) {
-    const singlePatternTab = document.getElementById('singlePatternTab');
-    const multiplePatternsTab = document.getElementById('multiplePatternsTab');
-    const singlePatternSection = document.getElementById('singlePatternSection');
-    const multiplePatternsSection = document.getElementById('multiplePatternsSection');
-    
-    if (type === 'single') {
-        singlePatternTab.classList.add('active');
-        multiplePatternsTab.classList.remove('active');
-        singlePatternSection.style.display = 'block';
-        multiplePatternsSection.style.display = 'none';
-    } else {
-        singlePatternTab.classList.remove('active');
-        multiplePatternsTab.classList.add('active');
-        singlePatternSection.style.display = 'none';
-        multiplePatternsSection.style.display = 'block';
-    }
-}
+          function getPatternList() {
+            if (!lovensePattern) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('pattern-list-response').textContent = `${errorTimestamp}\n❌ Error: Please complete initialization first`;
+              setStatus('Please complete initialization first');
+              return;
+            }
 
-// Initialize Single Pattern Cards
-function initializeSinglePatternCards() {
-    const singlePatternLinkCard = document.getElementById('singlePatternLinkCard');
-    const singlePatternDataCard = document.getElementById('singlePatternDataCard');
-    
-    singlePatternLinkCard.addEventListener('click', function() {
-        switchSinglePatternCard('link');
-    });
-    
-    singlePatternDataCard.addEventListener('click', function() {
-        switchSinglePatternCard('data');
-    });
-}
+            const mediaId = (inputMediaId.value || '').trim();
+            if (!mediaId) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('pattern-list-response').textContent = `${errorTimestamp}\n❌ Error: MediaId is required`;
+              setStatus('MediaId is required for getting pattern list');
+              return;
+            }
 
-function switchSinglePatternCard(type) {
-    const singlePatternLinkCard = document.getElementById('singlePatternLinkCard');
-    const singlePatternDataCard = document.getElementById('singlePatternDataCard');
-    const singlePatternLinkInput = document.getElementById('singlePatternLink');
-    const singlePatternDataInput = document.getElementById('singlePatternData');
-    
-    if (type === 'link') {
-        singlePatternLinkCard.classList.add('active');
-        singlePatternDataCard.classList.remove('active');
-        singlePatternLinkInput.focus();
-    } else {
-        singlePatternDataCard.classList.add('active');
-        singlePatternLinkCard.classList.remove('active');
-        singlePatternDataInput.focus();
-    }
-}
+            const page = parseInt(patternPageEl.value) || 1;
+            const pageSize = parseInt(patternPageSizeEl.value) || 10;
 
-async function loadSinglePattern() {
-    if (!lovensePattern) {
-        setResponse('loadPatternResponse', 'Error: Please initialize the Pattern SDK first');
-        return;
-    }
-    
-    try {
-        const type = document.getElementById('singlePatternType').value;
-        const patternLink = document.getElementById('singlePatternLink').value;
-        const patternDataInput = document.getElementById('singlePatternData').value;
-        
-        const patternData = {
-            type: type
-        };
-        
-        // Check if pattern link is provided
-        if (patternLink.trim()) {
-            patternData.patternLink = patternLink;
-        }
-        
-        // Check if pattern data is provided
-        if (patternDataInput.trim()) {
+            const params = {
+              mediaId: mediaId,
+              page: page,
+              pageSize: pageSize
+            };
+
+            setStatus('Getting pattern list...');
+            const patternListTimestamp = formatLocalDateTime();
+            
+            // Show the actual call being made
+            document.getElementById('pattern-list-call').textContent = `${patternListTimestamp}
+lovensePattern.getPatternList({
+  mediaId: "${mediaId}",
+  page: ${page},
+  pageSize: ${pageSize}
+}).then((data) => {
+  console.log('Pattern list:', data);
+  // Process pattern data
+  data.forEach((pattern, index) => {
+    console.log(\`Pattern \${index + 1}:\`, pattern);
+  });
+}).catch((error) => {
+  console.error('Failed to get patterns:', error);
+});`;
+            
+            console.log('🔺 SDK Call: lovensePattern.getPatternList()', { method: 'getPatternList', parameters: params });
+
             try {
-                patternData.data = JSON.parse(patternDataInput);
+              // Use Promise-based approach as per API documentation
+              lovensePattern.getPatternList(params)
+                .then((data) => {
+                  const responseTimestamp = formatLocalDateTime();
+                  
+                  document.getElementById('pattern-list-response').textContent = `${responseTimestamp}
+${JSON.stringify(data, null, 2)}`;
+                  
+                  // Display pattern results in the container
+                  displayPatternListResults(data);
+                  
+                                console.log('✅ SDK Response: getPatternList() successful', {
+                response: data,
+                patternCount: Array.isArray(data) ? data.length : 'Unknown',
+                page: page,
+                pageSize: pageSize
+              });
+                  
+                  setStatus(`Pattern list loaded successfully (${Array.isArray(data) ? data.length : 0} patterns found)`);
+                })
+                .catch((error) => {
+                  const errorTimestamp = formatLocalDateTime();
+                  document.getElementById('pattern-list-response').textContent = `${errorTimestamp}
+Error: ${String((error && error.message) || error)}`;
+                  
+                  console.log('💥 SDK Error: getPatternList() call error', {
+                    error: String((error && error.message) || error),
+                    parameters: params,
+                    stack: error && error.stack
+                  });
+                  setStatus('Error calling getPatternList');
+                });
+            } catch (err) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('pattern-list-response').textContent = `${errorTimestamp}
+Error: ${String((err && err.message) || err)}`;
+              
+              console.log('💥 SDK Error: getPatternList() call error', {
+                error: String((err && err.message) || err),
+                parameters: params,
+                stack: err && err.stack
+              });
+              setStatus('Error calling getPatternList');
+            }
+          }
+
+          function displayPatternListResults(patterns) {
+            const container = document.getElementById('pattern-list-container');
+            const resultsDiv = document.getElementById('pattern-list-results');
+            
+            if (!Array.isArray(patterns) || patterns.length === 0) {
+              resultsDiv.innerHTML = '<div class="muted">No patterns found for this media.</div>';
+              container.style.display = 'block';
+              return;
+            }
+            
+            let html = '';
+            patterns.forEach((pattern, index) => {
+              const patternId = pattern.id || pattern.patternId || `pattern-${index + 1}`;
+              const patternName = pattern.name || pattern.patternName || `Pattern ${index + 1}`;
+              const patternType = pattern.type || pattern.patternType || 'Unknown';
+              const duration = pattern.duration || pattern.durationMs || 'Unknown';
+              const createdAt = pattern.createdAt || pattern.created || 'Unknown';
+              
+              html += `
+                <div style="padding: 8px; margin-bottom: 8px; background: white; border: 1px solid var(--border-color); border-radius: 4px;">
+                  <div style="font-weight: 600; color: var(--primary-color); margin-bottom: 4px;">${escapeHtml(patternName)}</div>
+                  <div style="font-size: 12px; color: var(--text-secondary);">
+                    <span>ID: ${escapeHtml(String(patternId))}</span> | 
+                    <span>Type: ${escapeHtml(String(patternType))}</span> | 
+                    <span>Duration: ${escapeHtml(String(duration))}</span> | 
+                    <span>Created: ${escapeHtml(String(createdAt))}</span>
+                  </div>
+                </div>
+              `;
+            });
+            
+            resultsDiv.innerHTML = html;
+            container.style.display = 'block';
+          }
+
+
+
+          function exitLovensePattern() {
+            if (!lovensePattern) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('exit-response').textContent = `${errorTimestamp}\n❌ Error: No active Lovense Pattern session to exit`;
+              setStatus('No active session to exit');
+              return;
+            }
+
+            setStatus('Exiting Lovense Pattern session...');
+            const exitTimestamp = formatLocalDateTime();
+            
+            console.log('🔺 SDK Call: lovensePattern.exit()', {
+              method: 'exit',
+              timestamp: exitTimestamp
+            });
+
+            try {
+              const responseTimestamp = formatLocalDateTime();
+              const result = lovensePattern.exit();
+              
+              document.getElementById('exit-response').textContent = `${responseTimestamp}
+${JSON.stringify(result, null, 2)}`;
+              
+              console.log('✅ SDK Response: lovensePattern.exit() successful', {
+                response: result,
+                timestamp: responseTimestamp
+              });
+              
+              // Reset UI state
+              updateConnectionStatus('disconnected', 'Session exited');
+              updateConnectedToysCount(0);
+              renderToys([]);
+              
+              setStatus('Session exited successfully');
+              lovensePattern = null; // Clear the instance
+            } catch (err) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('exit-response').textContent = `${errorTimestamp}
+Error: ${String((err && err.message) || err)}`;
+              
+              console.log('💥 SDK Error: lovensePattern.exit() call error', {
+                error: String((err && err.message) || err),
+                stack: err && err.stack,
+                timestamp: errorTimestamp
+              });
+              setStatus('Error exiting session');
+            }
+          }
+
+
+
+          function setStatus(text) {
+            statusEl.textContent = text;
+          }
+
+
+
+          function generateRandomUserId() {
+            const randomNumbers = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+            const randomUserId = `deltatest_${randomNumbers}`;
+            
+            inputUserId.value = randomUserId;
+            return randomUserId;
+          }
+
+          function generateRandomMediaId() {
+            const randomNumbers = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+            const randomMediaId = `audioid_${randomNumbers}`;
+            
+            inputMediaId.value = randomMediaId;
+            return randomMediaId;
+          }
+
+          function generateCtoken() {
+            // Auto-generate random userId and mediaId first
+            const userId = generateRandomUserId();
+            const mediaId = generateRandomMediaId();
+
+            setStatus('Generating ctoken...');
+            const timestamp = formatLocalDateTime();
+            
+            // Show the actual request being made
+            const devToken = (inputDevToken.value || '').trim();
+            const url = `https://api.lovense-api.com/api/media/pattern/user/ctoken?userId=${encodeURIComponent(userId)}&developerToken=${encodeURIComponent(devToken)}`;
+            document.getElementById('ctoken-request').textContent = `${timestamp}
+URL: ${url}
+
+{"action": "get ctoken", "userId": "${userId}"}`;
+
+            console.log('🔺 API Request: Generating ctoken', { 
+              endpoint: 'https://api.lovense-api.com/api/media/pattern/user/ctoken',
+              userId: userId,
+              developerToken: devToken
+            });
+
+            fetch(url)
+              .then(response => response.json())
+              .then(data => {
+                const responseTimestamp = formatLocalDateTime();
+                
+                // Show the actual response
+                document.getElementById('ctoken-response').textContent = `${responseTimestamp}
+${JSON.stringify(data, null, 2)}`;
+                
+                if (data.result && data.data && data.data.ctoken) {
+                  // Auto-fill the ctoken in step 2
+                  inputCtokenStep2.value = data.data.ctoken;
+                  
+                  console.log('✅ API Response: ctoken generated successfully', { 
+                    ctoken: data.data.ctoken,
+                    userId: userId,
+                    fullResponse: data
+                  });
+                  setStatus('ctoken generated successfully');
+                } else {
+                  console.log('❌ API Response: Failed to generate ctoken', { 
+                    response: data,
+                    userId: userId
+                  });
+                  setStatus('Failed to generate ctoken');
+                }
+              })
+              .catch(error => {
+                const errorTimestamp = formatLocalDateTime();
+                document.getElementById('ctoken-response').textContent = `${errorTimestamp}
+Error: ${String(error)}`;
+                
+                console.log('💥 API Error: Error generating ctoken', { 
+                  error: String(error),
+                  userId: userId
+                });
+                setStatus('Error generating ctoken');
+              });
+          }
+
+          function ensureSDK() {
+            if (typeof LovensePattern === 'undefined') {
+
+              setStatus('SDK not loaded, please check network or CDN');
+              return false;
+            }
+            return true;
+          }
+
+          function getDesiredDurationSeconds() {
+            const manual = parseFloat(inputDuration.value);
+            if (!Number.isNaN(manual) && manual > 0) {
+              // If user inputs a value, assume it's in seconds and convert to milliseconds
+              const durationMs = manual * 1000;
+
+              return durationMs;
+            }
+            
+            if (Number.isFinite(audioEl.duration) && audioEl.duration > 0) {
+              // Audio duration is in seconds, convert to milliseconds
+              const durationMs = audioEl.duration * 1000;
+
+              return durationMs;
+            }
+            
+            return undefined;
+          }
+
+          function escapeHtml(value) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+            return String(value).replace(/[&<>"']/g, ch => map[ch]);
+          }
+
+
+
+          function normalizeToy(raw) {
+            if (!raw) return null;
+            const nickName = raw.nickName || raw.nickname || raw.name || '';
+            const toyType = raw.toyType || raw.name || '';
+            const toyVersion = raw.toyVersion || raw.version || '';
+            const battery = typeof raw.battery === 'number' ? raw.battery : '';
+            const connect = typeof raw.connect === 'boolean' ? raw.connect : (raw.status === '1' || raw.status === 1);
+            const toyId = raw.toyId || raw.id || raw.deviceId || '';
+            return { nickName, toyType, toyVersion, battery, connect, toyId };
+          }
+
+          function renderToys(data) {
+            let list = Array.isArray(data) ? data : (data && Array.isArray(data.toys) ? data.toys : []);
+            list = list.map(normalizeToy).filter(Boolean);
+            
+            // Always show table with header
+            toysTableEl.style.display = 'table';
+            
+            if (!list.length) {
+              toysEmptyEl.style.display = 'block';
+              toysTbodyEl.innerHTML = '';
+            } else {
+            toysEmptyEl.style.display = 'none';
+            toysTbodyEl.innerHTML = list.map(t => {
+              const batteryStr = t.battery === '' ? '' : `${t.battery}%`;
+              return `<tr>
+                <td>${escapeHtml(t.nickName)}</td>
+                <td>${escapeHtml(t.toyType)}</td>
+                <td>${escapeHtml(String(t.toyVersion))}</td>
+                <td>${escapeHtml(batteryStr)}</td>
+                <td>${t.connect ? 'Connected' : 'Disconnected'}</td>
+                <td><code>${escapeHtml(String(t.toyId))}</code></td>
+              </tr>`;
+            }).join('');
+            }
+            
+            // Update connected toys count
+            const connectedCount = list.filter(t => t.connect).length;
+            updateConnectedToysCount(connectedCount);
+            
+            // Update multiple patterns toy dropdowns when toy status changes
+            updateToyDropdowns();
+            
+            // Auto-select first toy for empty pattern cards
+            setTimeout(() => {
+              const emptyDropdowns = document.querySelectorAll('[id$="-toyId"]');
+              const connectedToys = getConnectedToys();
+              emptyDropdowns.forEach(dropdown => {
+                if (!dropdown.value && connectedToys.length > 0) {
+                  dropdown.value = connectedToys[0].toyId;
+                }
+              });
+            }, 100);
+          }
+
+          function tryParsePatternData(raw) {
+            const trimmed = (raw || '').trim();
+            if (!trimmed) return null;
+            try {
+              const parsed = JSON.parse(trimmed);
+              if (!Array.isArray(parsed)) throw new Error('Data must be an array');
+              return parsed;
             } catch (e) {
-                throw new Error('Invalid JSON in pattern data');
-            }
-        }
-        
-        // Validate that at least one input is provided
-        if (!patternData.patternLink && !patternData.data) {
-            throw new Error('Please provide either a pattern link or pattern data');
-        }
-        
-        console.log('Loading single pattern:', JSON.stringify(patternData, null, 2));
-        document.getElementById('loadPatternResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('loadPatternResponse', JSON.stringify(patternData, null, 2));
-        document.getElementById('loadPatternCallLabel').textContent = 'URL: lovensePattern.loadPattern(...)';
-        
-        lovensePattern.loadPattern(patternData);
-        setResponse('loadPatternResponse', '✅ Single pattern loaded successfully!\n\n' + JSON.stringify(patternData, null, 2));
-        
-    } catch (error) {
-        document.getElementById('loadPatternResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('loadPatternResponse', `Error: ${error.message}`);
-        document.getElementById('loadPatternCallLabel').textContent = 'URL: lovensePattern.loadPattern(...)';
-    }
-}
 
-async function loadMultiplePatterns() {
-    if (!lovensePattern) {
-        setResponse('loadPatternResponse', 'Error: Please initialize the Pattern SDK first');
-        return;
-    }
-    
-    try {
-        const patterns = [];
-        
-        // Pattern 1
-        const type1 = document.getElementById('multiPatternType1').value;
-        const toyId1 = document.getElementById('multiToyId1').value;
-        const patternLink1 = document.getElementById('multiPatternLink1').value;
-        const patternData1 = document.getElementById('multiPatternData1').value;
-        
-        if (toyId1.trim()) {
-            const pattern1 = {
-                type: type1,
-                toyId: toyId1
+              setStatus('Data parsing failed, please check JSON format');
+              return undefined; // indicates parsing was attempted but failed
+            }
+          }
+
+          function loadPatternFromUI() {
+            if (!lovensePattern) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('pattern-response').textContent = `${errorTimestamp}\n❌ Error: Please complete initialization first`;
+              setStatus('Please complete initialization first');
+              return;
+            }
+
+            const link = (inputPatternLink.value || '').trim();
+            const parsed = tryParsePatternData(inputPatternData.value);
+            if (parsed === undefined) return; // JSON format error
+
+            const payload = {
+              type: 'funScript',
+              patternLink: link || null,
+              data: parsed !== null ? parsed : null
+            };
+
+            if (payload.data === null && !payload.patternLink) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('pattern-response').textContent = `${errorTimestamp}\n❌ Error: loadPattern parameters empty`;
+              setStatus('Please fill in Data or Pattern Link');
+              return;
+            }
+
+            setStatus('Loading Pattern...');
+            const patternTimestamp = formatLocalDateTime();
+            
+            // Show actual call with compact data format
+            let displayPayload = {
+              type: payload.type
             };
             
-            if (patternLink1.trim()) {
-                pattern1.patternLink = patternLink1;
+            if (payload.data) {
+              // Use compact format for display
+              displayPayload.data = `[${payload.data.length} points] ${JSON.stringify(payload.data)}`;
             }
             
-            if (patternData1.trim()) {
-                try {
-                    pattern1.data = JSON.parse(patternData1);
-                } catch (e) {
-                    throw new Error('Invalid JSON in Pattern 1 data');
+            if (payload.patternLink) {
+              displayPayload.patternLink = payload.patternLink;
+            }
+            
+            document.getElementById('pattern-call').textContent = `${patternTimestamp}
+lovensePattern.loadPattern(${JSON.stringify(displayPayload)});`;
+            
+            console.log('🔺 SDK Call: loadPattern() - Loading single pattern', { 
+              payload: payload,
+              hasData: payload.data !== null,
+              hasLink: payload.patternLink !== null
+            });
+            
+            try {
+              const responseTimestamp = formatLocalDateTime();
+              const result = lovensePattern.loadPattern(payload);
+              
+              // Enhanced response display
+              const responseInfo = {
+                success: true,
+                timestamp: responseTimestamp,
+                patternType: payload.type,
+                hasData: !!payload.data,
+                hasLink: !!payload.patternLink,
+                dataPoints: payload.data ? payload.data.length : 0,
+                sdkResponse: result
+              };
+              
+              document.getElementById('pattern-response').textContent = `${responseTimestamp}
+${JSON.stringify(result, null, 2)}`;
+              
+              console.log('✅ SDK Response: loadPattern() successful', {
+                result: result,
+                detailedInfo: responseInfo
+              });
+              setStatus('Pattern loaded successfully');
+            } catch (err) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('pattern-response').textContent = `${errorTimestamp}
+Error: ${String((err && err.message) || err)}`;
+              
+              console.log('💥 SDK Error: loadPattern() call error', { 
+                error: String((err && err.message) || err),
+                payload: payload,
+                stack: err && err.stack
+              });
+              setStatus('Pattern loading error');
+            }
+          }
+
+          function createLovensePatternObject() {
+            if (!ensureSDK()) return;
+
+            try {
+              lovensePattern = new LovensePattern();
+              
+              // Update the object creation display
+              const createTimestamp = formatLocalDateTime();
+              document.getElementById('create-object-code').innerHTML = `<div class="timestamp">${createTimestamp}</div><code>&lt;script src=&quot;https://cdn.lovense-api.com/peditor-v2/pattern-sdk.js&quot;&gt;&lt;/script&gt;<br>const lovensePattern = new LovensePattern()</code>`;
+
+              // Update the response display
+              const responseTimestamp = formatLocalDateTime();
+              document.getElementById('create-object-response').textContent = `${responseTimestamp}
+✅ Success: LovensePattern object initialized successfully
+Ready for media initialization`;
+
+
+              
+              setStatus('LovensePattern object created successfully, ready for initialization');
+            } catch (err) {
+              console.error(err);
+              
+              // Update the response display with error
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('create-object-response').textContent = `${errorTimestamp}
+❌ Error: ${String((err && err.message) || err)}
+Failed to initialize LovensePattern object`;
+              
+              console.log('💥 SDK Error: Object creation error', { 
+                error: String((err && err.message) || err),
+                stack: err && err.stack
+              });
+              setStatus('Object creation error, please check console');
+            }
+          }
+
+          function initLovensePatternWhenReady() {
+            if (!lovensePattern) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('init-code').textContent = `${errorTimestamp}\n❌ Error: Please create LovensePattern object first`;
+              setStatus('Please create LovensePattern object first');
+              return;
+            }
+
+            const ctoken = (inputCtokenStep2.value || '').trim();
+            const mediaId = (inputMediaId.value || '').trim();
+            const desiredDuration = getDesiredDurationSeconds();
+
+            if (!ctoken || !mediaId) {
+
+              setStatus('Initialization failed: Please generate ctoken and fill in mediaId');
+              return;
+            }
+
+            if (desiredDuration === undefined) {
+
+              setStatus('Waiting for audio metadata to load...');
+              const onMeta = () => {
+                audioEl.removeEventListener('loadedmetadata', onMeta);
+                setTimeout(() => initLovensePatternWhenReady(), 100); // Small delay to ensure audio is ready
+              };
+              audioEl.addEventListener('loadedmetadata', onMeta, { once: true });
+              if (!audioEl.currentSrc) {
+                audioEl.load();
+              }
+              return;
+            }
+
+            try {
+              const audioElement = document.querySelector("audio");
+              const initParams = {
+                ctoken: ctoken,
+                mediaId: mediaId,
+                videoEl: audioElement,
+                duration: desiredDuration
+              };
+              
+
+              
+
+              
+              lovensePattern.init(initParams);
+              
+              // Update the initialization display
+              const initTimestamp = formatLocalDateTime();
+              document.getElementById('init-code').textContent = `${initTimestamp}
+lovensePattern.init(${JSON.stringify(initParams, null, 2)});`;
+
+              console.log('✅ SDK Initialization: lovensePattern.init completed', { 
+                initParams: initParams,
+                durationInMs: desiredDuration,
+                durationInSeconds: desiredDuration / 1000
+              });
+              setStatus('Initialized, waiting for App connection or getApp');
+
+              lovensePattern.on('appConnected', () => {
+                console.log('🔗 Event: appConnected');
+                setStatus('App connected, toys can be controlled');
+                updateConnectionStatus('connected', 'App connected');
+              });
+              lovensePattern.on('appDisconnected', () => {
+                console.log('🔌 Event: appDisconnected');
+                setStatus('App disconnected, please reconnect Lovense Remote or VibeMate');
+                updateConnectionStatus('disconnected', 'App disconnected');
+                updateConnectedToysCount(0);
+                // Clear toys table when disconnected
+                renderToys([]);
+              });
+              lovensePattern.on('appToyStatus', (data) => {
+                console.log('appToyStatus', data);
+                
+                // Check if there are new toys or status changes
+                const currentToys = getCurrentToysFromTable();
+                const newToys = data && Array.isArray(data.toys) ? data.toys : [];
+                
+                if (newToys.length > 0) {
+                  // Check for new toys
+                  newToys.forEach(toy => {
+                    const existingToy = currentToys.find(t => t.toyId === toy.toyId);
+                    if (!existingToy) {
+
+                    }
+                  });
                 }
-            }
-            
-            patterns.push(pattern1);
-        }
-        
-        // Pattern 2
-        const type2 = document.getElementById('multiPatternType2').value;
-        const toyId2 = document.getElementById('multiToyId2').value;
-        const patternLink2 = document.getElementById('multiPatternLink2').value;
-        const patternData2 = document.getElementById('multiPatternData2').value;
-        
-        if (toyId2.trim()) {
-            const pattern2 = {
-                type: type2,
-                toyId: toyId2
-            };
-            
-            if (patternLink2.trim()) {
-                pattern2.patternLink = patternLink2;
-            }
-            
-            if (patternData2.trim()) {
-                try {
-                    pattern2.data = JSON.parse(patternData2);
-                } catch (e) {
-                    throw new Error('Invalid JSON in Pattern 2 data');
+                
+                renderToys(data);
+                
+                // Update multiple patterns toy dropdowns
+                updateToyDropdowns();
+              });
+
+              lovensePattern.on('PatternSyncError', (data) => {
+                console.log('PatternSyncError', data.msg);
+                
+                // Update the error log display
+                const errorTimestamp = formatLocalDateTime();
+                const errorLogEl = document.getElementById('pattern-sync-errors');
+                
+                // Clear "no errors" message if it exists
+                if (errorLogEl.textContent.includes('No pattern sync errors detected yet')) {
+                  errorLogEl.textContent = '';
                 }
+                
+                // Add new error with timestamp
+                const errorText = `${errorTimestamp}\n${data.msg}`;
+                if (errorLogEl.textContent) {
+                  errorLogEl.textContent = errorText + '\n\n' + errorLogEl.textContent;
+                } else {
+                  errorLogEl.textContent = errorText;
+                }
+              });
+            } catch (err) {
+              console.error(err);
+              console.log('💥 SDK Error: Initialization error', { 
+                error: String((err && err.stack) || err),
+                stack: err && err.stack
+              });
+              setStatus('Initialization error, please check console');
+            }
+          }
+
+          btnGenerateCtoken.addEventListener('click', generateCtoken);
+          btnCreateObject.addEventListener('click', createLovensePatternObject);
+          btnInit.addEventListener('click', initLovensePatternWhenReady);
+
+          function renderConnections(data) {
+            // Hide placeholder
+            document.getElementById('connection-placeholder').style.display = 'none';
+            
+            // Display QR Code
+            if (data.qrCode) {
+              const qrEl = document.getElementById('connectionQr');
+              const qrImg = document.getElementById('qrImage');
+              qrImg.src = data.qrCode;
+              qrEl.style.display = 'block';
+            }
+
+            // Display App Link
+            if (data.appOpenUrl) {
+              const linkEl = document.getElementById('connectionLink');
+              const openLink = document.getElementById('openLink');
+              openLink.href = data.appOpenUrl;
+              openLink.textContent = 'Open Lovense Remote';
+              linkEl.style.display = 'block';
+            }
+
+            // Display Unique Code
+            if (data.code) {
+              const codeEl = document.getElementById('connectionCode');
+              const textCode = document.getElementById('textCode');
+              textCode.textContent = data.code;
+              codeEl.style.display = 'block';
+            }
+          }
+
+          btnGetApp.addEventListener('click', function () {
+            if (!lovensePattern) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('getapp-response').textContent = `${errorTimestamp}
+❌ Error: Please complete initialization first.`;
+              setStatus('Please complete initialization first');
+              return;
             }
             
-            patterns.push(pattern2);
-        }
-        
-        if (patterns.length === 0) {
-            throw new Error('Please enter at least one toy ID');
-        }
-        
-        console.log('Loading multiple patterns:', JSON.stringify(patterns, null, 2));
-        document.getElementById('loadPatternResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('loadPatternResponse', JSON.stringify(patterns, null, 2));
-        document.getElementById('loadPatternCallLabel').textContent = 'URL: lovensePattern.loadMultiplePatterns(...)';
-        
-        lovensePattern.loadMultiplePatterns(patterns);
-        setResponse('loadPatternResponse', '✅ Multiple patterns loaded successfully!\n\n' + JSON.stringify(patterns, null, 2));
-        
-    } catch (error) {
-        document.getElementById('loadPatternResponseTime').innerHTML = `Timestamp: ${getTimestamp()}`;
-        setResponse('loadPatternResponse', `Error: ${error.message}`);
-        document.getElementById('loadPatternCallLabel').textContent = 'URL: lovensePattern.loadMultiplePatterns(...)';
-    }
-}
-</script>
-
-<style>
-.api-documentation {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-
-h1 {
-    color: #2c3e50;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #eee;
-}
-
-.test-section {
-    background: #fff;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-h3 {
-    color: #34495e;
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-}
-
-h4 {
-    color: #2c3e50;
-    margin-bottom: 0.75rem;
-    font-size: 1.1rem;
-}
-
-h5 {
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-    font-size: 1rem;
-}
-
-.form-control {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-    font-size: 1rem;
-}
-
-.btn {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: all 0.2s;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.btn-primary {
-    background: #3498db;
-    color: white;
-}
-
-.btn-primary:hover {
-    background: #2980b9;
-}
-
-.btn-secondary {
-    background: #95a5a6;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background: #7f8c8d;
-}
-
-.data-box {
-    background: #f8f9fa;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    padding: 1rem;
-    margin-top: 1rem;
-    font-family: monospace;
-    white-space: pre-wrap;
-    font-size: 0.9rem;
-}
-
-.code-block {
-    background: #f8f9fa;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    padding: 1rem;
-    margin: 0.5rem 0;
-    font-family: monospace;
-    font-size: 0.9rem;
-}
-
-.status-indicator {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-weight: 500;
-    margin-bottom: 1rem;
-}
-
-.status-indicator.success {
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
-}
-
-.status-indicator.error {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.json-textarea {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    padding: 1rem;
-    resize: vertical;
-    white-space: pre;
-    tab-size: 2;
-}
-
-.media-preview {
-    margin: 1rem 0;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 4px;
-    border: 1px solid #eee;
-}
-
-.media-example {
-    text-align: center;
-}
-
-.media-example h5 {
-    margin-bottom: 1rem;
-    color: #2c3e50;
-}
-
-.input-group {
-    margin-bottom: 1rem;
-}
-
-.input-group.compact {
-    margin-bottom: 0;
-}
-
-.input-group label {
-    display: inline-block;
-    margin-right: 0.5rem;
-    font-weight: 500;
-    color: #2c3e50;
-    min-width: 80px;
-}
-
-.checkbox-group {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    cursor: pointer;
-    font-weight: normal;
-}
-
-.checkbox-label input[type="checkbox"] {
-    margin: 0;
-}
-
-.input-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.input-row .input-group {
-    flex: 1;
-    min-width: 200px;
-    display: flex;
-    align-items: center;
-}
-
-.input-row .btn {
-    margin-bottom: 0;
-    align-self: flex-end;
-}
-
-.info-text {
-    margin: 0.5rem 0;
-    color: #666;
-    font-style: italic;
-}
-
-.request-url {
-    font-family: monospace;
-    color: #0066cc;
-    margin-bottom: 8px;
-    padding: 4px 0;
-    font-size: 0.9em;
-}
-
-.timestamp {
-    font-family: monospace;
-    color: #666;
-    font-size: 0.85em;
-    margin-bottom: 8px;
-}
-
-.api-test-results {
-    margin-top: 1.5rem;
-}
-
-.request-box, .response-box {
-    margin-bottom: 1rem;
-}
-
-.request-box h4, .response-box h4 {
-    margin-bottom: 0.5rem;
-    color: #2c3e50;
-}
-
-.api-reference {
-    background: #f8f9fa;
-    border-left: 4px solid #3498db;
-    padding: 1rem;
-    margin-bottom: 2rem;
-    border-radius: 0 4px 4px 0;
-}
-
-.api-reference p {
-    margin: 0;
-    font-size: 0.95rem;
-    color: #2c3e50;
-}
-
-.api-reference a {
-    color: #3498db;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.api-reference a:hover {
-    text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-    .input-row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .input-row .input-group {
-        min-width: auto;
-    }
-    
-    .checkbox-group {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-    
-    .pattern-cards {
-        flex-direction: column;
-    }
-    
-    .pattern-card {
-        margin-bottom: 1rem;
-    }
-}
-.code-row { display: flex; align-items: center; gap: 1rem; }
-.media-tabs { display: flex; gap: 0.5rem; }
-.media-tab { padding: 0.5rem 1.5rem; border: 1px solid #ddd; background: #f8f9fa; cursor: pointer; border-radius: 4px 4px 0 0; font-weight: 500; }
-.media-tab.active { background: #3498db; color: #fff; border-bottom: 2px solid #3498db; }
-.sync-btn-pink {
-    background: linear-gradient(90deg, #ff5fa2 0%, #ff498a 100%);
-    color: #fff !important;
-    border: none;
-    border-radius: 14px;
-    font-weight: 500;
-    font-size: 1rem;
-    padding: 0.75rem 2.5rem;
-    box-shadow: 0 2px 8px 0 rgba(255, 89, 138, 0.15);
-    transition: background 0.2s, box-shadow 0.2s;
-    margin-right: 0.5rem;
-}
-.sync-btn-pink:hover, .sync-btn-pink:focus {
-    background: linear-gradient(90deg, #ff498a 0%, #ff5fa2 100%);
-    box-shadow: 0 4px 16px 0 rgba(255, 89, 138, 0.25);
-}
-
-/* Enhanced Audio Player */
-.enhanced-audio-player {
-    width: 100%;
-    max-width: 600px;
-    height: 60px;
-    border-radius: 30px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: none;
-    outline: none;
-}
-
-.enhanced-audio-player::-webkit-media-controls-panel {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 30px;
-}
-
-.enhanced-audio-player::-webkit-media-controls-play-button {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    margin: 0 10px;
-}
-
-.enhanced-audio-player::-webkit-media-controls-timeline {
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    margin: 0 10px;
-}
-
-.enhanced-audio-player::-webkit-media-controls-current-time-display,
-.enhanced-audio-player::-webkit-media-controls-time-remaining-display {
-    color: white;
-    font-weight: 500;
-}
-
-/* Sync Button Area with dashed border */
-.sync-button-area {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    border: 2px dashed #3498db;
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(52, 152, 219, 0.1) 100%);
-    position: relative;
-}
-
-.sync-button-area::before {
-    content: "🎯 Pattern Editor Area - Use advanced methods to control Lovense toys";
-    position: absolute;
-    top: -12px;
-    left: 20px;
-    background: white;
-    padding: 0 10px;
-    color: #3498db;
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.sync-button-container {
-    text-align: center;
-    padding: 1rem 0;
-}
-
-/* Scrollable Request Box */
-.scrollable-request {
-    max-height: 300px;
-    overflow-y: auto;
-    border: 2px solid #e9ecef;
-    background: #f8f9fa;
-}
-
-.scrollable-request::-webkit-scrollbar {
-    width: 8px;
-}
-
-.scrollable-request::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.scrollable-request::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-}
-
-.scrollable-request::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* Pattern Cards */
-.pattern-cards {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.pattern-card {
-    flex: 1;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    background: #f8f9fa;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
-
-.pattern-card:hover {
-    border-color: #3498db;
-    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
-}
-
-.pattern-card.active {
-    border-color: #3498db;
-    background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(52, 152, 219, 0.1) 100%);
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
-}
-
-.card-header {
-    padding: 1rem;
-    background: rgba(52, 152, 219, 0.1);
-    border-bottom: 1px solid #e9ecef;
-}
-
-.card-header h4 {
-    margin: 0 0 0.5rem 0;
-    color: #2c3e50;
-    font-size: 1.1rem;
-}
-
-.card-header p {
-    margin: 0;
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.card-content {
-    padding: 1rem;
-}
-
-.pattern-data-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.pattern-data-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.pattern-label {
-    font-weight: 500;
-    color: #2c3e50;
-}
-
-.btn-sm {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-}
-
-.pattern-textarea {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    resize: none;
-    min-height: 200px;
-}
-
-.fixed-height {
-    resize: none !important;
-}
-
-.sync-controls {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #e9ecef;
-}
-
-/* Media ID Styling */
-.audio-media-id {
-    color: #3498db;
-    font-weight: 600;
-    background: rgba(52, 152, 219, 0.1);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    border: 1px solid rgba(52, 152, 219, 0.3);
-}
-
-.video-media-id {
-    color: #e74c3c;
-    font-weight: 600;
-    background: rgba(231, 76, 60, 0.1);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    border: 1px solid rgba(231, 76, 60, 0.3);
-}
-
-/* Media Change Warning */
-.media-change-warning {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-    border: 2px solid #ffc107;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    animation: slideIn 0.3s ease-out;
-}
-
-.warning-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    color: #856404;
-    font-weight: 500;
-}
-
-.btn-close {
-    background: none;
-    border: none;
-    color: #856404;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.2s;
-}
-
-.btn-close:hover {
-    background-color: rgba(133, 100, 4, 0.1);
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.form-control.half-width {
-    width: 220px;
-    min-width: 120px;
-    display: inline-block;
-}
-.input-group.compact .form-control.half-width {
-    margin-bottom: 0;
-}
-
-/* Advanced Initialization Styles */
-.advanced-init-container {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
-}
-
-.step-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-}
-
-.step-header .info-text {
-    margin: 0;
-    flex: 1;
-    margin-right: 1rem;
-}
-
-.function-call-display {
-    background: #2c3e50;
-    color: #ecf0f1;
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
-    margin-bottom: 1rem;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
-    font-size: 0.9rem;
-}
-
-.function-call-display code {
-    color: #3498db;
-    font-weight: 500;
-}
-
-/* Connect to Apps Styles */
-.connect-apps-container {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
-}
-
-.connect-controls {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0;
-}
-
-.connection-display {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: white;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-}
-
-.connection-methods {
-    display: flex;
-    gap: 1rem;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.qr-section, .app-url-section, .code-section {
-    text-align: center;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    flex: 1;
-    min-width: 0;
-}
-
-.qr-code-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.qr-instruction {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #666;
-    font-weight: 500;
-}
-
-.app-url-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.app-url-instruction {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #666;
-    font-weight: 500;
-}
-
-.unique-code-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.code-display {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #3498db;
-    background: white;
-    padding: 1rem 2rem;
-    border: 2px solid #3498db;
-    border-radius: 8px;
-    letter-spacing: 0.5rem;
-    text-align: center;
-    min-width: 200px;
-}
-
-.code-instruction {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #666;
-    font-weight: 500;
-}
-
-/* Load Pattern(s) Styles */
-.load-pattern-container {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
-}
-
-.pattern-loading-tabs {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.pattern-tab {
-    padding: 0.75rem 1.5rem;
-    border: 1px solid #ddd;
-    background: #f8f9fa;
-    cursor: pointer;
-    border-radius: 4px;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-
-.pattern-tab.active {
-    background: #3498db;
-    color: #fff;
-    border-color: #3498db;
-}
-
-.pattern-tab:hover:not(.active) {
-    background: #e9ecef;
-}
-
-.pattern-section {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    border: 1px solid #e9ecef;
-    margin-bottom: 1rem;
-}
-
-.pattern-type-selector {
-    margin-bottom: 1rem;
-}
-
-.pattern-input-section {
-    margin-top: 1rem;
-}
-
-.multiple-patterns-config {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.pattern-entry {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 1.5rem;
-    border: 1px solid #e9ecef;
-}
-
-.pattern-entry h5 {
-    margin-bottom: 1rem;
-    color: #2c3e50;
-    font-size: 1.1rem;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 0.5rem;
-}
-
-/* Responsive Design for New Components */
-@media (max-width: 768px) {
-    .step-header {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .step-header .info-text {
-        margin-right: 0;
-    }
-    
-    .connect-controls {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    
-    .connection-methods {
-        flex-direction: column;
-    }
-    
-    .pattern-loading-tabs {
-        flex-direction: column;
-    }
-    
-    .pattern-tab {
-        text-align: center;
-    }
-    
-    .code-display {
-        font-size: 1.5rem;
-        letter-spacing: 0.25rem;
-        min-width: 150px;
-        padding: 0.75rem 1.5rem;
-    }
-}
-</style>
+            lovensePattern.getApp((data) => {
+              console.log('🔺 Connection data received:', data);
+              
+              // Show only the raw response data with forced line breaks
+              const responseTimestamp = formatLocalDateTime();
+              const formattedData = JSON.stringify(data, null, 2); // Add indentation for readability
+              document.getElementById('getapp-response').textContent = `${responseTimestamp}
+${formattedData}`;
+              
+              // Render connections (QR code, app link, unique code)
+              renderConnections(data);
+            });
+          });
+
+          audioEl.addEventListener('loadedmetadata', function () {
+            if (!inputDuration.value && Number.isFinite(audioEl.duration)) {
+              const durationSeconds = audioEl.duration;
+              const durationMs = durationSeconds * 1000;
+              inputDuration.value = String(durationSeconds.toFixed(3));
+
+            }
+          });
+
+          btnLoadPattern.addEventListener('click', loadPatternFromUI);
+          btnGetPatternList.addEventListener('click', getPatternList);
+          btnExit.addEventListener('click', exitLovensePattern);
+
+          // Multiple Patterns for Multiple Toys functionality
+          let patternCounter = 0;
+
+          // Add event listeners for multiple patterns functionality
+          btnAddPattern.addEventListener('click', createPatternEntry);
+          btnClearPatterns.addEventListener('click', clearAllPatterns);
+          btnLoadMultiplePatterns.addEventListener('click', loadMultiplePatternsFromUI);
+
+
+
+          function createPatternEntry() {
+            patternCounter++;
+            const patternId = `pattern-${patternCounter}`;
+            
+            const patternEntry = document.createElement('div');
+            patternEntry.className = 'pattern-entry';
+            
+            patternEntry.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h4>Toy Pattern #${patternCounter}</h4>
+                <div class="flex-row-8">
+                  <button class="quick-pattern-btn" data-pattern-id="${patternId}" data-duration="20">20s</button>
+                  <button class="quick-pattern-btn" data-pattern-id="${patternId}" data-duration="60">1m</button>
+                  <button class="quick-pattern-btn" data-pattern-id="${patternId}" data-duration="300">5m</button>
+                  <button class="quick-pattern-btn" data-pattern-id="${patternId}" data-duration="900">15m</button>
+                  <button onclick="removePatternEntry('${patternId}')" style="border: 1px solid #dc3545; background: #f8f9fa; color: #dc3545; padding: 4px 8px; font-size: 11px; border-radius: 4px;">Remove</button>
+                </div>
+              </div>
+              
+              <!-- Toy and Type with labels inline -->
+              <div style="display: flex; gap: 20px; margin-bottom: 12px; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                  <label class="small-label" style="min-width: 30px; margin-bottom: 0;">Toy:</label>
+                  <select id="${patternId}-toyId" style="flex: 1;">
+                    <option value="">Select connected toy...</option>
+                  </select>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 8px; flex: 1;">
+                  <label class="small-label" style="min-width: 35px; margin-bottom: 0;">Type:</label>
+                  <select id="${patternId}-type" style="flex: 1;">
+                    <option value="funScript">FunScript</option>
+                    <option value="lovense">Lovense</option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Pattern Link and Data in same row with 30/70 ratio -->
+              <div style="display: flex; gap: 20px; align-items: flex-start; margin-top: 12px;">
+                <div style="flex: 0 0 calc(30% - 10px); min-width: 180px;">
+                  <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Pattern Link (optional):</label>
+                  <input id="${patternId}-link" type="text" placeholder="https://example.com/pattern.funscript" style="width: 100%; padding: 8px 12px; border: 2px solid var(--border-color); border-radius: 6px; font-size: 14px; box-sizing: border-box;" />
+                </div>
+                <div style="flex: 0 0 calc(70% - 10px); min-width: 280px;">
+                  <label style="display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-primary); font-size: 14px;">Pattern Data (FunScript JSON):</label>
+                  <textarea id="${patternId}-data" placeholder='[{"at":1000, "pos":20}, {"at":3000, "pos":35}]' style="width: 100%; height: 80px; padding: 12px; border: 2px solid var(--border-color); border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; font-size: 12px; line-height: 1.4; box-sizing: border-box; resize: vertical;"></textarea>
+                </div>
+              </div>
+              <div class="note" style="margin-top: 8px;">Note: If data is provided, it takes priority over pattern link.</div>
+            `;
+            
+            patternEntry.id = patternId;
+            multiplePatternsContainer.appendChild(patternEntry);
+            
+            // Populate toy dropdown with connected toys and select first one
+            updateToyDropdowns();
+            
+            // Auto-select first connected toy for new patterns
+            const toyDropdown = document.getElementById(`${patternId}-toyId`);
+            const connectedToys = getConnectedToys();
+            if (toyDropdown && connectedToys.length > 0) {
+              toyDropdown.value = connectedToys[0].toyId;
+            }
+            
+            return patternId;
+          }
+
+          function removePatternEntry(patternId) {
+            const entry = document.getElementById(patternId);
+            if (entry) {
+              entry.remove();
+            }
+          }
+
+          function updateToyDropdowns() {
+            const toyDropdowns = document.querySelectorAll('[id$="-toyId"]');
+            const connectedToys = getConnectedToys();
+            
+            toyDropdowns.forEach(dropdown => {
+              const currentValue = dropdown.value;
+              dropdown.innerHTML = '<option value="">Select a connected toy...</option>';
+              
+              connectedToys.forEach(toy => {
+                const option = document.createElement('option');
+                option.value = toy.toyId;
+                // Display format: Full ToyName - Full ToyID
+                const displayName = toy.nickName && toy.nickName !== 'Unknown' ? toy.nickName : toy.toyType;
+                option.textContent = `${displayName} - ${toy.toyId}`;
+                if (toy.toyId === currentValue) {
+                  option.selected = true;
+                }
+                dropdown.appendChild(option);
+              });
+            });
+          }
+
+          function getConnectedToys() {
+            // Get toys from the toys table
+            const toyRows = toysTbodyEl.querySelectorAll('tr');
+            const connectedToys = [];
+            
+            toyRows.forEach(row => {
+              const cells = row.querySelectorAll('td');
+              if (cells.length >= 6) {
+                const connectionStatus = cells[4].textContent;
+                if (connectionStatus === 'Connected') {
+                  connectedToys.push({
+                    toyId: cells[5].querySelector('code').textContent,
+                    nickName: cells[0].textContent,
+                    toyType: cells[1].textContent
+                  });
+                }
+              }
+            });
+            
+            return connectedToys;
+          }
+
+          function getCurrentToysFromTable() {
+            // Get all toys from the toys table (both connected and disconnected)
+            const toyRows = toysTbodyEl.querySelectorAll('tr');
+            const allToys = [];
+            
+            toyRows.forEach(row => {
+              const cells = row.querySelectorAll('td');
+              if (cells.length >= 6) {
+                allToys.push({
+                  toyId: cells[5].querySelector('code').textContent,
+                  nickName: cells[0].textContent,
+                  toyType: cells[1].textContent,
+                  connectionStatus: cells[4].textContent
+                });
+              }
+            });
+            
+            return allToys;
+          }
+
+          function loadMultiplePatternsFromUI() {
+            if (!lovensePattern) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('multiple-patterns-response').textContent = `${errorTimestamp}\n❌ Error: Please complete initialization first`;
+              setStatus('Please complete initialization first');
+              return;
+            }
+
+            const patternEntries = document.querySelectorAll('.pattern-entry');
+            if (patternEntries.length === 0) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('multiple-patterns-response').textContent = `${errorTimestamp}\n❌ Error: No pattern entries found`;
+              setStatus('Please add at least one toy pattern');
+              return;
+            }
+
+            const patterns = [];
+            let hasValidPattern = false;
+
+            patternEntries.forEach(entry => {
+              const toyId = entry.querySelector('[id$="-toyId"]').value.trim();
+              const type = entry.querySelector('[id$="-type"]').value;
+              const link = entry.querySelector('[id$="-link"]').value.trim();
+              const dataText = entry.querySelector('[id$="-data"]').value.trim();
+
+                              if (!toyId) {
+                  const errorTimestamp = formatLocalDateTime();
+                  document.getElementById('multiple-patterns-response').textContent = `${errorTimestamp}\n❌ Error: Toy ID is required for all patterns`;
+                  return;
+                }
+
+              let data = null;
+              if (dataText) {
+                try {
+                  data = JSON.parse(dataText);
+                  if (!Array.isArray(data)) {
+                    throw new Error('Data must be an array');
+                  }
+                                  } catch (e) {
+                    const errorTimestamp = formatLocalDateTime();
+                    document.getElementById('multiple-patterns-response').textContent = `${errorTimestamp}\n❌ Error: Invalid JSON data for toy ${toyId}: ${String(e)}`;
+                    return;
+                  }
+              }
+
+              const pattern = {
+                type: type,
+                toyId: toyId
+              };
+
+              if (data) {
+                pattern.data = data;
+              } else if (link) {
+                pattern.patternLink = link;
+                              } else {
+                  const errorTimestamp = formatLocalDateTime();
+                  document.getElementById('multiple-patterns-response').textContent = `${errorTimestamp}\n❌ Error: Pattern data or link is required for toy ${toyId}`;
+                  return;
+                }
+
+              patterns.push(pattern);
+              hasValidPattern = true;
+            });
+
+            if (!hasValidPattern) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('multiple-patterns-response').textContent = `${errorTimestamp}\n❌ Error: No valid patterns found`;
+              setStatus('No valid patterns found');
+              return;
+            }
+
+            setStatus('Loading multiple patterns...');
+            const multipleTimestamp = formatLocalDateTime();
+            
+            // Show the actual call with truncated data for display
+            const displayPatterns = patterns.map(pattern => {
+              const displayPattern = { ...pattern };
+              if (pattern.data) {
+                const dataStr = JSON.stringify(pattern.data);
+                if (dataStr.length > 200) {
+                  const truncatedData = JSON.stringify(pattern.data.slice(0, 2)) + '...(truncated)';
+                  displayPattern.data = `[${pattern.data.length} points] ${truncatedData}`;
+                }
+              }
+              return displayPattern;
+            });
+            
+            document.getElementById('multiple-patterns-call').textContent = `${multipleTimestamp}
+lovensePattern.loadMultiplePatterns(${JSON.stringify(displayPatterns, null, 2)}).then((response) => {
+  console.log('Multiple patterns loaded:', response);
+}).catch((error) => {
+  console.error('Loading failed:', error);
+});`;
+            
+            // Enhanced logging for multiple patterns
+            console.log('🔺 SDK Call: lovensePattern.loadMultiplePatterns()', { 
+              method: 'loadMultiplePatterns',
+              patternCount: patterns.length,
+              toysInvolved: patterns.map(p => ({
+                toyId: p.toyId,
+                type: p.type,
+                hasData: !!p.data,
+                hasLink: !!p.patternLink,
+                dataPoints: p.data ? p.data.length : 0
+              }))
+            });
+            
+
+
+            try {
+              const responseTimestamp = formatLocalDateTime();
+              const result = lovensePattern.loadMultiplePatterns(patterns);
+              
+              // Enhanced response display
+              const responseInfo = {
+                success: true,
+                timestamp: responseTimestamp,
+                patternsSubmitted: patterns.length,
+                patterns: patterns.map((p, index) => ({
+                  index: index + 1,
+                  toyId: p.toyId,
+                  type: p.type,
+                  hasData: !!p.data,
+                  hasLink: !!p.patternLink,
+                  dataPoints: p.data ? p.data.length : 0
+                })),
+                sdkResponse: result
+              };
+              
+              document.getElementById('multiple-patterns-response').textContent = `${responseTimestamp}
+${JSON.stringify(result, null, 2)}`;
+              
+              console.log('✅ SDK Response: loadMultiplePatterns() successful', { 
+                response: result,
+                patternsLoaded: patterns.length,
+                timestamp: responseTimestamp,
+                detailedInfo: responseInfo
+              });
+              setStatus(`Multiple patterns loaded successfully (${patterns.length} patterns)`);
+            } catch (err) {
+              const errorTimestamp = formatLocalDateTime();
+              document.getElementById('multiple-patterns-response').textContent = `${errorTimestamp}
+Error: ${String((err && err.message) || err)}`;
+              
+              console.log('💥 SDK Error: loadMultiplePatterns() call error', { 
+                error: String((err && err.message) || err),
+                requestPayload: patterns,
+                patternCount: patterns.length,
+                stack: err && err.stack,
+                timestamp: errorTimestamp
+              });
+              setStatus('Multiple patterns loading error');
+            }
+          }
+
+          function clearAllPatterns() {
+            multiplePatternsContainer.innerHTML = '';
+            patternCounter = 0;
+  
+          }
+
+          // Make removePatternEntry globally accessible for onclick handlers
+          window.removePatternEntry = removePatternEntry;
+
+          // Quick pattern examples for single pattern
+          function generateQuickPattern(durationSeconds, variation = 0) {
+            // Generate patterns with gentle intensity (soft mode)
+            let basePattern;
+            
+            if (durationSeconds <= 20) {
+              // 20 seconds pattern: 3-4 points, very gentle
+              basePattern = [
+                { "at": 5000, "pos": 15 },
+                { "at": 12000, "pos": 25 },
+                { "at": 20000, "pos": 20 }
+              ];
+            } else if (durationSeconds <= 60) {
+              // 1 minute pattern: 4-5 points, gentle
+              basePattern = [
+                { "at": 10000, "pos": 15 },
+                { "at": 30000, "pos": 25 },
+                { "at": 45000, "pos": 20 },
+                { "at": 60000, "pos": 30 }
+              ];
+            } else if (durationSeconds <= 300) {
+              // 5 minutes pattern: 8-10 points, gentle
+              basePattern = [
+                { "at": 30000, "pos": 15 },
+                { "at": 60000, "pos": 25 },
+                { "at": 90000, "pos": 20 },
+                { "at": 120000, "pos": 30 },
+                { "at": 150000, "pos": 25 },
+                { "at": 180000, "pos": 35 },
+                { "at": 210000, "pos": 30 },
+                { "at": 240000, "pos": 40 },
+                { "at": 270000, "pos": 35 },
+                { "at": 300000, "pos": 45 }
+              ];
+            } else if (durationSeconds <= 900) {
+              // 15 minutes pattern: 15-20 points, gentle
+              basePattern = [
+                { "at": 60000, "pos": 15 },
+                { "at": 120000, "pos": 25 },
+                { "at": 180000, "pos": 20 },
+                { "at": 240000, "pos": 30 },
+                { "at": 300000, "pos": 25 },
+                { "at": 360000, "pos": 35 },
+                { "at": 420000, "pos": 30 },
+                { "at": 480000, "pos": 40 },
+                { "at": 540000, "pos": 35 },
+                { "at": 600000, "pos": 45 },
+                { "at": 660000, "pos": 25 },
+                { "at": 720000, "pos": 35 },
+                { "at": 780000, "pos": 30 },
+                { "at": 840000, "pos": 40 },
+                { "at": 900000, "pos": 35 }
+              ];
+            } else {
+              // 30 minutes pattern: 25-30 points, gentle
+              basePattern = [
+                { "at": 120000, "pos": 15 },
+                { "at": 240000, "pos": 25 },
+                { "at": 360000, "pos": 20 },
+                { "at": 480000, "pos": 30 },
+                { "at": 600000, "pos": 25 },
+                { "at": 720000, "pos": 35 },
+                { "at": 840000, "pos": 30 },
+                { "at": 960000, "pos": 40 },
+                { "at": 1080000, "pos": 35 },
+                { "at": 1200000, "pos": 45 },
+                { "at": 1320000, "pos": 25 },
+                { "at": 1440000, "pos": 35 },
+                { "at": 1560000, "pos": 30 },
+                { "at": 1680000, "pos": 40 },
+                { "at": 1800000, "pos": 35 },
+                { "at": 1920000, "pos": 45 },
+                { "at": 2040000, "pos": 25 },
+                { "at": 2160000, "pos": 35 },
+                { "at": 2280000, "pos": 30 },
+                { "at": 2400000, "pos": 40 },
+                { "at": 2520000, "pos": 35 },
+                { "at": 2640000, "pos": 45 },
+                { "at": 2760000, "pos": 25 },
+                { "at": 2880000, "pos": 35 },
+                { "at": 3000000, "pos": 30 }
+              ];
+            }
+            
+            // Apply variation for multiple toys
+            if (variation > 0) {
+              basePattern = basePattern.map(point => ({
+                ...point,
+                pos: Math.max(5, Math.min(95, point.pos + (variation * 10) - 10))
+              }));
+            }
+            
+            // Scale pattern to fit duration
+            const maxAt = Math.max(...basePattern.map(p => p.at));
+            const targetDuration = durationSeconds * 1000;
+            const scaleFactor = targetDuration / maxAt;
+            
+            return basePattern
+              .map(p => ({
+                at: Math.floor(p.at * scaleFactor),
+                pos: p.pos
+              }))
+              .filter(p => p.at <= targetDuration);
+          }
+
+          function loadQuickPattern(durationSeconds) {
+            const patterns = generateQuickPattern(durationSeconds);
+            // Use compact format, no line breaks
+            inputPatternData.value = JSON.stringify(patterns);
+            
+
+          }
+
+
+
+          // Use event delegation for quick pattern buttons (including dynamically added ones)
+          document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('quick-pattern-btn')) {
+              const duration = parseInt(e.target.dataset.duration);
+              const patternId = e.target.dataset.patternId;
+              
+              if (patternId) {
+                // Individual pattern entry quick button
+                const patterns = generateQuickPattern(duration, 0);
+                const dataTextarea = document.getElementById(`${patternId}-data`);
+                if (dataTextarea) {
+                  // Use compact format, no line breaks
+                  dataTextarea.value = JSON.stringify(patterns);
+                }
+              } else {
+                // Single pattern section quick button
+                loadQuickPattern(duration);
+              }
+            }
+            
+
+          });
+
+          renderToys([]);
+          
+          // Create default pattern entry on page load
+          setTimeout(() => {
+            if (multiplePatternsContainer.children.length === 0) {
+              createPatternEntry();
+            }
+          }, 500);
+        })();
+      </script>
+    </div>
+  </div>
+</div>
+

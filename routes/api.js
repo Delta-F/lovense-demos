@@ -80,6 +80,10 @@ router.get('/media-sync/patterns-creator', (req, res) => {
     res.render('api-pages/media-sync/patterns-creator');
 });
 
+router.get('/media-sync/media-sync-methods', (req, res) => {
+    res.render('api-pages/media-sync/media-sync-methods');
+});
+
 // Native SDKs routes
 router.get('/native-sdks/android-sdk', (req, res) => {
     res.render('api-pages/native-sdks/android-sdk');
